@@ -74,11 +74,25 @@ class MapGenerator {
         const positions = new Map();
         const visited = new Set();
         
-        // Start with the first room at origin
-        const startRoom = rooms[0];
-        const queue = [{ room: startRoom, x: 0, y: 0 }];
-        positions.set(startRoom.id, { x: 0, y: 0 });
-        visited.add(startRoom.id);
+        // Find the best starting room (one with the most connections)
+        let startRoom = rooms[0];
+        let maxConnections = 0;
+        
+        rooms.forEach(room => {
+            if (room.wayto) {
+                const validConnections = Object.keys(room.wayto).filter(targetId => {
+                    const direction = this.getDirectionForConnection(room, targetId);
+                    return direction && roomLookup.has(parseInt(targetId));
+                }).length;
+                
+                if (validConnections > maxConnections) {
+                    maxConnections = validConnections;
+                    startRoom = room;
+                }
+            }
+        });
+        
+        console.log(`Starting with room ${startRoom.id} (${maxConnections} connections)`);
         
         // Direction mappings
         const directionOffsets = {
@@ -92,76 +106,133 @@ class MapGenerator {
             'southwest': { x: -1, y: 1 },
             'up': { x: 0, y: -2 },
             'down': { x: 0, y: 2 },
-            'out': { x: 2, y: 0 } // Treat 'out' as east
+            'out': { x: 2, y: 0 }
         };
         
-        console.log('Starting room positioning...');
+        // Multiple passes to find connected components
+        const unpositioned = new Set(rooms.map(r => r.id));
         
-        // BFS to position connected rooms
-        while (queue.length > 0) {
-            const { room, x, y } = queue.shift();
+        while (unpositioned.size > 0) {
+            // Find the next starting room (either unvisited with most connections, or any unvisited)
+            let nextStart = null;
+            let nextStartConnections = 0;
             
-            // Check all connections from this room
-            if (room.wayto) {
-                for (const targetId of Object.keys(room.wayto)) {
-                    const targetIdNum = parseInt(targetId);
-                    const targetRoom = roomLookup.get(targetIdNum);
+            for (const roomId of unpositioned) {
+                const room = roomLookup.get(roomId);
+                if (room && room.wayto) {
+                    const validConnections = Object.keys(room.wayto).filter(targetId => {
+                        const direction = this.getDirectionForConnection(room, targetId);
+                        return direction && unpositioned.has(parseInt(targetId));
+                    }).length;
                     
-                    // Skip if target room not in our set or already visited
-                    if (!targetRoom || visited.has(targetRoom.id)) {
-                        continue;
+                    if (validConnections > nextStartConnections) {
+                        nextStartConnections = validConnections;
+                        nextStart = room;
                     }
-                    
-                    // Get direction for this connection
-                    const direction = this.getDirectionForConnection(room, targetId);
-                    
-                    if (direction) {
-                        // Calculate new position
-                        const offset = directionOffsets[direction];
-                        if (offset) {
-                            const newX = x + offset.x;
-                            const newY = y + offset.y;
-                            
-                            // Check if position is already occupied
-                            const occupied = Array.from(positions.entries()).find(([id, pos]) => 
-                                pos.x === newX && pos.y === newY
-                            );
-                            
-                            if (!occupied) {
-                                positions.set(targetRoom.id, { x: newX, y: newY });
-                                visited.add(targetRoom.id);
-                                queue.push({ room: targetRoom, x: newX, y: newY });
+                }
+            }
+            
+            if (!nextStart) {
+                // No more connected rooms, pick any remaining room
+                nextStart = roomLookup.get(Array.from(unpositioned)[0]);
+            }
+            
+            // Find a good position for this component
+            let startX = 0, startY = 0;
+            if (positions.size > 0) {
+                // Position new components away from existing ones
+                const existingCoords = Array.from(positions.values());
+                const maxX = Math.max(...existingCoords.map(p => p.x));
+                startX = maxX + 5; // Leave some space
+            }
+            
+            console.log(`Starting new component with room ${nextStart.id} at (${startX}, ${startY})`);
+            
+            // BFS for this connected component
+            const queue = [{ room: nextStart, x: startX, y: startY }];
+            positions.set(nextStart.id, { x: startX, y: startY });
+            unpositioned.delete(nextStart.id);
+            
+            while (queue.length > 0) {
+                const { room, x, y } = queue.shift();
+                
+                // Check all connections from this room
+                if (room.wayto) {
+                    for (const targetId of Object.keys(room.wayto)) {
+                        const targetIdNum = parseInt(targetId);
+                        const targetRoom = roomLookup.get(targetIdNum);
+                        
+                        // Skip if target room not in our set or already positioned
+                        if (!targetRoom || !unpositioned.has(targetRoom.id)) {
+                            continue;
+                        }
+                        
+                        // Get direction for this connection
+                        const direction = this.getDirectionForConnection(room, targetId);
+                        
+                        if (direction) {
+                            const offset = directionOffsets[direction];
+                            if (offset) {
+                                let newX = x + offset.x;
+                                let newY = y + offset.y;
                                 
-                                console.log(`Positioned room ${targetRoom.id} at (${newX}, ${newY}) via ${direction} from room ${room.id}`);
-                            } else {
-                                console.log(`Position (${newX}, ${newY}) occupied, skipping room ${targetRoom.id}`);
+                                // Check for position conflicts and resolve them
+                                let attempts = 0;
+                                while (this.isPositionOccupied(positions, newX, newY) && attempts < 8) {
+                                    // Try slight offsets to resolve conflicts
+                                    switch (attempts) {
+                                        case 0: newX += 1; break;
+                                        case 1: newX -= 2; break;
+                                        case 2: newX += 1; newY += 1; break;
+                                        case 3: newY -= 2; break;
+                                        case 4: newX += 2; break;
+                                        case 5: newX -= 4; break;
+                                        case 6: newY += 3; break;
+                                        case 7: newX += 2; newY += 2; break;
+                                    }
+                                    attempts++;
+                                }
+                                
+                                if (!this.isPositionOccupied(positions, newX, newY)) {
+                                    positions.set(targetRoom.id, { x: newX, y: newY });
+                                    unpositioned.delete(targetRoom.id);
+                                    queue.push({ room: targetRoom, x: newX, y: newY });
+                                    
+                                    console.log(`Positioned room ${targetRoom.id} at (${newX}, ${newY}) via ${direction} from room ${room.id}`);
+                                } else {
+                                    console.log(`Could not resolve position conflict for room ${targetRoom.id}`);
+                                }
                             }
                         }
-                    } else {
-                        console.log(`No cardinal direction found for ${room.id} -> ${targetId} (wayto: "${room.wayto[targetId]}")`);
                     }
                 }
             }
         }
         
-        // Position any unconnected rooms in a grid
-        const maxY = positions.size > 0 ? Math.max(...Array.from(positions.values()).map(p => p.y)) : 0;
-        let gridX = 0, gridY = maxY + 3;
+        console.log(`Positioned ${positions.size} rooms in connected components`);
         
-        rooms.forEach(room => {
-            if (!positions.has(room.id)) {
-                positions.set(room.id, { x: gridX, y: gridY });
-                console.log(`Positioned unconnected room ${room.id} at (${gridX}, ${gridY})`);
+        // Handle any remaining unpositioned rooms (should be rare now)
+        if (unpositioned.size > 0) {
+            console.log(`Positioning ${unpositioned.size} remaining unconnected rooms`);
+            const existingCoords = Array.from(positions.values());
+            const maxY = existingCoords.length > 0 ? Math.max(...existingCoords.map(p => p.y)) : 0;
+            
+            let gridX = 0, gridY = maxY + 3;
+            for (const roomId of unpositioned) {
+                positions.set(roomId, { x: gridX, y: gridY });
                 gridX++;
-                if (gridX > 10) { // New row every 10 rooms
+                if (gridX > 5) {
                     gridX = 0;
                     gridY++;
                 }
             }
-        });
+        }
         
-        console.log(`Positioned ${positions.size} rooms total`);
         return positions;
+    }
+
+    isPositionOccupied(positions, x, y) {
+        return Array.from(positions.values()).some(pos => pos.x === x && pos.y === y);
     }
 
     createSVG(rooms, positions, roomLookup) {
