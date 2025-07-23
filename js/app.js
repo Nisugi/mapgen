@@ -9,21 +9,166 @@ class MapGenApp {
 
     getDefaultConfig() {
         return {
-            theme: 'maritime',
+            theme: 'custom',
+            edgeLength: 80,
+            roomShape: 'circle',
+            roomSize: 15,
             colors: {
                 default: '#ffffff',
-                water: '#8cc6ff',
-                exit: '#ff6b6b',
-                shop: '#90EE90'
+                background: '#f8f9fa',
+                connections: '#666666'
             },
+            tagColors: new Map(), // tag -> color mapping
             options: {
                 showRoomIds: true,
                 showLabels: true,
                 showConnections: true,
-                debugMode: false,
-                gridSize: 50
+                debugMode: false
             }
         };
+    }
+
+    populateTagDropdown() {
+        if (!this.mapdb) return;
+
+        const tagSelect = document.getElementById('tag-select');
+        const allTags = this.mapdbLoader.extractTags(this.mapdb);
+        
+        tagSelect.innerHTML = '<option value="">Select a tag...</option>';
+        
+        allTags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag;
+            option.textContent = tag;
+            tagSelect.appendChild(option);
+        });
+
+        console.log(`Populated ${allTags.length} tags`);
+    }
+
+    addTagColor() {
+        const tagSelect = document.getElementById('tag-select');
+        const selectedTag = tagSelect.value;
+        
+        if (!selectedTag) {
+            alert('Please select a tag first');
+            return;
+        }
+
+        if (this.config.tagColors.has(selectedTag)) {
+            alert('This tag already has a color assigned');
+            return;
+        }
+
+        // Add to config
+        this.config.tagColors.set(selectedTag, '#ff0000'); // Default to red
+        
+        // Update UI
+        this.renderTagColorsList();
+        
+        // Reset dropdown
+        tagSelect.value = '';
+    }
+
+    renderTagColorsList() {
+        const container = document.getElementById('tag-colors-list');
+        
+        if (this.config.tagColors.size === 0) {
+            container.innerHTML = '<div class="empty-tag-list">No tag colors defined. Select a tag above to add one.</div>';
+            return;
+        }
+        
+        let html = '';
+        for (const [tag, color] of this.config.tagColors.entries()) {
+            html += `
+                <div class="tag-color-item" data-tag="${tag}">
+                    <span class="tag-name">${tag}</span>
+                    <input type="color" value="${color}" data-tag="${tag}">
+                    <button class="remove-tag" data-tag="${tag}">Remove</button>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+        
+        // Add event listeners
+        container.querySelectorAll('input[type="color"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const tag = e.target.dataset.tag;
+                this.config.tagColors.set(tag, e.target.value);
+            });
+        });
+        
+        container.querySelectorAll('.remove-tag').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const tag = e.target.dataset.tag;
+                this.config.tagColors.delete(tag);
+                this.renderTagColorsList();
+            });
+        });
+    }
+
+    applyThemePreset(e) {
+        const themes = {
+            maritime: {
+                default: '#f0f8ff',
+                background: '#e6f3ff',
+                connections: '#4682b4',
+                tagColors: new Map([
+                    ['exit', '#ff6b6b'],
+                    ['sea', '#1e90ff'],
+                    ['beach', '#f4a460'],
+                    ['shop', '#90EE90'],
+                    ['bank', '#ffd700']
+                ])
+            },
+            dungeon: {
+                default: '#2c2c2c',
+                background: '#1a1a1a',
+                connections: '#666666',
+                tagColors: new Map([
+                    ['exit', '#dc2626'],
+                    ['shop', '#16a34a'],
+                    ['danger', '#ef4444'],
+                    ['treasure', '#eab308']
+                ])
+            },
+            forest: {
+                default: '#f0f8e8',
+                background: '#e8f5e8',
+                connections: '#228b22',
+                tagColors: new Map([
+                    ['exit', '#e74c3c'],
+                    ['water', '#4a90e2'],
+                    ['shop', '#27ae60'],
+                    ['tree', '#2d5016']
+                ])
+            },
+            'high-contrast': {
+                default: '#ffffff',
+                background: '#000000',
+                connections: '#ffffff',
+                tagColors: new Map([
+                    ['exit', '#ff0000'],
+                    ['shop', '#00ff00'],
+                    ['water', '#0000ff'],
+                    ['danger', '#ff00ff']
+                ])
+            }
+        };
+
+        const theme = themes[e.target.value];
+        if (theme) {
+            // Update basic colors
+            document.getElementById('default-color').value = theme.default;
+            document.getElementById('background-color').value = theme.background;
+            document.getElementById('connection-color').value = theme.connections;
+            
+            this.config.colors = { ...theme };
+            this.config.tagColors = new Map(theme.tagColors);
+            
+            this.renderTagColorsList();
+        }
     }
 
     async init() {
@@ -56,6 +201,27 @@ class MapGenApp {
             document.getElementById('grid-size-value').textContent = e.target.value + 'px';
             this.config.options.gridSize = parseInt(e.target.value);
         });
+
+        // New appearance controls
+        const edgeLengthSlider = document.getElementById('edge-length');
+        edgeLengthSlider.addEventListener('input', (e) => {
+            document.getElementById('edge-length-value').textContent = e.target.value + 'px';
+            this.config.edgeLength = parseInt(e.target.value);
+        });
+
+        const roomSizeSlider = document.getElementById('room-size');
+        roomSizeSlider.addEventListener('input', (e) => {
+            document.getElementById('room-size-value').textContent = e.target.value + 'px';
+            this.config.roomSize = parseInt(e.target.value);
+        });
+
+        document.getElementById('room-shape').addEventListener('change', (e) => {
+            this.config.roomShape = e.target.value;
+        });
+    
+        // Tag color management
+        document.getElementById('add-tag-color').addEventListener('click', this.addTagColor.bind(this));
+        document.getElementById('theme-preset').addEventListener('change', this.applyThemePreset.bind(this));
 
         // File upload
         document.getElementById('mapdb-file').addEventListener('change', this.handleFileUpload.bind(this));
@@ -349,6 +515,9 @@ class MapGenApp {
         document.getElementById('generate-btn').disabled = false;
         document.getElementById('preview-btn').disabled = false;
         this.hideProgress();
+        this.populateLocationDropdown();
+        this.populateTagDropdown(); // Add this line
+        this.renderTagColorsList(); // Add this line
         this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
         this.debugMapDB();
     }

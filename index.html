@@ -65,35 +65,77 @@
                     </div>
                 </section>
 
-                <!-- Theme Panel -->
+                <!-- Theme & Colors Panel -->
                 <section class="panel">
                     <h3>🎨 Theme & Colors</h3>
+                    
+                    <!-- Map Appearance -->
                     <div class="form-group">
-                        <label for="theme-select">Theme Preset:</label>
-                        <select id="theme-select">
+                        <label for="edge-length">Edge Length:</label>
+                        <input type="range" id="edge-length" min="30" max="150" value="80">
+                        <span id="edge-length-value">80px</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="room-shape">Room Shape:</label>
+                        <select id="room-shape">
+                            <option value="circle">Circle</option>
+                            <option value="square">Square</option>
+                            <option value="rectangle">Rectangle</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="room-size">Room Size:</label>
+                        <input type="range" id="room-size" min="8" max="25" value="15">
+                        <span id="room-size-value">15px</span>
+                    </div>
+                    
+                    <!-- Default Colors -->
+                    <div class="form-group">
+                        <label>Default Colors:</label>
+                        <div class="color-grid">
+                            <div class="color-input">
+                                <label for="default-color">Default:</label>
+                                <input type="color" id="default-color" value="#ffffff">
+                            </div>
+                            <div class="color-input">
+                                <label for="background-color">Background:</label>
+                                <input type="color" id="background-color" value="#f8f9fa">
+                            </div>
+                            <div class="color-input">
+                                <label for="connection-color">Connections:</label>
+                                <input type="color" id="connection-color" value="#666666">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tag-based Colors -->
+                    <div class="form-group">
+                        <label for="tag-select">Add Tag Color:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select id="tag-select" style="flex: 1;">
+                                <option value="">Select a tag...</option>
+                            </select>
+                            <button type="button" id="add-tag-color" class="btn-small">Add</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tag Color List -->
+                    <div id="tag-colors-list" class="tag-colors">
+                        <!-- Tag color controls will be added here dynamically -->
+                    </div>
+                    
+                    <!-- Theme Presets -->
+                    <div class="form-group">
+                        <label for="theme-preset">Quick Themes:</label>
+                        <select id="theme-preset">
+                            <option value="">Custom</option>
                             <option value="maritime">Maritime</option>
                             <option value="dungeon">Dungeon</option>
                             <option value="forest">Forest</option>
-                            <option value="custom">Custom</option>
+                            <option value="high-contrast">High Contrast</option>
                         </select>
-                    </div>
-                    <div class="color-grid">
-                        <div class="color-input">
-                            <label for="default-color">Default Rooms:</label>
-                            <input type="color" id="default-color" value="#ffffff">
-                        </div>
-                        <div class="color-input">
-                            <label for="water-color">Water Rooms:</label>
-                            <input type="color" id="water-color" value="#8cc6ff">
-                        </div>
-                        <div class="color-input">
-                            <label for="exit-color">Exit Rooms:</label>
-                            <input type="color" id="exit-color" value="#ff6b6b">
-                        </div>
-                        <div class="color-input">
-                            <label for="shop-color">Shop Rooms:</label>
-                            <input type="color" id="shop-color" value="#90EE90">
-                        </div>
                     </div>
                 </section>
 

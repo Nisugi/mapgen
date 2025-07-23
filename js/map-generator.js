@@ -236,8 +236,9 @@ class MapGenerator {
     }
 
     createSVG(rooms, positions, roomLookup) {
-        const gridSize = this.config.gridSize;
-        const roomRadius = gridSize * 0.3;
+        const edgeLength = this.config.edgeLength || 80;
+        const roomSize = this.config.roomSize || 15;
+        const roomShape = this.config.roomShape || 'circle';
         
         // Calculate bounds
         const coords = Array.from(positions.values());
@@ -246,18 +247,16 @@ class MapGenerator {
         const minY = Math.min(...coords.map(p => p.y));
         const maxY = Math.max(...coords.map(p => p.y));
         
-        const width = (maxX - minX + 2) * gridSize;
-        const height = (maxY - minY + 2) * gridSize;
+        const width = (maxX - minX + 2) * edgeLength;
+        const height = (maxY - minY + 2) * edgeLength;
         const offsetX = -minX + 1;
         const offsetY = -minY + 1;
         
-        console.log(`SVG bounds: ${width}x${height}, offset: (${offsetX}, ${offsetY})`);
-        
         // Start SVG
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
-        svg += `<rect width="100%" height="100%" fill="#f8f9fa"/>`;
+        svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
         
-        // Draw connections first (so they appear behind rooms)
+        // Draw connections
         if (this.config.showConnections) {
             rooms.forEach(room => {
                 const pos = positions.get(room.id);
@@ -268,18 +267,16 @@ class MapGenerator {
                     const targetPos = positions.get(targetIdNum);
                     if (!targetPos) continue;
                     
-                    // Only draw if we have a cardinal direction
                     const direction = this.getDirectionForConnection(room, targetId);
                     if (!direction) continue;
                     
-                    const x1 = (pos.x + offsetX) * gridSize;
-                    const y1 = (pos.y + offsetY) * gridSize;
-                    const x2 = (targetPos.x + offsetX) * gridSize;
-                    const y2 = (targetPos.y + offsetY) * gridSize;
+                    const x1 = (pos.x + offsetX) * edgeLength;
+                    const y1 = (pos.y + offsetY) * edgeLength;
+                    const x2 = (targetPos.x + offsetX) * edgeLength;
+                    const y2 = (targetPos.y + offsetY) * edgeLength;
                     
-                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#666" stroke-width="2"/>`;
+                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${this.config.colors.connections || '#666'}" stroke-width="2"/>`;
                     
-                    // Add direction label
                     if (this.config.showLabels) {
                         const midX = (x1 + x2) / 2;
                         const midY = (y1 + y2) / 2;
@@ -296,19 +293,31 @@ class MapGenerator {
             const pos = positions.get(room.id);
             if (!pos) return;
             
-            const x = (pos.x + offsetX) * gridSize;
-            const y = (pos.y + offsetY) * gridSize;
+            const x = (pos.x + offsetX) * edgeLength;
+            const y = (pos.y + offsetY) * edgeLength;
             
-            // Determine room color
+            // Determine room color based on tags
             let color = this.config.colors.default;
-            if (room.tags) {
-                if (room.tags.includes('exit')) color = this.config.colors.exit;
-                else if (room.tags.some(tag => tag.includes('shop') || tag.includes('bank'))) color = this.config.colors.shop;
-                else if (room.tags.includes('sea') || room.tags.includes('water')) color = this.config.colors.water;
+            if (room.tags && this.config.tagColors) {
+                for (const tag of room.tags) {
+                    if (this.config.tagColors.has(tag)) {
+                        color = this.config.tagColors.get(tag);
+                        break; // Use first matching tag
+                    }
+                }
             }
             
-            // Draw room circle
-            svg += `<circle cx="${x}" cy="${y}" r="${roomRadius}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+            // Draw room shape
+            if (roomShape === 'circle') {
+                svg += `<circle cx="${x}" cy="${y}" r="${roomSize}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+            } else if (roomShape === 'square') {
+                const half = roomSize;
+                svg += `<rect x="${x - half}" y="${y - half}" width="${roomSize * 2}" height="${roomSize * 2}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+            } else if (roomShape === 'rectangle') {
+                const width = roomSize * 1.5;
+                const height = roomSize;
+                svg += `<rect x="${x - width}" y="${y - height}" width="${width * 2}" height="${height * 2}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+            }
             
             // Add room ID
             if (this.config.showRoomIds) {

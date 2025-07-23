@@ -200,10 +200,81 @@ header p {
     background: #cbd5e0;
 }
 
+.btn-small {
+    padding: 8px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 3px;
+    background: #5a67d8;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-small:hover {
+    background: #4c51bf;
+}
+
 footer {
     text-align: center;
     color: white;
     opacity: 0.8;
+}
+
+.tag-colors {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 10px;
+    background: #f8f9fa;
+}
+
+.tag-color-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 5px;
+    background: white;
+    border-radius: 3px;
+    border: 1px solid #e2e8f0;
+}
+
+.tag-color-item .tag-name {
+    flex: 1;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.tag-color-item input[type="color"] {
+    width: 40px;
+    height: 30px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.tag-color-item .remove-tag {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.tag-color-item .remove-tag:hover {
+    background: #c53030;
+}
+
+.empty-tag-list {
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+    padding: 20px;
 }
 
 footer a {
