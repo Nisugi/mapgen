@@ -4,6 +4,8 @@ class MapGenApp {
         this.mapdbVersion = null;
         this.mapdbLoader = new MapDBLoader();
         this.config = this.getDefaultConfig();
+        this.currentGroups = []; // Store detected groups
+        this.groupOffsets = new Map(); // Store manual offsets for groups
         this.init();
     }
 
@@ -365,16 +367,22 @@ class MapGenApp {
                 tagColors: this.config.tagColors,
                 showRoomIds: document.getElementById('show-room-ids').checked,
                 showLabels: document.getElementById('show-labels').checked,
-                showConnections: document.getElementById('show-connections').checked
+                showConnections: document.getElementById('show-connections').checked,
+                groupOffsets: this.groupOffsets // Pass group offsets
             };
             
-            // Generate map
-            const svg = generator.generateMap(rooms, config);
+            // Generate map and get group info
+            const result = generator.generateMapWithGroups(rooms, config);
+            const svg = result.svg;
+            this.currentGroups = result.groups;
+            
+            // Update group positioning panel
+            this.updateGroupPositioningPanel();
             
             // Download the SVG file
             this.downloadSVG(svg, document.getElementById('output-name').value);
             
-            this.updateStatus(`Map generated! ${rooms.length} rooms processed.`);
+            this.updateStatus(`Map generated! ${rooms.length} rooms in ${this.currentGroups.length} groups.`);
             
         } catch (error) {
             this.showError(error.message);
@@ -403,16 +411,22 @@ class MapGenApp {
                 tagColors: this.config.tagColors,
                 showRoomIds: document.getElementById('show-room-ids').checked,
                 showLabels: document.getElementById('show-labels').checked,
-                showConnections: document.getElementById('show-connections').checked
+                showConnections: document.getElementById('show-connections').checked,
+                groupOffsets: this.groupOffsets // Pass group offsets
             };
             
-            // Generate preview with ALL rooms
-            const svg = generator.generateMap(rooms, config);
+            // Generate preview and get group info
+            const result = generator.generateMapWithGroups(rooms, config);
+            const svg = result.svg;
+            this.currentGroups = result.groups;
+            
+            // Update group positioning panel
+            this.updateGroupPositioningPanel();
             
             // Show preview in a new window
             this.showPreview(svg);
             
-            this.updateStatus(`Preview generated for ${rooms.length} rooms.`);
+            this.updateStatus(`Preview generated for ${rooms.length} rooms in ${this.currentGroups.length} groups.`);
             
         } catch (error) {
             this.showError(error.message);
@@ -477,6 +491,86 @@ class MapGenApp {
         this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
 
+    updateGroupPositioningPanel() {
+        const container = document.getElementById('group-positioning');
+        if (!container) return;
+        
+        if (this.currentGroups.length === 0) {
+            container.innerHTML = '<p class="empty-message">Generate or preview a map to see groups</p>';
+            return;
+        }
+        
+        let html = '<h4>Detected Groups:</h4>';
+        html += '<div class="group-list">';
+        
+        this.currentGroups.forEach((group, index) => {
+            const offset = this.groupOffsets.get(index) || { x: 0, y: 0 };
+            const roomCount = group.rooms.length;
+            const locations = [...new Set(group.rooms.map(r => r.location).filter(Boolean))];
+            const label = locations.length > 0 ? locations.join(', ') : `Group ${index + 1}`;
+            
+            html += `
+                <div class="group-item" data-group="${index}">
+                    <div class="group-header">
+                        <strong>${label}</strong>
+                        <span class="room-count">${roomCount} rooms</span>
+                    </div>
+                    <div class="offset-controls">
+                        <div class="offset-control">
+                            <label>X Offset:</label>
+                            <input type="range" class="x-offset" data-group="${index}" 
+                                   min="-50" max="50" value="${offset.x}" 
+                                   oninput="this.nextElementSibling.textContent = this.value">
+                            <span class="offset-value">${offset.x}</span>
+                        </div>
+                        <div class="offset-control">
+                            <label>Y Offset:</label>
+                            <input type="range" class="y-offset" data-group="${index}" 
+                                   min="-50" max="50" value="${offset.y}"
+                                   oninput="this.nextElementSibling.textContent = this.value">
+                            <span class="offset-value">${offset.y}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        html += '<button class="btn-small" onclick="window.mapApp.resetGroupOffsets()">Reset All</button>';
+        html += '<button class="btn-small" onclick="window.mapApp.applyGroupOffsets()">Apply Changes</button>';
+        
+        container.innerHTML = html;
+        
+        // Add event listeners to sliders
+        container.querySelectorAll('.x-offset, .y-offset').forEach(slider => {
+            slider.addEventListener('change', () => {
+                const groupIndex = parseInt(slider.dataset.group);
+                const isX = slider.classList.contains('x-offset');
+                const value = parseInt(slider.value);
+                
+                if (!this.groupOffsets.has(groupIndex)) {
+                    this.groupOffsets.set(groupIndex, { x: 0, y: 0 });
+                }
+                
+                if (isX) {
+                    this.groupOffsets.get(groupIndex).x = value;
+                } else {
+                    this.groupOffsets.get(groupIndex).y = value;
+                }
+            });
+        });
+    }
+    
+    resetGroupOffsets() {
+        this.groupOffsets.clear();
+        this.updateGroupPositioningPanel();
+    }
+    
+    applyGroupOffsets() {
+        // Regenerate preview with new offsets
+        this.previewMap();
+    }
+
     updateStatus(message) {
         document.getElementById('status-text').textContent = message;
     }
@@ -512,5 +606,5 @@ class MapGenApp {
 
 // Initialize app when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new MapGenApp();
+    window.mapApp = new MapGenApp();
 });

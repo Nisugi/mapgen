@@ -20,6 +20,11 @@ class MapGenerator {
     }
 
     generateMap(rooms, config = {}) {
+        const result = this.generateMapWithGroups(rooms, config);
+        return result.svg;
+    }
+
+    generateMapWithGroups(rooms, config = {}) {
         console.log('Generating map for', rooms.length, 'rooms');
         
         // Merge config
@@ -29,13 +34,15 @@ class MapGenerator {
         const roomLookup = new Map();
         rooms.forEach(room => roomLookup.set(room.id, room));
         
-        // Step 2: Position rooms based on connections
-        const positions = this.calculateRoomPositions(rooms, roomLookup);
+        // Step 2: Position rooms based on connections and get group info
+        const positionResult = this.calculateRoomPositionsWithGroups(rooms, roomLookup);
+        const positions = positionResult.positions;
+        const groups = positionResult.groups;
         
         // Step 3: Generate SVG
         const svg = this.createSVG(rooms, positions, roomLookup);
         
-        return svg;
+        return { svg, groups };
     }
 
     getDirectionForConnection(room, targetId) {
@@ -91,8 +98,13 @@ class MapGenerator {
     }
 
     calculateRoomPositions(rooms, roomLookup) {
+        const result = this.calculateRoomPositionsWithGroups(rooms, roomLookup);
+        return result.positions;
+    }
+
+    calculateRoomPositionsWithGroups(rooms, roomLookup) {
         const positions = new Map();
-        const visited = new Set();
+        const groups = [];
         
         // Direction mappings
         const directionOffsets = {
@@ -104,9 +116,9 @@ class MapGenerator {
             'northwest': { x: -1, y: -1 },
             'southeast': { x: 1, y: 1 },
             'southwest': { x: -1, y: 1 },
-            'up': { x: 0, y: -1 },
-            'down': { x: 0, y: 1 },
-            'out': { x: 1, y: 0 }
+            'up': { x: 0, y: -2 },
+            'down': { x: 0, y: 2 },
+            'out': { x: 2, y: 0 }
         };
         
         // Track all component bounding boxes
@@ -147,10 +159,12 @@ class MapGenerator {
             
             // Create a temporary positions map for this component
             const componentPositions = new Map();
+            const componentRooms = [];
             
             // BFS for this connected component
             const queue = [{ room: nextStart, x: startX, y: startY }];
             componentPositions.set(nextStart.id, { x: startX, y: startY });
+            componentRooms.push(nextStart);
             unpositioned.delete(nextStart.id);
             
             while (queue.length > 0) {
@@ -195,6 +209,7 @@ class MapGenerator {
                                 
                                 if (!this.isPositionOccupied(componentPositions, newX, newY)) {
                                     componentPositions.set(targetRoom.id, { x: newX, y: newY });
+                                    componentRooms.push(targetRoom);
                                     unpositioned.delete(targetRoom.id);
                                     queue.push({ room: targetRoom, x: newX, y: newY });
                                     
@@ -209,42 +224,66 @@ class MapGenerator {
             // Get bounding box for this component
             const bounds = this.getBoundingBox(componentPositions);
             
-            // Find a good position for this component that doesn't overlap with previous ones
+            // Calculate base position for this component
+            let baseOffsetX = 0;
+            let baseOffsetY = 0;
+            
             if (componentBounds.length > 0) {
                 // Position new component to the right of all previous components with padding
                 const rightmostX = Math.max(...componentBounds.map(b => b.maxX));
                 const padding = 3; // Space between components
                 
-                // Offset all positions in this component
-                const offsetX = rightmostX + padding - bounds.minX;
-                const offsetY = -bounds.minY; // Align tops
-                
-                for (const [roomId, pos] of componentPositions) {
-                    positions.set(roomId, {
-                        x: pos.x + offsetX,
-                        y: pos.y + offsetY
-                    });
-                }
-                
-                // Update bounds for tracking
-                bounds.minX += offsetX;
-                bounds.maxX += offsetX;
-                bounds.minY += offsetY;
-                bounds.maxY += offsetY;
+                baseOffsetX = rightmostX + padding - bounds.minX;
+                baseOffsetY = -bounds.minY; // Align tops
             } else {
-                // First component, just copy positions
-                for (const [roomId, pos] of componentPositions) {
-                    positions.set(roomId, pos);
-                }
+                // First component
+                baseOffsetX = -bounds.minX;
+                baseOffsetY = -bounds.minY;
             }
             
+            // Apply manual offset if provided
+            const groupIndex = groups.length;
+            let manualOffsetX = 0;
+            let manualOffsetY = 0;
+            
+            if (this.config.groupOffsets && this.config.groupOffsets.has(groupIndex)) {
+                const manualOffset = this.config.groupOffsets.get(groupIndex);
+                manualOffsetX = manualOffset.x || 0;
+                manualOffsetY = manualOffset.y || 0;
+            }
+            
+            // Apply total offset to all positions in this component
+            const totalOffsetX = baseOffsetX + manualOffsetX;
+            const totalOffsetY = baseOffsetY + manualOffsetY;
+            
+            for (const [roomId, pos] of componentPositions) {
+                positions.set(roomId, {
+                    x: pos.x + totalOffsetX,
+                    y: pos.y + totalOffsetY
+                });
+            }
+            
+            // Update bounds for tracking
+            bounds.minX += totalOffsetX;
+            bounds.maxX += totalOffsetX;
+            bounds.minY += totalOffsetY;
+            bounds.maxY += totalOffsetY;
+            
             componentBounds.push(bounds);
+            
+            // Store group info
+            groups.push({
+                index: groupIndex,
+                rooms: componentRooms,
+                bounds: bounds
+            });
+            
             console.log(`Component ${componentBounds.length} bounds:`, bounds);
         }
         
         console.log(`Positioned ${positions.size} rooms in ${componentBounds.length} components`);
         
-        return positions;
+        return { positions, groups };
     }
 
     isPositionOccupied(positions, x, y) {
