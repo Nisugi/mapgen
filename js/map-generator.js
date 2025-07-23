@@ -12,6 +12,13 @@ class MapGenerator {
             showLabels: true,
             showConnections: true
         };
+        
+        // Cardinal directions we recognize
+        this.cardinalDirections = new Set([
+            'north', 'south', 'east', 'west',
+            'northeast', 'northwest', 'southeast', 'southwest',
+            'up', 'down', 'out'
+        ]);
     }
 
     generateMap(rooms, config = {}) {
@@ -33,10 +40,39 @@ class MapGenerator {
         return svg;
     }
 
+    getDirectionForConnection(room, targetId) {
+        // First check wayto for cardinal directions
+        if (room.wayto && room.wayto[targetId]) {
+            const waytoCommand = room.wayto[targetId].toLowerCase().trim();
+            
+            // Check if it's a direct cardinal direction
+            if (this.cardinalDirections.has(waytoCommand)) {
+                return waytoCommand;
+            }
+            
+            // Check if it contains a cardinal direction (like "go north")
+            for (const direction of this.cardinalDirections) {
+                if (waytoCommand.includes(direction)) {
+                    return direction;
+                }
+            }
+        }
+        
+        // Fallback to dirto if available
+        if (room.dirto && room.dirto[targetId]) {
+            const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
+            if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
+                return dirtoDirection;
+            }
+        }
+        
+        // No direction found
+        return null;
+    }
+
     calculateRoomPositions(rooms, roomLookup) {
         const positions = new Map();
         const visited = new Set();
-        const gridSize = this.config.gridSize;
         
         // Start with the first room at origin
         const startRoom = rooms[0];
@@ -55,45 +91,67 @@ class MapGenerator {
             'southeast': { x: 1, y: 1 },
             'southwest': { x: -1, y: 1 },
             'up': { x: 0, y: -2 },
-            'down': { x: 0, y: 2 }
+            'down': { x: 0, y: 2 },
+            'out': { x: 2, y: 0 } // Treat 'out' as east
         };
+        
+        console.log('Starting room positioning...');
         
         // BFS to position connected rooms
         while (queue.length > 0) {
             const { room, x, y } = queue.shift();
             
             // Check all connections from this room
-            if (room.dirto) {
-                for (const [targetId, direction] of Object.entries(room.dirto)) {
-                    const targetRoom = roomLookup.get(parseInt(targetId));
+            if (room.wayto) {
+                for (const targetId of Object.keys(room.wayto)) {
+                    const targetIdNum = parseInt(targetId);
+                    const targetRoom = roomLookup.get(targetIdNum);
                     
-                    // Skip if direction is 'none' or target room not in our set
-                    if (direction === 'none' || !targetRoom || visited.has(targetRoom.id)) {
+                    // Skip if target room not in our set or already visited
+                    if (!targetRoom || visited.has(targetRoom.id)) {
                         continue;
                     }
                     
-                    // Calculate new position
-                    const offset = directionOffsets[direction.toLowerCase()];
-                    if (offset) {
-                        const newX = x + offset.x;
-                        const newY = y + offset.y;
-                        
-                        positions.set(targetRoom.id, { x: newX, y: newY });
-                        visited.add(targetRoom.id);
-                        queue.push({ room: targetRoom, x: newX, y: newY });
-                        
-                        console.log(`Positioned room ${targetRoom.id} at (${newX}, ${newY}) via ${direction}`);
+                    // Get direction for this connection
+                    const direction = this.getDirectionForConnection(room, targetId);
+                    
+                    if (direction) {
+                        // Calculate new position
+                        const offset = directionOffsets[direction];
+                        if (offset) {
+                            const newX = x + offset.x;
+                            const newY = y + offset.y;
+                            
+                            // Check if position is already occupied
+                            const occupied = Array.from(positions.entries()).find(([id, pos]) => 
+                                pos.x === newX && pos.y === newY
+                            );
+                            
+                            if (!occupied) {
+                                positions.set(targetRoom.id, { x: newX, y: newY });
+                                visited.add(targetRoom.id);
+                                queue.push({ room: targetRoom, x: newX, y: newY });
+                                
+                                console.log(`Positioned room ${targetRoom.id} at (${newX}, ${newY}) via ${direction} from room ${room.id}`);
+                            } else {
+                                console.log(`Position (${newX}, ${newY}) occupied, skipping room ${targetRoom.id}`);
+                            }
+                        }
+                    } else {
+                        console.log(`No cardinal direction found for ${room.id} -> ${targetId} (wayto: "${room.wayto[targetId]}")`);
                     }
                 }
             }
         }
         
         // Position any unconnected rooms in a grid
-        let gridX = 0, gridY = Math.max(...Array.from(positions.values()).map(p => p.y)) + 3;
+        const maxY = positions.size > 0 ? Math.max(...Array.from(positions.values()).map(p => p.y)) : 0;
+        let gridX = 0, gridY = maxY + 3;
         
         rooms.forEach(room => {
             if (!positions.has(room.id)) {
                 positions.set(room.id, { x: gridX, y: gridY });
+                console.log(`Positioned unconnected room ${room.id} at (${gridX}, ${gridY})`);
                 gridX++;
                 if (gridX > 10) { // New row every 10 rooms
                     gridX = 0;
@@ -102,7 +160,7 @@ class MapGenerator {
             }
         });
         
-        console.log(`Positioned ${positions.size} rooms`);
+        console.log(`Positioned ${positions.size} rooms total`);
         return positions;
     }
 
@@ -122,6 +180,8 @@ class MapGenerator {
         const offsetX = -minX + 1;
         const offsetY = -minY + 1;
         
+        console.log(`SVG bounds: ${width}x${height}, offset: (${offsetX}, ${offsetY})`);
+        
         // Start SVG
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
         svg += `<rect width="100%" height="100%" fill="#f8f9fa"/>`;
@@ -130,13 +190,16 @@ class MapGenerator {
         if (this.config.showConnections) {
             rooms.forEach(room => {
                 const pos = positions.get(room.id);
-                if (!pos || !room.dirto) return;
+                if (!pos || !room.wayto) return;
                 
-                for (const [targetId, direction] of Object.entries(room.dirto)) {
-                    if (direction === 'none') continue;
-                    
-                    const targetPos = positions.get(parseInt(targetId));
+                for (const targetId of Object.keys(room.wayto)) {
+                    const targetIdNum = parseInt(targetId);
+                    const targetPos = positions.get(targetIdNum);
                     if (!targetPos) continue;
+                    
+                    // Only draw if we have a cardinal direction
+                    const direction = this.getDirectionForConnection(room, targetId);
+                    if (!direction) continue;
                     
                     const x1 = (pos.x + offsetX) * gridSize;
                     const y1 = (pos.y + offsetY) * gridSize;
@@ -146,12 +209,12 @@ class MapGenerator {
                     svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#666" stroke-width="2"/>`;
                     
                     // Add direction label
-                    if (this.config.showLabels && room.wayto && room.wayto[targetId]) {
+                    if (this.config.showLabels) {
                         const midX = (x1 + x2) / 2;
                         const midY = (y1 + y2) / 2;
                         const label = room.wayto[targetId];
                         
-                        svg += `<text x="${midX}" y="${midY}" text-anchor="middle" font-size="10" fill="#444" font-family="Arial">${label}</text>`;
+                        svg += `<text x="${midX}" y="${midY - 5}" text-anchor="middle" font-size="8" fill="#444" font-family="Arial">${label}</text>`;
                     }
                 }
             });
