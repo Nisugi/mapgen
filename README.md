@@ -5,7 +5,6 @@ A web-based map generator for creating custom maps from the Elanthia MapDB.
 ## Features
 
 - 🌐 Web-based interface - no installation required
-- 📱 Automatically loads latest MapDB from GitHub
 - 🎨 Customizable themes and colors
 - 🗺️ Multiple room selection methods
 - 📁 Export maps as SVG files
