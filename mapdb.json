@@ -533,6 +533,9 @@
   "location": "Sailor's Grief",
   "wayto": {},
   "timeto": {},
+  "tags": [
+    "exit"
+  ],
   "uid": [
     7150401
   ]
@@ -743,7 +746,7 @@
     "35614": "go hatch",
     "35608": "up"
   },
-  "dir": {
+  "dirto": {
     "35614": "south",
     "35608": "northeast"
   },

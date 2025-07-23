@@ -134,6 +134,7 @@ class MapGenApp {
                 default: '#f0f8ff',
                 background: '#e6f3ff',
                 connections: '#4682b4',
+                verticalConnections: '#6495ed',
                 tagColors: new Map([
                     ['exit', '#ff6b6b'],
                     ['sea', '#1e90ff'],
@@ -146,6 +147,7 @@ class MapGenApp {
                 default: '#2c2c2c',
                 background: '#1a1a1a',
                 connections: '#666666',
+                verticalConnections: '#888888',
                 tagColors: new Map([
                     ['exit', '#dc2626'],
                     ['shop', '#16a34a'],
@@ -157,6 +159,7 @@ class MapGenApp {
                 default: '#f0f8e8',
                 background: '#e8f5e8',
                 connections: '#228b22',
+                verticalConnections: '#32cd32',
                 tagColors: new Map([
                     ['exit', '#e74c3c'],
                     ['water', '#4a90e2'],
@@ -168,6 +171,7 @@ class MapGenApp {
                 default: '#ffffff',
                 background: '#000000',
                 connections: '#ffffff',
+                verticalConnections: '#cccccc',
                 tagColors: new Map([
                     ['exit', '#ff0000'],
                     ['shop', '#00ff00'],
@@ -183,6 +187,7 @@ class MapGenApp {
             document.getElementById('default-color').value = theme.default;
             document.getElementById('background-color').value = theme.background;
             document.getElementById('connection-color').value = theme.connections;
+            document.getElementById('vertical-connection-color').value = theme.verticalConnections;
             
             this.config.colors = { ...theme };
             this.config.tagColors = new Map(theme.tagColors);
@@ -451,8 +456,22 @@ class MapGenApp {
             if (!rangeText) {
                 throw new Error('Please enter room ranges');
             }
+            
+            const useUID = document.querySelector('input[name="room-id-type"]:checked').value === 'uid';
             const roomIds = this.mapdbLoader.parseRoomRanges(rangeText);
-            return this.mapdb.filter(room => roomIds.includes(room.id));
+            
+            if (useUID) {
+                // Filter by UID
+                return this.mapdb.filter(room => {
+                    if (room.uid && Array.isArray(room.uid)) {
+                        return roomIds.some(id => room.uid.includes(id));
+                    }
+                    return false;
+                });
+            } else {
+                // Filter by ID (default)
+                return this.mapdb.filter(room => roomIds.includes(room.id));
+            }
         }
     }
 
@@ -655,16 +674,16 @@ class MapGenApp {
                         <div class="offset-control">
                             <label>X Offset:</label>
                             <input type="range" class="x-offset" data-group="${index}" 
-                                   min="-100" max="100" value="${offset.x}" 
-                                   oninput="this.nextElementSibling.textContent = this.value">
-                            <span class="offset-value">${offset.x}</span>
+                                   min="-100" max="100" value="${offset.x}">
+                            <input type="number" class="offset-number x-offset-number" data-group="${index}"
+                                   min="-100" max="100" value="${offset.x}">
                         </div>
                         <div class="offset-control">
                             <label>Y Offset:</label>
                             <input type="range" class="y-offset" data-group="${index}" 
-                                   min="-100" max="100" value="${offset.y}"
-                                   oninput="this.nextElementSibling.textContent = this.value">
-                            <span class="offset-value">${offset.y}</span>
+                                   min="-100" max="100" value="${offset.y}">
+                            <input type="number" class="offset-number y-offset-number" data-group="${index}"
+                                   min="-100" max="100" value="${offset.y}">
                         </div>
                     </div>
                 </div>
@@ -685,9 +704,9 @@ class MapGenApp {
             });
         });
         
-        // Add event listeners to sliders
+        // Add event listeners to sliders and number inputs
         container.querySelectorAll('.x-offset, .y-offset').forEach(slider => {
-            slider.addEventListener('change', () => {
+            slider.addEventListener('input', () => {
                 const groupIndex = parseInt(slider.dataset.group);
                 const isX = slider.classList.contains('x-offset');
                 const value = parseInt(slider.value);
@@ -698,8 +717,43 @@ class MapGenApp {
                 
                 if (isX) {
                     this.groupOffsets.get(groupIndex).x = value;
+                    // Update corresponding number input
+                    const numberInput = container.querySelector(`.x-offset-number[data-group="${groupIndex}"]`);
+                    if (numberInput) numberInput.value = value;
                 } else {
                     this.groupOffsets.get(groupIndex).y = value;
+                    // Update corresponding number input
+                    const numberInput = container.querySelector(`.y-offset-number[data-group="${groupIndex}"]`);
+                    if (numberInput) numberInput.value = value;
+                }
+            });
+        });
+        
+        // Add event listeners to number inputs
+        container.querySelectorAll('.x-offset-number, .y-offset-number').forEach(input => {
+            input.addEventListener('change', () => {
+                const groupIndex = parseInt(input.dataset.group);
+                const isX = input.classList.contains('x-offset-number');
+                const value = parseInt(input.value) || 0;
+                
+                // Clamp value to range
+                const clampedValue = Math.max(-100, Math.min(100, value));
+                input.value = clampedValue;
+                
+                if (!this.groupOffsets.has(groupIndex)) {
+                    this.groupOffsets.set(groupIndex, { x: 0, y: 0 });
+                }
+                
+                if (isX) {
+                    this.groupOffsets.get(groupIndex).x = clampedValue;
+                    // Update corresponding slider
+                    const slider = container.querySelector(`.x-offset[data-group="${groupIndex}"]`);
+                    if (slider) slider.value = clampedValue;
+                } else {
+                    this.groupOffsets.get(groupIndex).y = clampedValue;
+                    // Update corresponding slider
+                    const slider = container.querySelector(`.y-offset[data-group="${groupIndex}"]`);
+                    if (slider) slider.value = clampedValue;
                 }
             });
         });

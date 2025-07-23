@@ -400,12 +400,18 @@ small {
     border: none;
 }
 
-.offset-value {
-    min-width: 30px;
-    text-align: right;
+.offset-number {
+    width: 60px;
+    padding: 2px 4px;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
     font-size: 12px;
-    font-weight: 600;
-    color: #5a67d8;
+    text-align: center;
+}
+
+.offset-number:focus {
+    outline: none;
+    border-color: #5a67d8;
 }
 
 #group-positioning button {

@@ -67,11 +67,17 @@ class MapGenerator {
     }
 
     getDirectionForConnection(room, targetId) {
-        // First check dirto for overrides
+        // First check dirto for overrides (also check "dir" for legacy compatibility)
         if (room.dirto && room.dirto[targetId]) {
             const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
             if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
                 return dirtoDirection;
+            }
+        } else if (room.dir && room.dir[targetId]) {
+            // Check legacy "dir" field
+            const dirDirection = room.dir[targetId].toLowerCase().trim();
+            if (dirDirection !== 'none' && this.cardinalDirections.has(dirDirection)) {
+                return dirDirection;
             }
         }
         
@@ -426,16 +432,51 @@ class MapGenerator {
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
         svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
         
+        // In createSVG method, after opening <svg> tag:
+        if (this.config.backgroundImage) {
+            svg += `
+                <defs>
+                    <pattern id="bgImage" x="0" y="0" width="100%" height="100%" 
+                            patternUnits="userSpaceOnUse">
+                        <image href="${this.config.backgroundImage}" 
+                            x="0" y="0" 
+                            width="${width}" height="${height}"
+                            preserveAspectRatio="xMidYMid slice"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#bgImage)"/>
+            `;
+        } else {
+            svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
+        }
+
         // Draw group labels if enabled
         if (this.config.showGroupLabels && this.config.groups) {
             this.config.groups.forEach((group) => {
                 if (group.bounds) {
-                    const labelX = (group.bounds.minX + group.bounds.width / 2 + offsetX) * edgeLength;
-                    const labelY = (group.bounds.minY + offsetY) * edgeLength - 10; // Above the group
+                    // Calculate label position - try to find clear space
+                    const centerX = (group.bounds.minX + group.bounds.width / 2 + offsetX) * edgeLength;
+                    let labelY = (group.bounds.minY + offsetY) * edgeLength - 20; // Default above
+                    
+                    // Check if there's a room at the top center - if so, move label to the side
+                    const topCenterGridX = Math.round(group.bounds.minX + group.bounds.width / 2);
+                    const topGridY = group.bounds.minY;
+                    const hasRoomAbove = Array.from(positions.values()).some(pos => 
+                        pos.x === topCenterGridX && pos.y === topGridY
+                    );
+                    
+                    let labelX = centerX;
+                    if (hasRoomAbove) {
+                        // Try to position to the left or right of the group
+                        labelX = (group.bounds.minX + offsetX - 0.5) * edgeLength;
+                        labelY = (group.bounds.minY + group.bounds.height / 2 + offsetY) * edgeLength;
+                    }
+                    
                     const label = group.name || `Group ${group.index + 1}`;
                     
                     // Draw background for label
-                    svg += `<rect x="${labelX - 40}" y="${labelY - 15}" width="80" height="20" 
+                    const textWidth = label.length * 7 + 20; // Approximate text width
+                    svg += `<rect x="${labelX - textWidth/2}" y="${labelY - 15}" width="${textWidth}" height="20" 
                             fill="${this.config.colors.background}" stroke="${this.config.colors.connections}" 
                             stroke-width="1" rx="3" ry="3"/>`;
                     
