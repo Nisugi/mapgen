@@ -1511,7 +1511,7 @@
     "35643": "northwest"
   },
   "dirto": {
-    "35645": "east"
+    "35645": "southeast"
   },
   "timeto": {
     "35645": 0.2,
@@ -1537,7 +1537,7 @@
     "35646": "northeast"
   },
   "dirto": {
-    "35644": "west"
+    "35644": "northwest"
   },
   "timeto": {
     "35644": 0.2,
