@@ -1,0 +1,4106 @@
+[{
+  "id": 35585,
+  "title": [
+    "[The Contempt, Quartermaster's]"
+  ],
+  "description": [
+    "An ebony door studded with golden rivets opens onto a precisely ordered chamber.  Brass-bound ledgers are stacked atop a mahogany table, joined by polished scales and stacks of silver coins.  Canvas sacks and labeled crates line the far bulkhead beneath racks that hold well-secured inkpots and parchments.  The compartment smells strongly of parchment and sharp preservatives."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35586": "go door"
+  },
+  "dirto": {
+    "35586": "south"
+  },
+  "timeto": {
+    "35586": 0.2
+  },
+  "tags": [
+    "pawnshop",
+    "pawn shop"
+  ],
+  "uid": [
+    7150621
+  ]
+},{
+  "id": 35586,
+  "title": [
+    "[The Contempt, Orlop Deck]"
+  ],
+  "description": [
+    "Nearing the bow of the ship, a greying bulkhead of planks choked by creeping algae separates the ship's mess from the rest of the orlop deck.  In its face is an uneven arch carved into the shapes of intertwined sirens.  Along the port side of the ship stretches a cabin with an ebony door and golden rivets, the wood and metal far better maintained than the surrounding deck space."
+  ],
+  "paths": [
+    "Obvious exits: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35585": "go door",
+    "35587": "go arch",
+    "35588": "east"
+  },
+  "dirto": {
+    "35585": "north",
+    "35587": "south"
+  },
+  "timeto": {
+    "35585": 0.2,
+    "35587": 0.2,
+    "35588": 0.2
+  },
+  "uid": [
+    7150614
+  ]
+},{
+  "id": 35587,
+  "title": [
+    "[The Contempt, Mess Hall]"
+  ],
+  "description": [
+    "Opposite an uneven arch, strands of faded bunting in teal and saffron hang where the beams of the overhead meet a half-wall of grated steel separating the galley from the wider mess.  Beyond the grating, the galley is lit by lanterns of patinated brass, its ovens the source of the aroma of spiced bread and salt-cured meat infusing the air.  Several tables stand within the mess, each flanked by benches studded with copper nails."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35586": "go arch",
+    "35605": "go ebb table",
+    "35606": "go seaspray table",
+    "35607": "go leviathan table"
+  },
+  "dirto": {
+    "35586": "north",
+    "35605": "southwest",
+    "35606": "south",
+    "35607": "southeast"
+  },
+  "timeto": {
+    "35586": 0.2,
+    "35605": 0.2,
+    "35606": 0.2,
+    "35607": 0.2
+  },
+  "tags": [
+    "tables",
+    "table"
+  ],
+  "uid": [
+    7150617
+  ]
+},{
+  "id": 35588,
+  "title": [
+    "[The Contempt, Orlop Deck]"
+  ],
+  "description": [
+    "A squat, dimly lit passage stretches below the main deck beneath the low and pitch-stained beams of a sagging overhead.  Near to rotting steps that climb out of the hold's hatch toward the brilliance of the day, a crooked workbench stands slightly askew.  Splicing tools litter its surface, though they seem ill-suited to the colossal task embodied by the piles of netting and loose coils of line heaped at the bench's base."
+  ],
+  "paths": [
+    "Obvious exits: east, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35589": "east",
+    "35586": "west",
+    "35593": "go hatch"
+  },
+  "dirto": {
+    "35593": "none"
+  },
+  "timeto": {
+    "35589": 0.2,
+    "35586": 0.2,
+    "35593": 0.2
+  },
+  "uid": [
+    7150613
+  ]
+},{
+  "id": 35589,
+  "title": [
+    "[The Contempt, Orlop Deck]"
+  ],
+  "description": [
+    "Harsh daylight burns through the gun ports to either side of the broad orlop deck, catching on the shapes of cannons slumped under the weight of disuse.  Cannonballs rattle in racks beside them, but they, too, are spotted with streaks of rust, with thin threads of cobweb spanning the spaces between them.  Moldering bulkheads frame a cabin set off from the walkway with a carved black oak hatch serving as its entrance."
+  ],
+  "paths": [
+    "Obvious exits: east, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35590": "east",
+    "35588": "west",
+    "35602": "go hatch"
+  },
+  "dirto": {
+    "35602": "north"
+  },
+  "timeto": {
+    "35590": 0.2,
+    "35588": 0.2,
+    "35602": 0.2
+  },
+  "uid": [
+    7150612
+  ]
+},{
+  "id": 35590,
+  "title": [
+    "[The Contempt, Orlop Deck]"
+  ],
+  "description": [
+    "In the orlop deck's dim undercroft, coils of salt-crusted line lie heaped in silent disorder along planks stained with sludge.  They tangle about the bases of a collection of crates and tuns of spirits sealed with old, dry wax.  The air of the hold is close and smells sweetly of rot.  Sounds of splashing water and groans of distressed wood climb a ladder leading down to the hold."
+  ],
+  "paths": [
+    "Obvious exits: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35591": "climb ladder",
+    "35589": "west"
+  },
+  "dirto": {
+    "35591": "down"
+  },
+  "timeto": {
+    "35591": 0.2,
+    "35589": 0.2
+  },
+  "uid": [
+    7150611
+  ]
+},{
+  "id": 35591,
+  "title": [
+    "[The Contempt, Hold]"
+  ],
+  "description": [
+    "Far from the open air and the activity of the other decks, the hold is dark and echoes with a symphony of creaking timbers and dripping water.  Though a skim of water lingers over the swollen planks of the deck, most of the cargo, a collection of crates, barrels, and foot lockers in a variety of makes, remains dry and secured by lengths of line.  A single sea lamp swings from a rusted iron chain overhead, throwing fitful light over the cavernous space."
+  ],
+  "paths": [
+    "Obvious exits: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35592": "west",
+    "35590": "climb ladder"
+  },
+  "dirto": {
+    "35590": "up"
+  },
+  "timeto": {
+    "35592": 0.2,
+    "35590": 0.2
+  },
+  "tags": [
+    "furrier"
+  ],
+  "uid": [
+    7150615
+  ]
+},{
+  "id": 35592,
+  "title": [
+    "[The Contempt, Hold]"
+  ],
+  "description": [
+    "Dim lamplight from a scratched iron lantern casts wavering shadows across the hold, reflected in rippling puddles scattered across the deck.  Within a loose semicircle of crates and barrels, an unvarnished oak table holds brass scales, a chisel, and neat piles of coin.  Damp burlap sacks slump along the hull.  Most exhale a sweet-must aroma of spoiled grain, but a few clink tantalizingly with every pitch of the ship."
+  ],
+  "paths": [
+    "Obvious exits: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35591": "east"
+  },
+  "timeto": {
+    "35591": 0.2
+  },
+  "tags": [
+    "bank"
+  ],
+  "uid": [
+    7150616
+  ]
+},{
+  "id": 35593,
+  "title": [
+    "[The Contempt, Main Deck]"
+  ],
+  "description": [
+    "Beneath the main mast, a disintegrating hatch of iron with edges swollen by rust yawns into the hold below.  The deck before it is worn smooth by the passage of many feet over countless years.  Its greying planks and the steps leading down to the hold are weakened in places by splotches of black rot.  Air from below wafts up in cold gusts, laden with the perfume of lamp oil and a less pleasant sweetness of old decay."
+  ],
+  "paths": [
+    "Obvious paths: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35594": "east",
+    "35588": "go hatch",
+    "35603": "climb mast"
+  },
+  "dirto": {
+    "35588": "none",
+    "35603": "none"
+  },
+  "timeto": {
+    "35594": 0.2,
+    "35588": 0.2,
+    "35603": 0.2
+  },
+  "uid": [
+    7150607
+  ]
+},{
+  "id": 35594,
+  "title": [
+    "[The Contempt, Aft]"
+  ],
+  "description": [
+    "Beneath the thundering canvas of the mizzenmast, the quarterdeck rises imperiously toward the ship's blunt stern.  Mirrored sets of stairs ascend to the raised deck, leaving space for a black wooden hatch heavily reinforced with dark steel allowing entry to the cabin beneath.  Several barrels sit nearby in various states of disrepair, the golden frame of a compass atop one standing out against the dark wood."
+  ],
+  "paths": [
+    "Obvious paths: north, south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35595": "north",
+    "35593": "west",
+    "35597": "south",
+    "35600": "go stairs",
+    "35601": "go hatch"
+  },
+  "dirto": {
+    "35600": "northeast",
+    "35601": "east"
+  },
+  "timeto": {
+    "35595": 0.2,
+    "35593": 0.2,
+    "35597": 0.2,
+    "35600": 0.2,
+    "35601": 0.2
+  },
+  "uid": [
+    7150606
+  ]
+},{
+  "id": 35595,
+  "title": [
+    "[The Contempt, Main Deck]"
+  ],
+  "description": [
+    "Near the aft portion of the ship's grey-green deck, the railing has given way to permit a dangerous but thorough view of the ship's starboard hull.  Despite the great age of the vessel and its considerable disrepair, there are the bones of a sleek and predatory ship beneath the decay.  The timbers around her portholes are painted in silver gilt and emerald lacquer to form radiating streamers of kelp."
+  ],
+  "paths": [
+    "Obvious paths: south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35596": "west",
+    "35594": "south"
+  },
+  "timeto": {
+    "35596": 0.2,
+    "35594": 0.2
+  },
+  "tags": [
+    "advguild"
+  ],
+  "uid": [
+    7150605
+  ]
+},{
+  "id": 35596,
+  "title": [
+    "[The Contempt, Main Deck]"
+  ],
+  "description": [
+    "Beneath the engulfing shadow of the foremast, a heavy capstan of black iron rises from salted planks.  Thick spokes, scabbed with rust from exposure to the sea air, extend well past an arm's length from its center.  The mast's shrouds are anchored to the deck nearby with heavy chainplates of the same material, but a few are rusted through, leaving their rigging to flap aimlessly in the breeze.  With each of the sea's swells, the ship's ancient lines protest and the mechanism groans mournfully."
+  ],
+  "paths": [
+    "Obvious paths: east, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35595": "east",
+    "35599": "southwest"
+  },
+  "timeto": {
+    "35595": 0.2,
+    "35599": 0.2
+  },
+  "tags": [
+    "advguild",
+    "bounty"
+  ],
+  "uid": [
+    7150604
+  ]
+},{
+  "id": 35597,
+  "title": [
+    "[The Contempt, Main Deck]"
+  ],
+  "description": [
+    "Unnatural cold that has nothing to do with the ocean wind clings to the deck of the old ship.  The old vessel looks too dilapidated to be seafaring, the planks of her deck weathered to a dusky silver where they are not stained grey-green by the spread of enterprising algae, but she sits tall and grim in the water.  A rope ladder dangles from a space between the ship's gunnels, its lowest rungs frayed and lost to rot."
+  ],
+  "paths": [
+    "Obvious paths: north, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35598": "west",
+    "35594": "north"
+  },
+  "timeto": {
+    "35598": 0.2,
+    "35594": 0.2
+  },
+  "tags": [
+    "exit"
+  ],
+  "uid": [
+    7150601
+  ]
+},{
+  "id": 35598,
+  "title": [
+    "[The Contempt, Main Deck]"
+  ],
+  "description": [
+    "Tangled piles of rigging stained with mildew hide in a small close along the starboard side of the main deck.  Though home to a few scuttling crabs, the heaped lines otherwise make for a hospitable place for the crew to hold court, judging from a pair of jewel-pipped dice and a few corroded coins lost within the coils.  Shaded by the foremast, the deck is spared enough of the sunlight to reveal a faint ghostly glow seeping from the green-grey planks."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35597": "east",
+    "35599": "northwest"
+  },
+  "timeto": {
+    "35597": 0.2,
+    "35599": 0.2
+  },
+  "uid": [
+    7150602
+  ]
+},{
+  "id": 35599,
+  "title": [
+    "[The Contempt, Fo'c'sle]"
+  ],
+  "description": [
+    "A stately figurehead of algae-spotted oak juts from the prow, its carved figure that of a nixie with proudly imperious features.  Salt-encrusted rigging drapes across weathered rails, where paint flakes off in ragged hanks like peeling flesh to reveal rusted metal underneath.  The whipping breeze is sharp with brine and bitter with the hot copper smell of rust, and beneath both is a stale undercurrent of mildewed and rotting wood."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35598": "southeast",
+    "35596": "northeast"
+  },
+  "timeto": {
+    "35598": 0.2,
+    "35596": 0.2
+  },
+  "uid": [
+    7150603
+  ]
+},{
+  "id": 35600,
+  "title": [
+    "[The Contempt, Quarterdeck]"
+  ],
+  "description": [
+    "High above the cluttered expanse of the main deck, the quarterdeck unfolds beneath the ragged sails of the mizzenmast.  The ship's wheel is black and timeworn, metal banding around its spokes more verdigris than bronze.  Nearby, a binnacle stands slightly askew, its compass face clouded and unreadable.  Patches of rust and peeling paint mar every surface, lending the once-proud post a tatterdemalion cast."
+  ],
+  "paths": [
+    "Obvious paths: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35594": "go stairs"
+  },
+  "dirto": {
+    "35594": "soutwest"
+  },
+  "timeto": {
+    "35594": 0.2
+  },
+  "uid": [
+    7150609
+  ]
+},{
+  "id": 35601,
+  "title": [
+    "[The Contempt, Captain's Cabin]"
+  ],
+  "description": [
+    "A black wooden hatch reinforced with dark steel opens into an aged but orderly chamber.  Varnished planks gleam beneath the steady glow of ship's lanterns, their tarnished brass polished free of corrosion.  A mahogany desk stands against one bulkhead, unfurled charts secured by the weight of a sextant that looks newer than most of the cabin's other accoutrements.  Faded velvet drapes frame a porthole over a spacious bunk, admitting pale sunlight that illuminates gleaming motes in the air."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35594": "go hatch"
+  },
+  "dirto": {
+    "35594": "west"
+  },
+  "timeto": {
+    "35594": 0.2
+  },
+  "uid": [
+    7150610
+  ]
+},{
+  "id": 35602,
+  "title": [
+    "[The Contempt, Trader's Cabin]"
+  ],
+  "description": [
+    "A narrow cabin lined with oaken shelves is secured by a carved black oak hatch.  Glass jars atop the shelving hold powdered indigo, starfruit seeds, and a few drying specimens of coral.  Tanned leather pouches and crates stamped with foreign seals occupy a polished walnut counter over a bunk that, while narrow, has sheets of jewel-toned silk.  Lanterns of hammered bronze cast warm light over a thick rug softening the floorboards, weighted in place by a footlocker made from polished teak."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35589": "go hatch"
+  },
+  "dirto": {
+    "35602": "north"
+  },
+  "timeto": {
+    "35589": 0.2
+  },
+  "tags": [
+    "gemshop",
+    "gem shop"
+  ],
+  "uid": [
+    7150622
+  ]
+},{
+  "id": 35603,
+  "title": [
+    "[The Contempt, Crow's Nest]"
+  ],
+  "description": [
+    "Atop the main mast, a circular wooden crow's nest sways in the ocean breeze, its timbers held together by the feeble efforts of rusting nails and splintered planks.  Frayed lines dangle from the masthead, their fibers stiff and tacky from decades of disuse.  They sway in the wind like ragged pennants, but are overshadowed by the ship's flag, which is embroidered with a scarlet siren on faded black cloth."
+  ],
+  "paths": [
+    "Obvious paths: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35593": "climb mast"
+  },
+  "dirto": {
+    "35593": "none"
+  },
+  "timeto": {
+    "35593": 0.2
+  },
+  "tags": [
+    "town",
+    "node",
+    "supernode"
+  ],
+  "uid": [
+    7150608
+  ]
+},{
+  "id": 35604,
+  "title": [
+    "[Spicers' Sea, Waters]"
+  ],
+  "description": [
+    "The Spicers' Sea forms a boundless expanse of water, stretching silently toward horizons devoid of recognizable features.  Drifting tangles of kelp and seaweed provide fleeting refuge for small fish darting anxiously within their shelter.  A dead shark carcass floats lazily on the surface, plagued by scavenging pelicans."
+  ],
+  "paths": [
+    "Obvious paths: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {},
+  "timeto": {},
+  "tags": [
+    "exit"
+  ],
+  "uid": [
+    7150401
+  ]
+},{
+  "id": 35605,
+  "title": [
+    "[Ebb Tide Table]"
+  ],
+  "description": [
+    "The table, a plank of pale driftwood with a wavering edge, bears faint turquoise veins like rivulets of clear blue water.  Scrawls of carved graffiti left behind by past diners mar its surface, which is otherwise unadorned.  Benches of bleached oak sit to either side, held together by copper studs that gleam warmly in the lamplight.  A cluster of sea-foam green mugs rest at the table's center, empty but only questionably clean."
+  ],
+  "paths": [
+    "Obvious exits: out"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35587": "out"
+  },
+  "dirto": {
+    "35587": "northeast"
+  },
+  "timeto": {
+    "35587": 0.2
+  },
+  "uid": [
+    7150618
+  ]
+},{
+  "id": 35606,
+  "title": [
+    "[Seaspray Table]"
+  ],
+  "description": [
+    "Marine blue bunting flutters overhead.  Though the banners' intricate lace borders may once have resembled seafoam, they are yellowed with age and ragged from decay.  The tabletop is etched with a spiral of scallop shells, each groove catching the glow of brass lanterns hanging above.  Napkins of sailcloth cleverly folded into the shapes of fish sit at each setting along the table's surface."
+  ],
+  "paths": [
+    "Obvious exits: out"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35587": "out"
+  },
+  "dirto": {
+    "35587": "north"
+  },
+  "timeto": {
+    "35587": 0.2
+  },
+  "uid": [
+    7150619
+  ]
+},{
+  "id": 35607,
+  "title": [
+    "[Leviathan's Table]"
+  ],
+  "description": [
+    "Dark heartwood, polished almost as smooth as glass, is carved with twisting fishscale motifs that spiral outward in an intricate pattern.  Hunter green bunting droops down from above, backlit by brass lanterns suspended from the overhead.  Sturdy benches cobbled together from driftwood and copper nails sit to either side.  At the center of the table, an ivory sea serpent stands, baleful eyes looking toward the entrance of the mess."
+  ],
+  "paths": [
+    "Obvious exits: out"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35587": "out"
+  },
+  "dirto": {
+    "35587": "northwest"
+  },
+  "timeto": {
+    "35587": 0.2
+  },
+  "uid": [
+    7150620
+  ]
+},{
+  "id": 35608,
+  "title": [
+    "[The Mageborn, Broken Bow]"
+  ],
+  "description": [
+    "The Mageborn's bow rises in splintered ruin, its fractured timbers jutting sharply above the grasping surf.  Rusted metal bindings cling stubbornly to weathered wood, leaving trails the color of dried blood down the faded and flaking blue paint.  Relentless waves crash against the hull, spraying seafoam onto the salt-crusted features of a battered figurehead in the form of a woman with a proud countenance and ringleted hair.  The hull below is shattered, allowing the ocean into the ship's forward hold."
+  ],
+  "paths": [
+    "Obvious paths: east, south, down"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35609": "south",
+    "35611": "east",
+    "35613": "down"
+  },
+  "dirto": {
+    "35613": "southwest"
+  },
+  "timeto": {
+    "35609": 0.2,
+    "35611": 0.2,
+    "35613": 0.2
+  },
+  "tags": [
+    "exit"
+  ],
+  "uid": [
+    7150503
+  ]
+},{
+  "id": 35609,
+  "title": [
+    "[The Mageborn, Upper Deck]"
+  ],
+  "description": [
+    "In the shadow of a rust-stained railing, the outline of a fallen sailor stains the deck, dried blood having left behind a silhouette that neither the sun nor the sea can leach from the wood.  Though there is no sign of the hapless mariner's remains, frayed ropes tangle across the deck alongside shattered barrels whose pungent odor suggests they once held salted fish.  A dilapidated helm, crumpled and corroded, stands like a lonely sentry near the deck's edge, looking out onto the shiftless waters."
+  ],
+  "paths": [
+    "Obvious paths: north, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35610": "southeast",
+    "35608": "north"
+  },
+  "timeto": {
+    "35610": 0.2,
+    "35608": 0.2
+  },
+  "uid": [
+    7150502
+  ]
+},{
+  "id": 35610,
+  "title": [
+    "[The Mageborn, Upper Deck]"
+  ],
+  "description": [
+    "Though most of the main deck below has been consigned to the sea, an expanse of the upper deck stands unbroken despite the endless assault of storms and salt.  Rust-streaked rails have begun to succumb to the onslaught, corrosion having eaten holes into their bases that will undermine them entirely, in time.  The planks of the deck, once sanded fine and protected by smooth varnish, are warped and buckled in places, slick with algae and strands of kelp."
+  ],
+  "paths": [
+    "Obvious paths: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35609": "northwest"
+  },
+  "timeto": {
+    "35609": 0.2
+  },
+  "uid": [
+    7150501
+  ]
+},{
+  "id": 35611,
+  "title": [
+    "[The Mageborn, Upper Deck]"
+  ],
+  "description": [
+    "The starboard upper deck is riddled with gaps, its timbers rotting away beneath heaps of seaweed and clusters of opportunistic barnacles.  The main mast has fallen, crashing through a weak spot of railing to point accusatorily out into the waters to the north.  Partially submerged in the brine, portholes along the upper hull gape like blind eyes into submerged darkness.  Remnants of the ship's name are limned in golden paint, barely legible but clinging defiantly to the mutilated hull."
+  ],
+  "paths": [
+    "Obvious paths: southeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35612": "southeast",
+    "35608": "west"
+  },
+  "timeto": {
+    "35612": 0.2,
+    "35608": 0.2
+  },
+  "uid": [
+    7150504
+  ]
+},{
+  "id": 35612,
+  "title": [
+    "[The Mageborn, Upper Deck]"
+  ],
+  "description": [
+    "Amidships, the Mageborn is cracked open, what remains of its aft sagging, defeated, into the waves.  Pools of seawater collect in depressions along the warped deck, reflecting scavenging seabirds as they soar across the sky.  Rusted equipment and cargo debris lie scattered across the broken deck, the latter comprising waterlogged footlockers, crates still tied down to rusting hooks, and a few barrels of wine long since gone sour."
+  ],
+  "paths": [
+    "Obvious paths: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35611": "northwest"
+  },
+  "timeto": {
+    "35611": 0.2
+  },
+  "uid": [
+    7150505
+  ]
+},{
+  "id": 35613,
+  "title": [
+    "[The Mageborn, Main Deck]"
+  ],
+  "description": [
+    "The deck is partially bisected by the ship's broken main mast, but still overshadowed by what remains of the shrouds.  Decaying lines cast foreboding patterns of shadow over a hatch that permits access into the partially submerged hold.  The rush of the tide beckons from the gloom below, and in a narrow square of sunlight, white foam stands out against a backdrop of surging black water."
+  ],
+  "paths": [
+    "Obvious paths: up"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35614": "go hatch",
+    "35608": "up"
+  },
+  "dirto": {
+    "35614": "south",
+    "35608": "northeast"
+  },
+  "timeto": {
+    "35614": 0.2,
+    "35608": 0.2
+  },
+  "uid": [
+    7150506
+  ]
+},{
+  "id": 35614,
+  "title": [
+    "[The Mageborn, Hold]"
+  ],
+  "description": [
+    "Seawater surges and ebbs, battering rotted support beams in the darkness of the hold.  Broken crates float amid drifting seaweed that fills the space with the sweetness of decay, though a few still secured to the deck by tortured lines are stacked to allow access to a rusted iron hatch.  Faint twinkles of starlight beckon from cracks between the planks overhead, casting silvery luminescence across bulkheads crawling with algae.  The ceaseless rocking of the ship sends concentric waves rippling across black water."
+  ],
+  "paths": [
+    "Obvious exits: southeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35615": "southeast",
+    "35618": "northwest",
+    "35613": "go hatch",
+    "35727": ";e fput 'search'; waitrt?; fput 'go gash'"
+  },
+  "dirto": {
+    "35613": "north",
+    "35727": "southwest"
+  },
+  "timeto": {
+    "35615": 0.2,
+    "35618": 0.2,
+    "35613": 0.2,
+    "35727": 0.2
+  },
+  "uid": [
+    7150507
+  ]
+},{
+  "id": 35615,
+  "title": [
+    "[The Mageborn, Hold]"
+  ],
+  "description": [
+    "Sea scum congregates around the lower rim of a hatchway above steps of carved teak that lead up out of the submerged hold.  Weakened by rust, the hinges have surrendered to the weight of the hatch, which is forged from steel and gilded.  The tide swirls beneath, thick with shattered planks and other detritus.  Though stained with rust and choked with algae and sea mosses, the walls around the entry are painted with a spread-winged bird in bright blue pigment."
+  ],
+  "paths": [
+    "Obvious exits: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35616": "go hatchway",
+    "35614": "northwest"
+  },
+  "dirto": {
+    "35616": "southeast"
+  },
+  "timeto": {
+    "35616": 0.2,
+    "35614": 0.2
+  },
+  "uid": [
+    7150510
+  ]
+},{
+  "id": 35616,
+  "title": [
+    "[The Mageborn, Guest Quarters]"
+  ],
+  "description": [
+    "In the darkness lazes a sprawling suite that begins in a narrow antechamber once secured by a painted hatchway.  Padded benches are joined to the sodden planks to which they are bolted by an overgrowth of faintly glowing moss.  Threadbare curtains shroud windows that, while spiderwebbed with cracks, still hold back the pressure of the dark seawater beyond them.  Saltwater rains down in plinking droplets that echo loudly throughout the sepulchral wreckage."
+  ],
+  "paths": [
+    "Obvious exits: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35617": "west",
+    "35615": "go hatchway"
+  },
+  "dirto": {
+    "35615": "northwest"
+  },
+  "timeto": {
+    "35617": 0.2,
+    "35615": 0.2
+  },
+  "uid": [
+    7150511
+  ]
+},{
+  "id": 35617,
+  "title": [
+    "[The Mageborn, Guest Quarters]"
+  ],
+  "description": [
+    "Inside the spacious cabin, a sprawling bunk of teak with widowwood insets is bolted to the planks of the deck.  Moldering blankets, once blue and yellow but reduced to mockeries of those hues by encroaching spots of black mildew, have been cast aside and trail through the shallow water of the flooded compartment.  A battered foot locker sits at the base of the bed, its wooden frame swollen shut with the damp.  An intact lantern of smoky glass sits atop a writing desk of once-fine Turamzzyrian oak."
+  ],
+  "paths": [
+    "Obvious exits: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35616": "east"
+  },
+  "timeto": {
+    "35616": 0.2
+  },
+  "uid": [
+    7150512
+  ]
+},{
+  "id": 35618,
+  "title": [
+    "[The Mageborn, Hold]"
+  ],
+  "description": [
+    "Set into a bulkhead streaked with rust and choked with barnacles, a corroded hatch has been rusted open.  Ribbons of salt water pour over its threshold, plinking into the larger body of seawater that occupies much of the hold.  Waterlogged fragments of old vellum charts drift near the surface, though their inks have run to a point past uselessness.  Overhead, a single ship's lantern hangs, its light long since gone out."
+  ],
+  "paths": [
+    "Obvious exits: southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35619": "go hatch",
+    "35614": "southeast"
+  },
+  "dirto": {
+    "35619": "west"
+  },
+  "timeto": {
+    "35619": 0.2,
+    "35614": 0.2
+  },
+  "uid": [
+    7150508
+  ]
+},{
+  "id": 35619,
+  "title": [
+    "[The Mageborn, Captain's Cabin]"
+  ],
+  "description": [
+    "To either side of a corroded hatch, shelves bowed by exposure to the brine hold waterlogged remains of books whose pages have fused together in a messy mishmash.  They hang above the crumpled remains of the captain's bunk, which is a mess of moldy fabric and sodden wood.  A carved compass rose in the forward bulkhead spreads from a narrow hatch that has rusted shut, barring access to a secondary hold near the bow of the ship.  Seawater trickles from the surrounding planks and runs along the floor in rivulets."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35618": "go hatch"
+  },
+  "dirto": {
+    "35618": "east"
+  },
+  "timeto": {
+    "35618": 0.2
+  },
+  "uid": [
+    7150509
+  ]
+},{
+  "id": 35620,
+  "title": [
+    "[Talon Isle, Beach]"
+  ],
+  "description": [
+    "A colossal tree, uprooted long ago, lies sprawled dramatically across the sand, its twisted roots clawing skyward in silent protest.  The trunk, worn smooth and drained of color by the elements and harsh sun, forms a natural barrier dividing beach from jungle.  Fragments of coral and fantastical shells cluster beneath the fallen giant, and tiny wildflowers bloom courageously in the rich earth along its landward face."
+  ],
+  "paths": [
+    "Obvious paths: southeast, south, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35621": "southeast",
+    "35622": "northwest",
+    "35623": "south"
+  },
+  "timeto": {
+    "35621": 0.2,
+    "35622": 0.2,
+    "35623": 0.2
+  },
+  "tags": [
+    "exit",
+    "beach",
+    "sea"
+  ],
+  "uid": [
+    7150220
+  ]
+},{
+  "id": 35621,
+  "title": [
+    "[Moghreb Jungle, Beach Trail]"
+  ],
+  "description": [
+    "A narrow trail winds precariously through dense green foliage, nearly obscured by the fronds of lush ferns and the creeping tendrils of thick vines.  Birds flit raucously between branches, their vainglorious plumage briefly catching the sunlight filtering through the thick canopy.  The air is as heavy with humidity as it is with the exotic fragrance of tropical flowers, the latter interspersed with occasional hints of decaying vegetation from the jungle floor."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35620": "northwest",
+    "35632": "east"
+  },
+  "timeto": {
+    "35620": 0.2,
+    "35632": 0.2
+  },
+  "uid": [
+    7150222
+  ]
+},{
+  "id": 35622,
+  "title": [
+    "[Talon Isle, Coral Sands]"
+  ],
+  "description": [
+    "Coral, pulverized into colorful dust by the inexorable power of the waves, stains the sand with the dazzling hues of the setting sun.  Shells, from ridged cockles to horned murexes, litter the rosy sand in abundance, pearlescent nacre on overturned ones shimmering with pastel rainbows.  A solitary hump of volcanic rock stands like a lone sentinel near the waterline.  Worn nearly smooth by the elements, it watches the swells and crashes of the blue waters beyond its domain."
+  ],
+  "paths": [
+    "Obvious paths: southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35620": "southeast"
+  },
+  "timeto": {
+    "35620": 0.2
+  },
+  "uid": [
+    7150221
+  ]
+},{
+  "id": 35623,
+  "title": [
+    "[Talon Isle, Beach]"
+  ],
+  "description": [
+    "A rugged outcrop of volcanic rock juts sharply from the sand, its craggy surface home to small scuttling crabs and noisy seabirds.  Waves break around its base in crashes of niveous foam, leaving behind glistening white trails on the bordering sand.  A few smaller humps of rock lead toward a steep cliff face to the east that is curtained in knots of blooming green vines."
+  ],
+  "paths": [
+    "Obvious paths: north, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35624": "southeast",
+    "35620": "north"
+  },
+  "timeto": {
+    "35624": 0.2,
+    "35620": 0.2
+  },
+  "uid": [
+    7150219
+  ]
+},{
+  "id": 35624,
+  "title": [
+    "[Talon Isle, Beach Lagoon]"
+  ],
+  "description": [
+    "A pristine lagoon graces the beach, separated from the sea by a slender barrier of white sand and black rock.  Astonishingly clear waters teem with small fish with scales that catch the sunlight like cut gemstones.  Small palms shade the lagoon, fronds swaying on the ocean breeze, smaller cousins to the huge coconut palm trees looming at the edges of the jungle populating the highland to the east."
+  ],
+  "paths": [
+    "Obvious paths: south, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35625": "south",
+    "35623": "northwest"
+  },
+  "timeto": {
+    "35625": 0.2,
+    "35623": 0.2
+  },
+  "uid": [
+    7150218
+  ]
+},{
+  "id": 35625,
+  "title": [
+    "[Talon Isle, Mangroves]"
+  ],
+  "description": [
+    "Sturdy mangroves stand along the shore like stooped sentinels, their tangled roots digging into the sands like gnarled fingers.  Their leaves glow green in the sunlight, canopies shading little crabs the color of verdigris that scuttle hurriedly among the root systems.  Waves break softly along the shore, the impassive trees taking the brunt of their fury."
+  ],
+  "paths": [
+    "Obvious paths: north, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35626": "southeast",
+    "35624": "north"
+  },
+  "timeto": {
+    "35626": 0.2,
+    "35624": 0.2
+  },
+  "uid": [
+    7150217
+  ]
+},{
+  "id": 35626,
+  "title": [
+    "[Talon Isle, Beach]"
+  ],
+  "description": [
+    "Shallow tidepools dot the sand, their crystal clear depths harboring tiny fish and colorful anemones that bloom like underwater flowers.  Jagged volcanic rocks frame some of the pools, edges softened by downy blankets of bright green sea moss.  Occasional gusts drive curtains of salty spray across the beach, the brine mingling with the scents of blooming tropical flowers drifting down from the jungle atop the cliffs to the east."
+  ],
+  "paths": [
+    "Obvious paths: south, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35627": "south",
+    "35625": "northwest"
+  },
+  "timeto": {
+    "35627": 0.2,
+    "35625": 0.2
+  },
+  "uid": [
+    7150216
+  ]
+},{
+  "id": 35627,
+  "title": [
+    "[Talon Isle, Beach]"
+  ],
+  "description": [
+    "The beach curves inward, forming a small, secluded cove protected by rocky arms draped in trailing vines.  Clusters of waterlogged driftwood have been relinquished by the tides and dot the pale sands in great number.  An enormous silvery grey log is by far the largest, and has resisted being reclaimed by the sea for long enough to have become caked with the droppings of gulls."
+  ],
+  "paths": [
+    "Obvious paths: north, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35628": "southeast",
+    "35626": "north"
+  },
+  "timeto": {
+    "35628": 0.2,
+    "35626": 0.2
+  },
+  "uid": [
+    7150215
+  ]
+},{
+  "id": 35628,
+  "title": [
+    "[Talon Isle, Beach]"
+  ],
+  "description": [
+    "Vast and trackless, the Spicers' Sea refuses any sense of scale, vanishing indistinctly into infinite distance.  Jellyfish drift in translucent congregations, their ghostly bodies pulsating gently within the water.  A ship cuts through the waters far, far away."
+  ],
+  "paths": [
+    "Obvious paths: northwest, up"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35629": "up",
+    "35627": "northwest"
+  },
+  "timeto": {
+    "35629": 0.2,
+    "35627": 0.2
+  },
+  "uid": [
+    7150214
+  ]
+},{
+  "id": 35629,
+  "title": [
+    "[Moghreb Jungle, Ridge]"
+  ],
+  "description": [
+    "The jungle canopy falls away near the end of a dark stone ridge, revealing a winding path down toward the island's western beach.  Gnarled roots and flowering vines cling to the steep slopes to either side of the trail.  Wind stirs the broad fronds of towering palms overhead, and the sound of the sapphire blue waves echoes off of the rocks, pealing over the descent like muted thunder."
+  ],
+  "paths": [
+    "Obvious paths: northeast, down"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35630": "northeast",
+    "35628": "down"
+  },
+  "timeto": {
+    "35630": 0.2,
+    "35628": 0.2
+  },
+  "uid": [
+    7150213
+  ]
+},{
+  "id": 35630,
+  "title": [
+    "[Moghreb Jungle, Ridge]"
+  ],
+  "description": [
+    "Huge crimson corpse flowers grow in stinking abundance, sheltering beneath a stand of hardy banana trees that have colonized a narrow stripe of fertile land at the center of a rocky ridge.  The flowers exude a pungent smell of rotting flesh so intense that neither the exotic perfume of jungle plants nor the gale coming in off the sea can fully disperse it.  Fat ants the color of carbuncles seem little deterred by the ghastly scent, for they swarm the ground beneath the huge blooms."
+  ],
+  "paths": [
+    "Obvious paths: southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35631": "northwest",
+    "35629": "southwest"
+  },
+  "timeto": {
+    "35631": 0.2,
+    "35629": 0.2
+  },
+  "uid": [
+    7150212
+  ]
+},{
+  "id": 35631,
+  "title": [
+    "[Moghreb Jungle, Ancient Ruin]"
+  ],
+  "description": [
+    "Shafts of sunlight filter through gaps in the high canopy, dappling everything in green-golden hues.  One patch of warmth reveals the crumbling edge of a cyclopean stone wall, part of a huge ruined edifice partially reclaimed by the jungle.  Most of the visible wall has been devoured by thorny vines that are heavy with trumpet-shaped periwinkle blooms.  Ornate pillars about its perimeter are etched with faded glyphs, and mosses in a variety of colors carpet broken stone tiles underfoot."
+  ],
+  "paths": [
+    "Obvious paths: southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35630": "southeast",
+    "35697": "go vines"
+  },
+  "dirto": {
+    "35697": "east"
+  },
+  "timeto": {
+    "35630": 0.2,
+    "35697": 0.2
+  },
+  "uid": [
+    7150211
+  ]
+},{
+  "id": 35632,
+  "title": [
+    "[Moghreb Jungle, Ancient Banyan]"
+  ],
+  "description": [
+    "An immense banyan tree spreads its massive branches outward, draped in vines and moss that cascade like living curtains.  Roots thick as a man's torso push through the dark, rich earth, sheltering hidden alcoves that have likely not seen light for centuries.  Insects hum and buzz among its branches like mad, talentless choristers, their even droning a steady counterpoint to the erratic ebb and flow of bird calls and bestial chittering in the heavy air."
+  ],
+  "paths": [
+    "Obvious paths: northeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35633": "northeast",
+    "35621": "west"
+  },
+  "timeto": {
+    "35633": 0.2,
+    "35621": 0.2
+  },
+  "uid": [
+    7150223
+  ]
+},{
+  "id": 35633,
+  "title": [
+    "[Moghreb Jungle, Terrace Garden]"
+  ],
+  "description": [
+    "Along the exterior of a vine-tangled ruin near the jungle's heart, ancient terraces burst with wild orchids, the extravagant blooms saturating the air with heady perfume.  Benches of dark-veined turquoise stone, crumbling and strangled by layers of green growth, sit along the perimeter.  The huge, rough-edged stones fitted together to form the ruin's cyclopean facade have weathered the ages with surprising fortitude, save for where the fall of a great meranti tree has left a broad crack in one wall."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35634": "northeast",
+    "35632": "southwest",
+    "35695": "go crack"
+  },
+  "dirto": {
+    "35695": "southeast"
+  },
+  "timeto": {
+    "35634": 0.2,
+    "35632": 0.2,
+    "35695": 0.2
+  },
+  "uid": [
+    7150224
+  ]
+},{
+  "id": 35634,
+  "title": [
+    "[Moghreb Jungle, Pond]"
+  ],
+  "description": [
+    "At a fork in the path, a tranquil pond lies nestled amid thick foliage, its surface reflecting the tangled greenery above.  Lily pads float serenely, their delicate white and pink blossoms in silent competition with the more strident maroons and yellows of nearby lotuses.  Dragonflies with crimson and cerulean bodies skim gracefully across the cold, clear water, iridescent wings flashing.  The dense jungle presses in close as if anxious to keep the pond sacrosanct and secret."
+  ],
+  "paths": [
+    "Obvious paths: southeast, southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35635": "northwest",
+    "35633": "southwest",
+    "35638": "southeast"
+  },
+  "timeto": {
+    "35635": 0.2,
+    "35633": 0.2,
+    "35638": 0.2
+  },
+  "uid": [
+    7150225
+  ]
+},{
+  "id": 35635,
+  "title": [
+    "[Moghreb Jungle, High Path]"
+  ],
+  "description": [
+    "Curtains of vines heavy with scarlet and sunny yellow flowers cascade down from the high branches, their bright petals like a waterfall of color suspended in the air.  The humidity lends intimacy to their honeysuckle fragrance, drawing hummingbirds and butterflies that flit tirelessly among the blossoms.  Droplets of water patter down from the canopy, moistening the earth of the path.  It is soft and springy, carpeted in fallen petals in myriad hues."
+  ],
+  "paths": [
+    "Obvious paths: north, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35636": "north",
+    "35634": "southeast"
+  },
+  "timeto": {
+    "35636": 0.2,
+    "35634": 0.2
+  },
+  "uid": [
+    7150227
+  ]
+},{
+  "id": 35636,
+  "title": [
+    "[Moghreb Jungle, High Path]"
+  ],
+  "description": [
+    "The jungle canopy deteriorates as towering giants give way to shorter trees stunted by the winds sweeping over the trailway as it climbs toward higher ground.  Opportunistic stands of bamboo thrive in the open air, their slender, knobbed stalks colluding to craft a nearly impassable wall along the eastern verges of the path.  The breeze sets the bamboo to gentle swaying, soliciting a softly creaking symphony that echoes quietly through the thinning jungle."
+  ],
+  "paths": [
+    "Obvious paths: northeast, south"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35637": "northeast",
+    "35635": "south"
+  },
+  "timeto": {
+    "35637": 0.2,
+    "35635": 0.2
+  },
+  "uid": [
+    7150228
+  ]
+},{
+  "id": 35637,
+  "title": [
+    "[Singing Crags, Base]"
+  ],
+  "description": [
+    "The last verges of the jungle yield to cragged stone as the path approaches a wall of severe blood-black stone that rises toward the high hills at the island's heart.  Vines snake thickly over the rugged surfaces of the rocks, dotted with little white blossoms that are far less numerous than the barbed black thorns spiraling down their lengths.  Moss shelters in the depths of cracks and crevices, seeking solace from scouring winds that awaken a subtle, melodic hum from the rock face."
+  ],
+  "paths": [
+    "Obvious paths: southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35636": "southwest",
+    "35699": "climb wall"
+  },
+  "dirto": {
+    "35699": "up"
+  },
+  "timeto": {
+    "35636": 0.2,
+    "35699": 0.2
+  },
+  "uid": [
+    7150229
+  ]
+},{
+  "id": 35638,
+  "title": [
+    "[Moghreb Jungle, Ancient Ruin]"
+  ],
+  "description": [
+    "Massive turquoise stones frame an ancient ruin nearly swallowed by the merciless jungle.  Intricate carvings depicting long-limbed figures of proud bearing sweep elegantly across the masonry, gently aglow in the sunlight caressing the stone.  Ivy and vines fight for purchase across the cyclopean facade of the immense building, the latter boasting ethereal white flowers with diaphanous petals.  A wide stone basin before the entry arch is filled with perfectly still water, cold and crystal clear."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35639": "east",
+    "35634": "northwest",
+    "35694": "go arch"
+  },
+  "dirto": {
+    "35694": "south"
+  },
+  "timeto": {
+    "35639": 0.2,
+    "35634": 0.2,
+    "35694": 0.2
+  },
+  "uid": [
+    7150226
+  ]
+},{
+  "id": 35639,
+  "title": [
+    "[Moghreb Jungle, Trail]"
+  ],
+  "description": [
+    "Drops of water patter into the lush undergrowth encroaching upon the path, its insistent drumbeat an erratic accompaniment to the cries of birds and the screeching of tiny macaques that call the trees their home.  The primates have their pick of residences, from interwoven strangler figs to frankincense trees.  The latter's knobby branches strain to find sunlight not jealously hoarded by taller palms and skyscraping merantis that form much of the dense canopy overhead."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35640": "southeast",
+    "35638": "west",
+    "35641": "northeast"
+  },
+  "timeto": {
+    "35640": 0.2,
+    "35638": 0.2,
+    "35641": 0.2
+  },
+  "uid": [
+    7150202
+  ]
+},{
+  "id": 35640,
+  "title": [
+    "[Talon Isle, Jungle Threshold]"
+  ],
+  "description": [
+    "Sugarcane grows in plenitude to either side of the loamy walk, its grassy sweetness almost lost amid the glut of aromas flooding the jungle at its verges.  The rich scent of rain-dampened earth strives for attention amid the strident perfume of wildflowers.  A towering blue stone arch rises out of vines and tangled brush, its weathered surface streaked with lichen and moss.  Shafts of golden sunlight pierce the cracked keystone, illuminating heavy air thick with mist."
+  ],
+  "paths": [
+    "Obvious paths: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35639": "northwest",
+    "35643": "go arch"
+  },
+  "dirto": {
+    "35643": "west"
+  },
+  "timeto": {
+    "35639": 0.2,
+    "35643": 0.2
+  },
+  "uid": [
+    7150201
+  ]
+},{
+  "id": 35641,
+  "title": [
+    "[Moghreb Jungle, Ancient Road]"
+  ],
+  "description": [
+    "Glimpses of a white road are all but consumed by wide-fronded ferns, straining saplings, and the expansionist tendencies of creepers with sunny yellow blossoms.  What remains of the sinuous stone span is cracked in places and bubbled and blackened in others, though the jungle's expansion has erased any other evidence of the cataclysm that doomed the roadway.  Parakeets, scarlet and blue and green, nest in cacao trees up a gentle hill, at bliss and ignorant of the land's ancient history."
+  ],
+  "paths": [
+    "Obvious paths: southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35642": "northwest",
+    "35639": "southwest"
+  },
+  "timeto": {
+    "35642": 0.2,
+    "35639": 0.2
+  },
+  "uid": [
+    7150203
+  ]
+},{
+  "id": 35642,
+  "title": [
+    "[Talon Isle, Rock Wall]"
+  ],
+  "description": [
+    "The jungle's swaying banyans and strangler figs stand away from the base of a towering pinnacle as if in deference.  Black and foreboding, the spire of rock stretches skyward like a crooked talon, its tip lost in swirling mists.  Though the stone wall at its base is replete with crags to serve as handholds and footholds, it is slicked with mist and rain, and the exotic vines clinging to it are as likely to snap treacherously as to provide purchase."
+  ],
+  "paths": [
+    "Obvious paths: southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35641": "southeast",
+    "35659": "climb wall"
+  },
+  "dirto": {
+    "35659": "up"
+  },
+  "timeto": {
+    "35641": 0.2,
+    "35659": 0.2
+  },
+  "uid": [
+    7150204
+  ]
+},{
+  "id": 35643,
+  "title": [
+    "[Talon Isle, Prayer Gate]"
+  ],
+  "description": [
+    "Age has defaced but not managed to weaken a towering blue stone arch that looms over the walkway just before its slope intensifies markedly.  Creepers cling to what limited purchase cracks in the stone can provide, but the ancient architecture's foundation appears to be mingled with the roots of the island itself, so sturdy does it seem.  Its bulk provides more than adequate shelter from the rain."
+  ],
+  "paths": [
+    "Obvious paths: southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35644": "southeast",
+    "35640": "go arch"
+  },
+  "dirto": {
+    "35640": "east"
+  },
+  "timeto": {
+    "35644": 0.2,
+    "35640": 0.2
+  },
+  "uid": [
+    7150116
+  ]
+},{
+  "id": 35644,
+  "title": [
+    "[Talon Isle, Trail of Hopes]"
+  ],
+  "description": [
+    "Ferns lean in close to either side of the path, spotted with raindrops that make them glitter like rainbowed jewels in the golden half-light filtering through the jungle canopy.  Old, stout palms that are many times the height of a giant form bowers over the road of hard-packed dirt and stone, mimicking an immense structure further on up the trail.  The narrow walkway cleaves close to the uneven walls of the spire as it strives to ascend."
+  ],
+  "paths": [
+    "Obvious paths: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35645": "go decline",
+    "35643": "northwest"
+  },
+  "dirto": {
+    "35645": "southeast"
+  },
+  "timeto": {
+    "35645": 0.2,
+    "35643": 0.2
+  },
+  "uid": [
+    7150115
+  ]
+},{
+  "id": 35645,
+  "title": [
+    "[Talon Isle, Shore]"
+  ],
+  "description": [
+    "Contorted spires of bubbly igneous rock jut from the sands of the beach like accusatory fingers.  The stone and sand are a study in contrasts, the former blood-dark and craggy; the latter bright as diamonds and fine of texture.  Inland, the beach makes a reluctant segue into an overgrowth of vine-draped banyans and wild sugarcane, their verdance enhanced by the stormlight in the skies overhead.  Tropical flowers in a riot of mismatched hues border a steep path delving boldly into the overgrowth."
+  ],
+  "paths": [
+    "Obvious paths: northeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35644": "go path",
+    "35646": "northeast"
+  },
+  "dirto": {
+    "35644": "northwest"
+  },
+  "timeto": {
+    "35644": 0.2,
+    "35646": 0.2
+  },
+  "uid": [
+    7150101
+  ]
+},{
+  "id": 35646,
+  "title": [
+    "[Talon Isle, Tidepools]"
+  ],
+  "description": [
+    "The stretch of idyllic beach shines like a second sun as the white sands bask in the day's radiance.  A plethora of thriving tidepools shelter in the curve of the vine-choked cliffside, reflected light sending rainbowed sparks scattering across the unforgiving black stone.  The scents of the sea and the isle's thriving flora commingle in a salty-sweet melange that perfumes the humid air."
+  ],
+  "paths": [
+    "Obvious paths: southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35645": "southwest",
+    "35647": "northwest"
+  },
+  "timeto": {
+    "35645": 0.2,
+    "35647": 0.2
+  },
+  "uid": [
+    7150102
+  ]
+},{
+  "id": 35647,
+  "title": [
+    "[Talon Isle, Obelisk]"
+  ],
+  "description": [
+    "A silver-shot black stone obelisk lies on its side, the etchings on its face gnawed down to faint depressions by the corrosive bite of saltwater.  Vines and moss alike seem to give the fallen monolith a wide berth, though nearly every other stone surface is choked by one or blanketed by the other.  Peeking through a curtain of overgrowth, a sheer cliff face of rock behind the monument is as dark as old blood save where it is threaded with veins of startlingly blue lapis lazuli."
+  ],
+  "paths": [
+    "Obvious paths: southeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35648": "northwest",
+    "35646": "southeast"
+  },
+  "timeto": {
+    "35648": 0.2,
+    "35646": 0.2
+  },
+  "uid": [
+    7150103
+  ]
+},{
+  "id": 35648,
+  "title": [
+    "[Talon Isle, Treasure Beach]"
+  ],
+  "description": [
+    "The crystal blue waters of the abounding sea have heaped their tithes upon the sand.  Baubles of gold and silver and copper wink teasingly from the glittering white dunes.  Waterlogged chests and strongboxes lie half-buried in the sand, most with only locks eaten by rust and corrosion to guard their secrets.  By some trick of the tides, the treasures appear to be from places far abroad, none being alike in origin to another."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35649": "northeast",
+    "35647": "southeast"
+  },
+  "timeto": {
+    "35649": 0.2,
+    "35647": 0.2
+  },
+  "uid": [
+    7150104
+  ]
+},{
+  "id": 35649,
+  "title": [
+    "[Talon Isle, Treasure Beach]"
+  ],
+  "description": [
+    "Waters as blue as cut sapphires lap at the strikingly white beach, which is strewn with rubbery kelp and clumps of sargassum.  The algae are not the only secrets the sea has surrendered.  Colored glass chimes glint from where they lie half-buried in a rolling dune, while just down the stretch, a foreboding bronze bust is mostly submerged in a tidepool.  Broken idols of unknown stone and foreign coins of strange metal fan out where the sand meets the water."
+  ],
+  "paths": [
+    "Obvious paths: southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35648": "southwest",
+    "35650": "go docks"
+  },
+  "dirto": {
+    "35650": "east"
+  },
+  "timeto": {
+    "35648": 0.2,
+    "35650": 0.2
+  },
+  "uid": [
+    7150105
+  ]
+},{
+  "id": 35650,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "A span of wood, silvered by sun and green with moss, stretches from the gleaming white sands out into the azure waters of the sea.  Severe cliffs watch over the structure, their jagged tops crowned with trees that grow so thick together that it is difficult to tell where one ends and another begins.  The humid air is full of the honeyed sweetness of wildflowers and the beckoning freshness of the ocean brine."
+  ],
+  "paths": [
+    "Obvious paths: northeast, east, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35651": "northeast",
+    "35654": "east",
+    "35656": "southeast",
+    "35649": "go sands"
+  },
+  "dirto": {
+    "35649": "west"
+  },
+  "timeto": {
+    "35651": 0.2,
+    "35654": 0.2,
+    "35656": 0.2,
+    "35649": 0.2
+  },
+  "tags": [
+    "docks",
+    "dock"
+  ],
+  "uid": [
+    7150106
+  ]
+},{
+  "id": 35651,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Broad driftwood beams, lashed together with lengths of dried seaweed that has been braided into a strong and flexible rope, stretch out over turquoise blue waters.  Anchored to warped old posts by heavy iron rings, salvaged anchor chains hold corroded lanterns aloft to creak in the ocean breeze.  Abandoned crates and overturned barrels leave little navigable space on the weathered wood of the docks."
+  ],
+  "paths": [
+    "Obvious paths: east, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35652": "east",
+    "35650": "southwest"
+  },
+  "timeto": {
+    "35652": 0.2,
+    "35650": 0.2
+  },
+  "uid": [
+    7150107
+  ]
+},{
+  "id": 35652,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Driftwood beams, bound by braided, dried seaweed, splay out into the sapphire blue sea like silvered fingers.  Thick planks creak, swaying with the might of the current, their surfaces slick with moss and framed by posts crusted with salt.  The warped timbers strain under the weight of broken crates full of chipped pottery and dark metal coins corroded past the point of any value."
+  ],
+  "paths": [
+    "Obvious paths: east, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35653": "east",
+    "35651": "west"
+  },
+  "timeto": {
+    "35653": 0.2,
+    "35651": 0.2
+  },
+  "uid": [
+    7150108
+  ]
+},{
+  "id": 35653,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Vines have woven themselves through the rusted iron chains swaying between driftwood posts along the dock, their dew-splashed flowers unfurling in an abundance of colors, from alarming pink to fiery orange.  The clear waters of the surrounding sea are a pellucid window onto the sandy shallows.  Bits of amber-tinted glass and fragments of old porcelain dot the pale underwater dunes, the leavings of another's plunder."
+  ],
+  "paths": [
+    "Obvious paths: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35652": "west"
+  },
+  "timeto": {
+    "35652": 0.2
+  },
+  "uid": [
+    7150109
+  ]
+},{
+  "id": 35654,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Sinuous lines of salt crystal create patterns on the driftwood planks, their grit lending texture to the smooth-worn wood.  The docks rock as sapphire waves slap at their pilings, but the thick clusters of black-shelled mussels seem little perturbed by the ocean's tantrums.  Their briny scent is intense, even contrasted with the salty sea air."
+  ],
+  "paths": [
+    "Obvious paths: east, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35655": "east",
+    "35650": "west"
+  },
+  "timeto": {
+    "35655": 0.2,
+    "35650": 0.2
+  },
+  "uid": [
+    7150110
+  ]
+},{
+  "id": 35655,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "A length of anchor chain is heaped onto the dock, one dangling length clanking insistently against a nearby piling as the waves tug at it.  Rust from the decaying links has stained the wood below an unsavory reddish brown.  Tiny crabs, ghostly white and no larger than an infant's fist, have made the shadows of the abandoned chain their home."
+  ],
+  "paths": [
+    "Obvious paths: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35654": "west"
+  },
+  "timeto": {
+    "35654": 0.2
+  },
+  "uid": [
+    7150111
+  ]
+},{
+  "id": 35656,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Gull cries fill the humid air as the gluttonous birds circle overhead, drawn by schools of fish in the clear waters around the dock.  The fish are tiny and glint like silver coins, and while a few have sought safety in the shadowed crevices of an ominous old statue beneath the waterline, most swim about, heedless of the danger awaiting them.  The birds' droppings are sprays of stark white against the time-silvered planks, and judging from their copious leavings, they are prolific hunters."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35657": "east",
+    "35650": "northwest"
+  },
+  "timeto": {
+    "35657": 0.2,
+    "35650": 0.2
+  },
+  "uid": [
+    7150112
+  ]
+},{
+  "id": 35657,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Driftwood planks warped by wind and water creak and shiver in the powerful current, their surfaces slick with algae and salt.  Frayed ropes arc between one pair of barnacled posts, a poor replacement for rusted iron chains bedecking the rest.  Broken crates spill strings of coral beads and tarnished metal tokens etched with unreadable runes."
+  ],
+  "paths": [
+    "Obvious paths: east, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35658": "east",
+    "35656": "west"
+  },
+  "timeto": {
+    "35658": 0.2,
+    "35656": 0.2
+  },
+  "uid": [
+    7150113
+  ]
+},{
+  "id": 35658,
+  "title": [
+    "[Talon Isle, Docks]"
+  ],
+  "description": [
+    "Creeping fingers of vivid emerald lichen fan out over the dock, colluding with seaspray to leave treacherously slick patches on the sun-bleached planks.  Coins from a dozen different nations are wedged between the boards, accompanied by bits of colored glass and a few sparkling beads.  Their likely source is the mossy remains of a crate that has been reduced to splintered wreckage by disuse and abandonment."
+  ],
+  "paths": [
+    "Obvious paths: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35657": "west"
+  },
+  "timeto": {
+    "35657": 0.2
+  },
+  "uid": [
+    7150114
+  ]
+},{
+  "id": 35659,
+  "title": [
+    "[Talon Isle, Rock Wall]"
+  ],
+  "description": [
+    "A precarious ledge juts out from the middle of the stone wall just over an arm's breadth away from deep niches in the black stone.  Winks of gold and other precious metals flash from the darkness of several of the crevices.  A single such recess might be the work of nature, but the even procession of them suggests the use of tools.  Above, the cliff face is smooth, offering little purchase for climbing beyond a few slick handholds.  In some places it appears smooth as volcanic glass."
+  ],
+  "paths": [
+    "Obvious paths: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35642": "climb wall",
+    "35693": "climb hand"
+  },
+  "dirto": {
+    "35642": "down",
+    "35693": "up"
+  },
+  "timeto": {
+    "35642": 0.2,
+    "35693": 0.2
+  },
+  "uid": [
+    7150205
+  ]
+},{
+  "id": 35660,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "Cracked planks jut from the hull of a capsized ship, their edges fractured by the relentless tide.  The once-varnished wood, scoured and silvered by the elements, is coated with barnacles and crowded with oysters.  Much of the ship lurks as a nebulous shadow beneath the waterline.  Clumps of reddish sargassum drift around the wreckage, tossed cruelly by the angry tide."
+  ],
+  "paths": [
+    "Obvious paths: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35661": "west"
+  },
+  "timeto": {
+    "35661": 0.2
+  },
+  "tags": [
+    "exit"
+  ],
+  "uid": [
+    7150701
+  ]
+},{
+  "id": 35661,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "Bobbing, salt-stained planks congregate aimlessly about the derelict remnants of an aftercastle bobbing on the tide.  Scattered crates and a few empty barrels float lazily around, surprisingly intact but spattered with copious gull droppings.  A torn sail sprawls across the surface nearby, its fabric long since bleached to the color of aging bone."
+  ],
+  "paths": [
+    "Obvious paths: east, south, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35662": "southwest",
+    "35660": "east",
+    "35669": "south"
+  },
+  "timeto": {
+    "35662": 0.2,
+    "35660": 0.2,
+    "35669": 0.2
+  },
+  "uid": [
+    7150702
+  ]
+},{
+  "id": 35662,
+  "title": [
+    "[Sailor's Grief, Solitary Islet]"
+  ],
+  "description": [
+    "Rising from the froth and seaspray, a craggy islet is littered with debris from abounding shipwrecks.  Cracked planks, broken remnants of crates, and even a rusted anchor are scattered along its shifting shoreline, lapped by the incoming tide.  Seaweed drapes the rocks like tattered lengths of fabric, concealing sharp crags and deep fissures with water-slicked surfaces."
+  ],
+  "paths": [
+    "Obvious paths: northeast, east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35663": "northwest",
+    "35661": "northeast",
+    "35669": "east"
+  },
+  "timeto": {
+    "35663": 0.2,
+    "35661": 0.2,
+    "35669": 0.2
+  },
+  "uid": [
+    7150704
+  ]
+},{
+  "id": 35663,
+  "title": [
+    "[Sailor's Grief, Solitary Islet]"
+  ],
+  "description": [
+    "Barely rising above the water, the jagged rocks of the islet are littered with the remnants of ships.  Some of the wreckage is barely recognizable under layers of heaped kelp and hardy mosses, which cling to broken planks and rusted chains.  The endless crashing of the waves drowns out most sounds, but the occasional call of a hungry gull overhead manages to pierce through the roar."
+  ],
+  "paths": [
+    "Obvious paths: southeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35664": "west",
+    "35662": "southeast"
+  },
+  "timeto": {
+    "35664": 0.2,
+    "35662": 0.2
+  },
+  "uid": [
+    7150705
+  ]
+},{
+  "id": 35664,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "The shallows near the rocky islet are a graveyard of ship wreckage, which lies half-submerged beneath the insistent waves.  Jagged splinters of wood and anchors that are more rust than iron poke up from the silty bottom, protruding from tangles of thick seaweed.  Fish thrive in the ships' remains, smaller ones with scales of silver, copper, and gold lurking in the shadows while their larger predators swim stridently through the clear waters."
+  ],
+  "paths": [
+    "Obvious paths: east, south"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35665": "south",
+    "35663": "east"
+  },
+  "timeto": {
+    "35665": 0.2,
+    "35663": 0.2
+  },
+  "uid": [
+    7150706
+  ]
+},{
+  "id": 35665,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "The stern of a ship bobs amid the waves, moored to its battered neighbors by haphazard stretches of line and a few stubborn pieces of wood.  Coral has begun to reclaim its other half, which is scattered across the shallow seafloor, vibrant clusters of pink and orange creeping across broken planks and the rusted remnants of metal fittings.  Fish of all shapes dart in and out of the crannies of the wreck, their scales flashing in the sunlight that pierces the clear water above."
+  ],
+  "paths": [
+    "Obvious paths: north, east, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35666": "southeast",
+    "35664": "north",
+    "35671": "east"
+  },
+  "timeto": {
+    "35666": 0.2,
+    "35664": 0.2,
+    "35671": 0.2
+  },
+  "uid": [
+    7150707
+  ]
+},{
+  "id": 35666,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "Barely afloat, a shipwreck juts from the swirling morass of wreckage, its bow tipped downward as though it is slowly sinking back into the sea.  The wood is cracked and bowed, releasing bubbles of air that merge with the effervescent foam on the surface.  A few whip-thin sharks prowl about the submerged portions of the wreck's hull, scouring the abandoned wreck for prey.  They pay little heed to the clams and mussels that have found shelter in the shadows."
+  ],
+  "paths": [
+    "Obvious paths: north, east, southeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35667": "southeast",
+    "35665": "northwest",
+    "35670": "east",
+    "35671": "north"
+  },
+  "timeto": {
+    "35667": 0.2,
+    "35665": 0.2,
+    "35670": 0.2,
+    "35671": 0.2
+  },
+  "uid": [
+    7150709
+  ]
+},{
+  "id": 35667,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "The keel of a wreck juts out of the floating debris like the exposed spine of a long-dead sea creature, its fractured beams twisted and buckled by the sea's constant onslaught.  Mussels cling, big and black, to the warped wood, and a haze of iridescent foam clings to the wood with a tenacity that even the waves cannot overcome.  The rhythmic slap of the waves against the hull echoes hollowly, as if the ocean is playing a great, mournful drum."
+  ],
+  "paths": [
+    "Obvious paths: north, southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35668": "southwest",
+    "35666": "northwest",
+    "35670": "north"
+  },
+  "timeto": {
+    "35668": 0.2,
+    "35666": 0.2,
+    "35670": 0.2
+  },
+  "uid": [
+    7150711
+  ]
+},{
+  "id": 35668,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "Dilapidated wreckage of an ancient trireme teeters over the brink of a roaring fall of white water in the midst of the ocean where the waters part as if held separate by vast, invisible hands.  Curtains of seaspray cloud the air, glistening with rainbowed sparks in the sunlight, spiraling like swarms of fireflies.  Chunks of scattered debris from a hundred different shipwrecks are caught within the solidified walls of water, forming a dangerous path down to the drying seafloor below."
+  ],
+  "paths": [
+    "Obvious paths: northeast, down"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35667": "northeast",
+    "35672": "down"
+  },
+  "timeto": {
+    "35667": 0.2,
+    "35672": 0.2
+  },
+  "uid": [
+    7150712
+  ]
+},{
+  "id": 35669,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "Fragments of a ship's stern litter the waves near to a harsh islet that is barely more than a cluster of dark rocks in the midst of the ocean.  The fallen shrouds hang limp on the water, tangled with other lines and jagged-edged remnants of dislodged planking.  The scent of saltwater and rotting wood fills the air, and the roar of the ocean is broken only by the tormented creaking of the remnants as they resist being claimed by the sea."
+  ],
+  "paths": [
+    "Obvious paths: north, southwest, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35662": "west",
+    "35670": "southwest",
+    "35661": "north"
+  },
+  "timeto": {
+    "35662": 0.2,
+    "35670": 0.2,
+    "35661": 0.2
+  },
+  "uid": [
+    7150703
+  ]
+},{
+  "id": 35670,
+  "title": [
+    "[Sailor's Grief, Rocks]"
+  ],
+  "description": [
+    "A sliver of rocky ground rises out of the restless sea, barely large enough to stand upon and nearly lost among the surrounding hulks.  Jagged stones are scattered across the surface, worn smooth in places by the ceaseless crashing of waves.  Sparse tufts of coarse grass cling stubbornly to crevices, but nothing else grows.  Waves surge against the land, occasionally drowning it entirely beneath their briny currents."
+  ],
+  "paths": [
+    "Obvious paths: northeast, south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35669": "northeast",
+    "35666": "west",
+    "35667": "south"
+  },
+  "timeto": {
+    "35669": 0.2,
+    "35666": 0.2,
+    "35667": 0.2
+  },
+  "uid": [
+    7150710
+  ]
+},{
+  "id": 35671,
+  "title": [
+    "[Sailor's Grief, Wreckage]"
+  ],
+  "description": [
+    "Scattered along a rocky shelf beneath the waves, the broken remnants of an Ashrim galleon have come to rest, though they are mostly overshadowed by a capsized hulk still buoyed above the waters by air trapped belowdecks.  Sea anemones sway on the deck of the drowned ship, their stridently colored tendrils fluttering on currents that stir ragged shreds of kelp.  Tiny crabs dart between the crevices of the wreckage, stark orange shells standing out like cut citrines against the dark wood."
+  ],
+  "paths": [
+    "Obvious paths: south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35666": "south",
+    "35665": "west"
+  },
+  "timeto": {
+    "35666": 0.2,
+    "35665": 0.2
+  },
+  "uid": [
+    7150708
+  ]
+},{
+  "id": 35672,
+  "title": [
+    "[Spicers' Sea, Abyssal Cleft]"
+  ],
+  "description": [
+    "Walls of water rise imperiously high to either side, held back as if by magic.  Whatever force binds the ocean seems not limitless in its power, as the water ripples and surges, threatening at any moment to crash in and drown the narrow cleft in a murderous torrent.  The brittle remains of dead starfish and drying kelp are scattered across the way alongside a few anemones leached of their colors and life."
+  ],
+  "paths": [
+    "Obvious paths: west, up"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35673": "west",
+    "35668": "up"
+  },
+  "timeto": {
+    "35673": 0.2,
+    "35668": 0.2
+  },
+  "uid": [
+    7150713
+  ]
+},{
+  "id": 35673,
+  "title": [
+    "[Spicers' Sea, Abyssal Cleft]"
+  ],
+  "description": [
+    "The shadowed path sinks into a narrow gorge littered with skeletal fish.  One skeleton's spine has been cruelly harvested, leaving behind only jagged rib bones strewn about.  On the opposite sides of the towering walls of water to either side, living fish dart past, seeming little bothered by the miraculous magics restraining the tide.  Great ripples distort the surfaces of each wall as the sea fights to escape the power holding it in check."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35674": "northwest",
+    "35672": "east"
+  },
+  "timeto": {
+    "35674": 0.2,
+    "35672": 0.2
+  },
+  "uid": [
+    7150714
+  ]
+},{
+  "id": 35674,
+  "title": [
+    "[Spicers' Sea, Abyssal Cleft]"
+  ],
+  "description": [
+    "The weight of the water seems an almost palpable thing, leaving the air heavy, close, and oppressive.  Only the invisible hand of magic holds the sea back from swallowing the path whole in a crash of crushing water.  Schools of translucent fish drift lazily within the water's hold, their shapes flickering like phantoms in the tidal darkness."
+  ],
+  "paths": [
+    "Obvious paths: southeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35675": "northwest",
+    "35673": "southeast"
+  },
+  "timeto": {
+    "35675": 0.2,
+    "35673": 0.2
+  },
+  "uid": [
+    7150715
+  ]
+},{
+  "id": 35675,
+  "title": [
+    "[Spicers' Sea, Abyssal Cleft]"
+  ],
+  "description": [
+    "Faint flashes of bioluminescence from within the sky-scraping walls of water to either side illuminate the pathway in fell light.  The fitful radiance illuminates the shadowed form of a whale draped across the path, sweetly poisoning the air with its rotting flesh.  A few industrious crabs clack and click within the slack-jawed mouth of the carcass, skittering about as if in celebration of the bounty it represents."
+  ],
+  "paths": [
+    "Obvious paths: southeast, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35676": "southwest",
+    "35674": "southeast"
+  },
+  "timeto": {
+    "35676": 0.2,
+    "35674": 0.2
+  },
+  "uid": [
+    7150716
+  ]
+},{
+  "id": 35676,
+  "title": [
+    "[Spicers' Sea, Abyssal Cleft]"
+  ],
+  "description": [
+    "As it delves deeper, the dry path twists between towering rock formations spotted with algae.  Their sheer faces are slick with seaspray raining down from above in cold, stinging droplets.  Squid swim past to either side, tentacles occasionally breaching through the imperceptible walls holding back the unimaginable force of the sea."
+  ],
+  "paths": [
+    "Obvious paths: northeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35677": "west",
+    "35675": "northeast"
+  },
+  "timeto": {
+    "35677": 0.2,
+    "35675": 0.2
+  },
+  "uid": [
+    7150717
+  ]
+},{
+  "id": 35677,
+  "title": [
+    "[Spicers' Sea, Abyssal Cleft]"
+  ],
+  "description": [
+    "To the southwest, the waters yawn wider to accommodate a vast disc of unusual stone.  Seawater runs from its uneven edges, channeled by cracks and runnels into waterfalls that fill the cleft with their rumbling roar.  A reef of brilliantly colored corals clings to the bizarre structure's immense stone base, fed by the constant rush of seawater, and the air grows colder near its all-consuming shadow."
+  ],
+  "paths": [
+    "Obvious paths: east, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35678": "southwest",
+    "35676": "east"
+  },
+  "timeto": {
+    "35678": 0.2,
+    "35676": 0.2
+  },
+  "uid": [
+    7150718
+  ]
+},{
+  "id": 35678,
+  "title": [
+    "[Spicers' Sea, Penumbra]"
+  ],
+  "description": [
+    "The path ends at the base of a colossal disc of peculiar blue stone that looms overhead as a great black shadow.  Within its darkness, the air is cruelly cold and smells faintly of burning ozone.  The monument's stony construction is pocked from years beneath the wave where it is not crowded by an overgrowth of coral in a chaotic rainbow of colors.  Along unsullied surfaces, there are hints of ancient carvings that bleed a pale glow that brings to mind a sky tossed by storms."
+  ],
+  "paths": [
+    "Obvious paths: northeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35679": "climb base",
+    "35677": "northeast"
+  },
+  "dirto": {
+    "35679": "up"
+  },
+  "timeto": {
+    "35679": 0.2,
+    "35677": 0.2
+  },
+  "uid": [
+    7150719
+  ]
+},{
+  "id": 35679,
+  "title": [
+    "[Seat of Storms, Base]"
+  ],
+  "description": [
+    "Seawater cascades down from the huge disc on all sides, feeding an overgrowth of multicolored coral that scales the base of the structure.  Along the immense supporting column of blue stone, there are places where dying coral has fallen away, revealing stone undamaged by the gnawing of the sea.  Carvings taller than a giant depict figures overlooking seas churned by storms, and they bleed sickly greenish stormglow that casts the surroundings in a sallow pall."
+  ],
+  "paths": [
+    "Obvious paths: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35678": "climb base",
+    "35680": "climb column"
+  },
+  "dirto": {
+    "35678": "down",
+    "35680": "up"
+  },
+  "timeto": {
+    "35678": 0.2,
+    "35680": 0.2
+  },
+  "uid": [
+    7150720
+  ]
+},{
+  "id": 35680,
+  "title": [
+    "[Seat of Storms, Base]"
+  ],
+  "description": [
+    "Worn away by the powerful rush of draining seawater, a yawning sinkhole in the stone lets cold starlight glimmer across the damp surface of the girthy support column beneath the sprawling disc of variegated blue stone.  Its rugged edges offer purchases necessary to scale the distance to the surface of the disc.  Bordered by towering barriers of fathomless ocean held back by invisible forces, the perch offers improbable glimpses of sealife surging and darting through the depths.",
+    "Worn away by the powerful rush of draining seawater, a yawning sinkhole in the stone sends harsh sunlight skittering down the damp surface of the girthy support column beneath the sprawling disc of variegated blue stone.  Its rugged edges offer purchases necessary to scale the distance to the surface of the disc.  Bordered by towering barriers of fathomless ocean held back by invisible forces, the perch offers improbable glimpses of sealife surging and darting through the depths."
+  ],
+  "paths": [
+    "Obvious paths: up"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35679": "climb column",
+    "35681": "up"
+  },
+  "dirto": {
+    "35679": "down"
+  },
+  "timeto": {
+    "35679": 0.2,
+    "35681": 0.2
+  },
+  "uid": [
+    7150721
+  ]
+},{
+  "id": 35681,
+  "title": [
+    "[Seat of Storms, Sinkhole]"
+  ],
+  "description": [
+    "A deep sinkhole yawns near the southern edge of the disc, its edges ragged and uneven as if clawed away by the fury of the rushing sea.  Standing over it is a ghastly statue depicting a hideous deviation of the humanoid form, with tentacles sprouting where its arms ought to be, its sinister, squinting eyes staring out over the restrained and vengeful sea.  The air is charged with power, an odd tingle barely audible as a crackling hum."
+  ],
+  "paths": [
+    "Obvious paths: north, northeast, northwest, down"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35682": "northwest",
+    "35688": "northeast",
+    "35691": "north",
+    "35680": "down"
+  },
+  "timeto": {
+    "35682": 0.2,
+    "35688": 0.2,
+    "35691": 0.2,
+    "35680": 0.2
+  },
+  "uid": [
+    7150722
+  ]
+},{
+  "id": 35682,
+  "title": [
+    "[Seat of Storms, Perilous Edge]"
+  ],
+  "description": [
+    "Patterns of swirling blue-green veins run through the variegated surface of the stone, pulsing with green-tinged light reminiscent of a sky made sickly with stormglow.  The lip of the disc is nearly parallel with the ocean's surface, which rages and surges just paces away, sending sheets of spray spattering onto the stone.  Between stone and sea is a plummet through the air down to the bared seafloor far below."
+  ],
+  "paths": [
+    "Obvious paths: north, east, southeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35683": "northwest",
+    "35681": "southeast",
+    "35692": "north",
+    "35691": "east"
+  },
+  "timeto": {
+    "35683": 0.2,
+    "35681": 0.2,
+    "35692": 0.2,
+    "35691": 0.2
+  },
+  "uid": [
+    7150727
+  ]
+},{
+  "id": 35683,
+  "title": [
+    "[Seat of Storms, Western Verge]"
+  ],
+  "description": [
+    "Riddled with forking cracks, the edge of the disc juts perilously toward an open expanse of the surrounding sea.  Dark waves crash violently against the invisible barrier encircling the ancient monument, pelting the stone with an onslaught of spray that collects in puddles and pools.  Runnels in the stone channel some of the water toward the edges, where it cascades down toward the base of the disc far below."
+  ],
+  "paths": [
+    "Obvious paths: northeast, east, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35684": "northeast",
+    "35682": "southeast",
+    "35692": "east"
+  },
+  "timeto": {
+    "35684": 0.2,
+    "35682": 0.2,
+    "35692": 0.2
+  },
+  "uid": [
+    7150733
+  ]
+},{
+  "id": 35684,
+  "title": [
+    "[Seat of Storms, Defaced Span]"
+  ],
+  "description": [
+    "The surface of the disc is marred by deeply etched runes, the edges of which are rough and imprecise.  Pallid light bleeds from their edges like blood from a gouge, leaching color from the surroundings.  Fragments of broken rock litter the area, their edges fitfully illuminated by the same glow.  No signs of tools, even makeshift ones, necessary to cause such damage are left behind."
+  ],
+  "paths": [
+    "Obvious paths: northeast, south, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35685": "northeast",
+    "35683": "southwest",
+    "35692": "south"
+  },
+  "timeto": {
+    "35685": 0.2,
+    "35683": 0.2,
+    "35692": 0.2
+  },
+  "uid": [
+    7150732
+  ]
+},{
+  "id": 35685,
+  "title": [
+    "[Seat of Storms, Stone Serpent]"
+  ],
+  "description": [
+    "Sprawled across the disc's northernmost verges, its sinuous form following the curve of the monument's rounded edge, is a statue of a singularly gargantuan serpent.  Its immense body, carved from silver-veined black stone with uncanny attention to the details of scales and powerful musculature, is twisted as if in agony.  Its coils nearly conceal a ragged gash along its underbelly where scales have been torn away to reveal yielding flesh beneath.  Beneath the statue, the ground is pocked and pitted."
+  ],
+  "paths": [
+    "Obvious paths: south, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35686": "south",
+    "35684": "southwest"
+  },
+  "timeto": {
+    "35686": 0.2,
+    "35684": 0.2
+  },
+  "uid": [
+    7150731
+  ]
+},{
+  "id": 35686,
+  "title": [
+    "[Seat of Storms, Formations]"
+  ],
+  "description": [
+    "Steps of stone the color of the ocean near sunset climb toward the center of the dais, passing between sediment deposits that resemble great, spent candles.  The scent of burnt ozone is oppressive, an acrid intrusion onto the scouring ocean winds, and an electric tingle suffuses the air and thrums through the stone like a faltering heartbeat.  Green-tinged white light surges from the stone, lighting the path in ebbs and flows."
+  ],
+  "paths": [
+    "Obvious paths: north, south, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35687": "south",
+    "35685": "north",
+    "35692": "southwest"
+  },
+  "timeto": {
+    "35687": 0.2,
+    "35685": 0.2,
+    "35692": 0.2
+  },
+  "uid": [
+    7150729
+  ]
+},{
+  "id": 35687,
+  "title": [
+    "[Seat of Storms, Seaglass Throne]"
+  ],
+  "description": [
+    "Standing imperiously atop a raised dais at the precise center of the disc, a monstrous throne of seaglass is framed by a pallid expanse of dead coral.  Lightning without thunder forks through the throne in blinding flashes and violently brilliant surges, finding muted echo in the radiance pulsing from the stone of the disc.  Below the scintillating throne, an altar is carved with a man of cruel countenance with a stormcloud in one hand and a cresting wave in the other."
+  ],
+  "paths": [
+    "Obvious paths: north"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35686": "north"
+  },
+  "timeto": {
+    "35686": 0.2
+  },
+  "tags": [
+    "throne",
+    "altar"
+  ],
+  "uid": [
+    7150730
+  ]
+},{
+  "id": 35688,
+  "title": [
+    "[Seat of Storms, Crumbling Edge]"
+  ],
+  "description": [
+    "Rushing seawater races toward the edge of the stone disc, where it careens down toward the unnatural path below in frothing white falls that could rival thunder for intensity.  The edge of the vast monument is jagged and uneven, eaten at by the sea where it was not buffeted by the ocean's sudden retreat.  Pits in the rock hold deep pools teeming with sealife, from dazzling fish to bright-hued anemones stretching their tendrils as if trying to hoard the remaining saltwater around them."
+  ],
+  "paths": [
+    "Obvious paths: north, northeast, southwest, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35689": "northeast",
+    "35691": "west",
+    "35690": "north",
+    "35681": "southwest"
+  },
+  "timeto": {
+    "35689": 0.2,
+    "35691": 0.2,
+    "35690": 0.2,
+    "35681": 0.2
+  },
+  "uid": [
+    7150723
+  ]
+},{
+  "id": 35689,
+  "title": [
+    "[Seat of Storms, The Scar]"
+  ],
+  "description": [
+    "A black and twisting wound in the surface of the dais has undermined its structural integrity, causing much of the northeastern quadrant to collapse.  Though still mostly of a piece, its angle is so skewed as to be untraversable.  Its farthest edges jut through the invisible wall binding the surrounding ocean.  Where the two meet, the disc shines with sickly green stormglow and the barrier shimmers with abyssal greens of answering brilliance in visible evidence of the magics holding back the waves."
+  ],
+  "paths": [
+    "Obvious paths: southwest, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35690": "west",
+    "35688": "southwest"
+  },
+  "timeto": {
+    "35690": 0.2,
+    "35688": 0.2
+  },
+  "uid": [
+    7150724
+  ]
+},{
+  "id": 35690,
+  "title": [
+    "[Seat of Storms, The Scar]"
+  ],
+  "description": [
+    "A jagged chasm mars the surface of the disc.  The stone is blackened and bubbled and looks as if it ran like liquid before resolidifying, leaving behind an unsightly wound, the edges of which bleed stormglow in erratic spurts.  Crystal clear water lingers in the depths of the scar, but it is devoid of life, with not a shred of moss nor a single fish visible in the pellucid pools.  An awful statue looms over the devastation as if exulting in the defacement."
+  ],
+  "paths": [
+    "Obvious paths: east, south, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35691": "southwest",
+    "35688": "south",
+    "35689": "east"
+  },
+  "timeto": {
+    "35691": 0.2,
+    "35688": 0.2,
+    "35689": 0.2
+  },
+  "uid": [
+    7150725
+  ]
+},{
+  "id": 35691,
+  "title": [
+    "[Seat of Storms, The Scar]"
+  ],
+  "description": [
+    "Near the heart of the disc, an unsightly chasm delves into its blue stone.  The edges are black and look to have run like wax before hardening back into porous stone.  In some places, the walls of the gouge are nearly as smooth as glass, while other spans bulge with warped, blistered stone that bleeds green-tinged radiance.  Fragments of rock litter the belly of the chasm in every shade of blue from turquoise to richest indigo."
+  ],
+  "paths": [
+    "Obvious paths: northeast, east, south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35682": "west",
+    "35681": "south",
+    "35688": "east",
+    "35690": "northeast"
+  },
+  "timeto": {
+    "35682": 0.2,
+    "35681": 0.2,
+    "35688": 0.2,
+    "35690": 0.2
+  },
+  "uid": [
+    7150726
+  ]
+},{
+  "id": 35692,
+  "title": [
+    "[Seat of Storms, Ghost Reef]"
+  ],
+  "description": [
+    "Toward the center of the disc, a reef of dead coral sprawls across the path, once-vibrant colors blanched to a lifeless bone white.  The coral forms a jagged, impassable barrier, its sharp arms jabbing upward like skeletal fingers.  Some of the larger branches are cracked to reveal their hollow interiors.  Amid the dead reef are pools of mineral-rich water that shimmer in wild hues, their still surfaces reflecting the skies above."
+  ],
+  "paths": [
+    "Obvious paths: north, northeast, south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35684": "north",
+    "35686": "northeast",
+    "35682": "south",
+    "35683": "west"
+  },
+  "timeto": {
+    "35684": 0.2,
+    "35686": 0.2,
+    "35682": 0.2,
+    "35683": 0.2
+  },
+  "uid": [
+    7150728
+  ]
+},{
+  "id": 35693,
+  "title": [
+    "[Talon Isle, The Sea's Bargain]"
+  ],
+  "description": [
+    "Winds scream about the peak of the rock talon that gives the island its name, tossing the stubborn grasses crowning the summit's small plateau.  An ornate seaglass altar stands forgotten, its base tangled with flowering vines, and atop it, held aloft by a twist of seaglass, is a clear glass orb that pulses with stormglow.  Ragged veils of swirling mist whirl around the summit, snagging on black crags and tracing patterns over the greenery.  They occlude all but the vaguest view of the island and the sea beyond."
+  ],
+  "paths": [
+    "Obvious paths: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35659": "climb talon"
+  },
+  "dirto": {
+    "35659": "down"
+  },
+  "timeto": {
+    "35659": 0.2
+  },
+  "tags": [
+    "echo of volgust",
+    "altar",
+    "orb"
+  ],
+  "uid": [
+    7150230
+  ]
+},{
+  "id": 35694,
+  "title": [
+    "[Moghreb Jungle, Ruin]"
+  ],
+  "description": [
+    "Irregular blocks of stone in variegated shades of teal compose cyclopean masonry to either side of an entry arch ten times the height of a man.  The ruin's lofty ceiling is far from intact, cracked in some places to reveal swathes of sky and breached in others by towering trees hungrily pursuing the sunlight.  Vines curtain the walls, but do not entirely obscure carvings along their faces depicting magnificent beings.  Many of the etchings are graced with flaking gilt."
+  ],
+  "paths": [
+    "Obvious exits: south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35695": "west",
+    "35698": "south",
+    "35638": "go arch"
+  },
+  "dirto": {
+    "35638": "north"
+  },
+  "timeto": {
+    "35695": 0.2,
+    "35698": 0.2,
+    "35638": 0.2
+  },
+  "tags": [
+    "carvings",
+    "carving"
+  ],
+  "uid": [
+    7150206
+  ]
+},{
+  "id": 35695,
+  "title": [
+    "[Moghreb Jungle, Ruin]"
+  ],
+  "description": [
+    "An ugly, jagged crack defaces carvings along the northwestern wall depicting a parade of chickens led by a crowned cockatrice.  The fanciful etchwork, still graced with some surviving gilt, is lost to either side beneath dense curtains of vines with ghostly blue blossoms.  Chasms where the stone floor has collapsed in upon the edifice's ancient foundations are home to clear pools where jewel-toned frogs no smaller than a fingertip swim and leap."
+  ],
+  "paths": [
+    "Obvious exits: east, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35696": "southwest",
+    "35694": "east",
+    "35633": "go crack"
+  },
+  "dirto": {
+    "35633": "northwest"
+  },
+  "timeto": {
+    "35696": 0.2,
+    "35694": 0.2,
+    "35633": 0.2
+  },
+  "uid": [
+    7150207
+  ]
+},{
+  "id": 35696,
+  "title": [
+    "[Moghreb Jungle, Ruin]"
+  ],
+  "description": [
+    "A circular stone fountain stands at a bend in the corridor, choked with a profusion of orchids in every shade between snow white and lilac.  The underside of the bowl is elaborately etched with interlocking patterns.  Ferns flourish at its base, thriving in sunlight streaming down from a crack in the high ceiling, and insects hidden within their fronds hum in the sultry air."
+  ],
+  "paths": [
+    "Obvious exits: northeast, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35697": "southeast",
+    "35695": "northeast"
+  },
+  "timeto": {
+    "35697": 0.2,
+    "35695": 0.2
+  },
+  "uid": [
+    7150208
+  ]
+},{
+  "id": 35697,
+  "title": [
+    "[Moghreb Jungle, Ruin]"
+  ],
+  "description": [
+    "Creeping vines cascade down the walls, their thorny coils as threatening as their vibrant white blossoms are lovely.  They twist about the base of a crumbling statue of ivory that has been stained the color of dark honey by the passage of years.  Along the walls, decorative carvings are worn almost smooth by the elements and ages, colored by only teasing hints of the pigments that once illuminated them."
+  ],
+  "paths": [
+    "Obvious exits: northeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35698": "northeast",
+    "35696": "northwest",
+    "35631": "go vines"
+  },
+  "dirto": {
+    "35631": "west"
+  },
+  "timeto": {
+    "35698": 0.2,
+    "35696": 0.2,
+    "35631": 0.2
+  },
+  "uid": [
+    7150209
+  ]
+},{
+  "id": 35698,
+  "title": [
+    "[Moghreb Jungle, Ruin]"
+  ],
+  "description": [
+    "Haloed by sunlight streaming in through the ruined ceiling, a half-circle of immense chairs stands atop a dais choked in thick vines.  Each of the huge stone seats stands far taller than a man, though that has little deterred the epiphytes that have found purchase in the dark stone's cracks and crags.  Above the dais, gilt highlights the outline of a faded carving taking the form of a two-headed boar with a magnificent mane."
+  ],
+  "paths": [
+    "Obvious exits: north, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35694": "north",
+    "35697": "southwest"
+  },
+  "timeto": {
+    "35694": 0.2,
+    "35697": 0.2
+  },
+  "uid": [
+    7150210
+  ]
+},{
+  "id": 35699,
+  "title": [
+    "[Singing Crags, Rocky Ascent]"
+  ],
+  "description": [
+    "Jagged rocks descend sharply toward a green path a staggering drop below, their surfaces etched into strange patterns by wind and driving rain.  Sparse vegetation struggles between cracks, manifesting as spiky grasses sprouting from a shallow crevice or hardy shrubs along the cliff's edge.  The roots of the latter protrude defiantly from the rock face, gripping tenuously to stony hollows.  Soft breezes whisper through narrow fissures in the rock, filling the air with strange, moaning music."
+  ],
+  "paths": [
+    "Obvious paths: north, east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35700": "north",
+    "35716": "east",
+    "35637": "climb rocks"
+  },
+  "dirto": {
+    "35637": "down"
+  },
+  "timeto": {
+    "35700": 0.2,
+    "35716": 0.2,
+    "35637": 0.2
+  },
+  "uid": [
+    7150301
+  ]
+},{
+  "id": 35700,
+  "title": [
+    "[Singing Crags, Southern Ridge]"
+  ],
+  "description": [
+    "A stand of massive trumpet trees flourishes, immensely tall and old, sheltered by the embrace of a towering ridge line that shades the area along its perimeter to the south and west.  Flowers, from canary yellow to flamingo pink in color, bloom brazenly amid the foliage, making the colossal trees look like puffs of vibrantly dyed cotton puffs.  A few boards are haphazardly nailed into the trunk of one tree to serve as handholds, and droplets of dried golden sap trail down the bole from the punctures."
+  ],
+  "paths": [
+    "Obvious paths: northeast, south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35701": "west",
+    "35699": "south",
+    "35722": "go tree",
+    "35717": "northeast"
+  },
+  "dirto": {
+    "35722": "southwest"
+  },
+  "timeto": {
+    "35701": 0.2,
+    "35699": 0.2,
+    "35722": 0.2,
+    "35717": 0.2
+  },
+  "uid": [
+    7150306
+  ]
+},{
+  "id": 35701,
+  "title": [
+    "[Singing Crags, Shale Slope]"
+  ],
+  "description": [
+    "Jagged shale tilts precipitously toward a sheer drop to the northwest, the ground's surface scored and scratched by great claw marks.  Fetid water seeps through hairline cracks in the black rock ridge to the south, pooling in shallow hollows slick with algae.  Above, scattered palms sway, their bark festooned with crude bone fetishes and smeared with white splotches."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35702": "northwest",
+    "35700": "east"
+  },
+  "timeto": {
+    "35702": 0.2,
+    "35700": 0.2
+  },
+  "uid": [
+    7150310
+  ]
+},{
+  "id": 35702,
+  "title": [
+    "[Singing Crags, Crude Bridge]"
+  ],
+  "description": [
+    "Thick vines have been braided to support a swinging bridge of scavenged driftwood planks that spans the gap between two flat-topped crags.  Every gust sets the bridge to swaying and makes its timbers creak in protest.  To either side of the unwieldy span is a plummet down onto knife-edged rocks strewn with old bones."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35703": "northeast",
+    "35701": "southeast"
+  },
+  "timeto": {
+    "35703": 0.2,
+    "35701": 0.2
+  },
+  "uid": [
+    7150311
+  ]
+},{
+  "id": 35703,
+  "title": [
+    "[Singing Crags, Fetid Nest]"
+  ],
+  "description": [
+    "The wide trunk of a tree split by lightning serves as the stinking foundation for a thatch nest lined with tattered hides and dried banana leaves.  Dark soot stains the scarred wood, mingling with amber rivulets of sap.  The pungent aroma of rot rises from the belly of the nest, where dull egg fragments mingle with broken carcasses, some of small rodents and birds, but others of larger and more dangerous game."
+  ],
+  "paths": [
+    "Obvious paths: southeast, southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35704": "northwest",
+    "35702": "southwest",
+    "35724": "southeast"
+  },
+  "timeto": {
+    "35704": 0.2,
+    "35702": 0.2,
+    "35724": 0.2
+  },
+  "tags": [
+    "nest"
+  ],
+  "uid": [
+    7150312
+  ]
+},{
+  "id": 35704,
+  "title": [
+    "[Singing Crags, Fallen Hut]"
+  ],
+  "description": [
+    "What remains of a crude wooden hut lies slumped against a jagged boulder, splintered beams and shredded reed thatch scattered haphazardly across the ground.  A fetid puddle of rancid liquid oozes from within the wreckage, where splintered planks and scattered straw mats are slick with decaying fruit that smells strongly of sour fermentation.  The crudely made structure appears to have fallen from the branches of a great tree shading the area."
+  ],
+  "paths": [
+    "Obvious paths: north, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35705": "north",
+    "35706": "go tree",
+    "35703": "southeast"
+  },
+  "dirto": {
+    "35706": "southwest"
+  },
+  "timeto": {
+    "35705": 0.2,
+    "35706": 0.2,
+    "35703": 0.2
+  },
+  "uid": [
+    7150314
+  ]
+},{
+  "id": 35705,
+  "title": [
+    "[Singing Crags, Cliff Carving]"
+  ],
+  "description": [
+    "At the base of an escarpment, a colossal carving of a harpy dominates the rock face, wings stretched wide in jagged relief.  Weathered grooves mark each feather and define sharp stone talons.  Crude swaths of ochre, soot, and rancid fat streak the figure's hollow eyes, lending them a gleam whenever firelight flares from sputtering flames roaring from stone braziers.  Wind blows through chiseled crevices in mournful chords that shiver across the crags."
+  ],
+  "paths": [
+    "Obvious paths: south"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35704": "south"
+  },
+  "timeto": {
+    "35704": 0.2
+  },
+  "uid": [
+    7150315
+  ]
+},{
+  "id": 35706,
+  "title": [
+    "[Singing Crags, Giant Cacao]"
+  ],
+  "description": [
+    "A singularly gigantic cacao tree looms over the crags.  Though far taller and broader than one ought to grow, the bright yellow and orange pods cradled near its trunk are unmistakable.  Drooping white flowers erupt in protrusion from its outer branches, which spread wide as if to embrace the moist air.  Frayed ropes and broken planks suggest that a hut once occupied the branches, but was betrayed by an expanse of weak and spongy wood along the trunk that has been undermined by a livid scarlet fungus."
+  ],
+  "paths": [
+    "Obvious paths: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35707": "east",
+    "35704": "go tree"
+  },
+  "dirto": {
+    "35704": "northeast"
+  },
+  "timeto": {
+    "35707": 0.2,
+    "35704": 0.2
+  },
+  "uid": [
+    7150322
+  ]
+},{
+  "id": 35707,
+  "title": [
+    "[Singing Crags, Watchpost]"
+  ],
+  "description": [
+    "Balanced precariously atop the branches of a towering manna gum tree, a small lookout built from rough branches surveys the rocky landscape below.  Faded symbols scratched crudely into the wood are smeared with the sticky juices of a strangler fig, staining them an unsightly reddish brown.  Winds whisper through the branches of the old tree, making the watch post sway and dance like a drunken sailor."
+  ],
+  "paths": [
+    "Obvious paths: southeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35708": "southeast",
+    "35706": "west"
+  },
+  "timeto": {
+    "35708": 0.2,
+    "35706": 0.2
+  },
+  "uid": [
+    7150321
+  ]
+},{
+  "id": 35708,
+  "title": [
+    "[Singing Crags, Feasting Terrace]"
+  ],
+  "description": [
+    "A broad terrace of crudely hewn planks clinging to the bole of a great kapok appears to be a communal feasting spot, judging from the splintered bones and scraps of dried meat littering the wood.  Unclean pottery is scattered across salt-stained rugs that look to have been the provenance of a long-ago shipwreck.  Dense foliage hangs low over the space, muffling sounds from below and casting the surroundings into deep shadow."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southwest, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35709": "northeast",
+    "35707": "northwest",
+    "35720": "southwest"
+  },
+  "timeto": {
+    "35709": 0.2,
+    "35707": 0.2,
+    "35720": 0.2
+  },
+  "uid": [
+    7150320
+  ]
+},{
+  "id": 35709,
+  "title": [
+    "[Singing Crags, Strangler Fig]"
+  ],
+  "description": [
+    "Platforms of rough-hewn meranti planks, held together by lengths of vine and animal sinew, encircle the huge, gnarled bole of the strangler fig tree.  Bridges sprout toward other trees, primitive in construction and questionably safe due to missing planks and fraying supports.  Fallen fruit spatters the planks with sticky patches that swarm with ants, the industrious creatures attracted by the too-sweet scent of the decaying figs."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35710": "northeast",
+    "35708": "southwest",
+    "35717": "go tree"
+  },
+  "dirto": {
+    "35717": "southeast"
+  },
+  "timeto": {
+    "35710": 0.2,
+    "35708": 0.2,
+    "35717": 0.2
+  },
+  "uid": [
+    7150319
+  ]
+},{
+  "id": 35710,
+  "title": [
+    "[Singing Crags, Hanging Hut]"
+  ],
+  "description": [
+    "A small hut hangs precariously amid the branches of an ancient manna gum tree, its walls woven from branches and strips of dried sinew and sealed with dried sap.  The air around it is thick with the tang of bird droppings and the effervescent bite of the tree's leaves and resin.  Worn wooden charms dangle from the branches above, clattering faintly against one another in the humid air."
+  ],
+  "paths": [
+    "Obvious paths: southeast, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35711": "southeast",
+    "35709": "southwest",
+    "35723": "go hut"
+  },
+  "dirto": {
+    "35723": "east"
+  },
+  "timeto": {
+    "35711": 0.2,
+    "35709": 0.2,
+    "35723": 0.2
+  },
+  "uid": [
+    7150318
+  ]
+},{
+  "id": 35711,
+  "title": [
+    "[Singing Crags, Tattered Bridge]"
+  ],
+  "description": [
+    "A swaying bridge of fragile planks and frayed rope stretches between towering trees rooted in the crags below.  Every breeze awakens creaks and groans from its length, chased by malevolent whispers from the disturbed leaves of the canopy overhead.  Dangling fetishes crafted from bone shards and leather strips clatter softly, as if in anticipation."
+  ],
+  "paths": [
+    "Obvious paths: northeast, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35712": "northeast",
+    "35710": "northwest"
+  },
+  "timeto": {
+    "35712": 0.2,
+    "35710": 0.2
+  },
+  "uid": [
+    7150317
+  ]
+},{
+  "id": 35712,
+  "title": [
+    "[Singing Crags, Kapok Tree]"
+  ],
+  "description": [
+    "A massive kapok sprawls atop rugged hills, some of its sprawling limbs bound with coarse vines to form treacherous platforms.  Near its apex, scratched runes and old blood mar the tree's bole.  Decaying nests of jungle twigs and leaves and dried mud cling precariously to the branches.  They emit a sour odor of spoiled meat.  Occasional feathers spiral lazily downward from the crude nests, caught in swirling currents of befouled air."
+  ],
+  "paths": [
+    "Obvious paths: southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35713": "go tree",
+    "35711": "southwest"
+  },
+  "dirto": {
+    "35713": "south"
+  },
+  "timeto": {
+    "35713": 0.2,
+    "35711": 0.2
+  },
+  "uid": [
+    7150316
+  ]
+},{
+  "id": 35713,
+  "title": [
+    "[Singing Crags, Grove]"
+  ],
+  "description": [
+    "Tall trees shade the rugged stone of the hills, sheltered enough from the stunting wind by higher hills to have grown to staggering heights.  One kapok tree scrapes the sky, faces carved into its lower trunks cast in shadow by its immense branches, which are strung with primitive ornaments made from bone, feather, and twine.  High overhead, crude platforms and thatch-roofed dwellings peek from within the foliage, nearly hidden by the dense greenery."
+  ],
+  "paths": [
+    "Obvious paths: southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35714": "southwest"
+  },
+  "timeto": {
+    "35714": 0.2
+  },
+  "uid": [
+    7150305
+  ]
+},{
+  "id": 35714,
+  "title": [
+    "[Singing Crags, Village]"
+  ],
+  "description": [
+    "Crude perches strung together from harvested branches, hides, and unevenly woven thatch perch precariously atop rocky outcroppings.  They are slapped together haphazardly, gaps patched with clumsy splotches of dried mud and clay that are only vaguely distinguishable from the droppings covering the wood like spent candle wax.  Wind shakes the uneven structures, causing hanging bone charms and feather decorations to sway like drunken sailors on a pitching deck."
+  ],
+  "paths": [
+    "Obvious paths: northeast, south, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35715": "south",
+    "35713": "northeast",
+    "35717": "west"
+  },
+  "timeto": {
+    "35715": 0.2,
+    "35713": 0.2,
+    "35717": 0.2
+  },
+  "uid": [
+    7150304
+  ]
+},{
+  "id": 35715,
+  "title": [
+    "[Singing Crags, Gorge]"
+  ],
+  "description": [
+    "Sheer stone walls of rock as black as dried blood rise to either side of the gorge, their weathered surfaces streaked with stark veins of turquoise stone around a tall, narrow cave mouth.  Sparse clusters of grass cling with determination to crevices around the opening.  The floor of the valley is littered with bits of old bone, made brittle and yellow by long exposure to the elements.  Breezes sing through the passage, soliciting resonant harmonies from hollows in the rock as they gust past."
+  ],
+  "paths": [
+    "Obvious paths: north, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35716": "southwest",
+    "35714": "north",
+    "35725": "go mouth"
+  },
+  "dirto": {
+    "35725": "south"
+  },
+  "timeto": {
+    "35716": 0.2,
+    "35714": 0.2,
+    "35725": 0.2
+  },
+  "uid": [
+    7150303
+  ]
+},{
+  "id": 35716,
+  "title": [
+    "[Singing Crags, Gorge]"
+  ],
+  "description": [
+    "Crude fetishes fashioned from bone, feather, and woven vine dangle precariously from twisted branches lining the rocky trail as it descends toward a rocky gorge.  Their unsettling shapes cast faint, swaying shadows that dance silently over the stones of the path.  Natural arches of rock, worn smooth by the moaning winds, stretch overhead like the ribs of a fallen gargantuan.  Aside from the scraggly trees, only hardy grasses and tenacious mosses find purchase along the walls of the valley."
+  ],
+  "paths": [
+    "Obvious paths: northeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35699": "west",
+    "35715": "northeast"
+  },
+  "timeto": {
+    "35699": 0.2,
+    "35715": 0.2
+  },
+  "uid": [
+    7150302
+  ]
+},{
+  "id": 35717,
+  "title": [
+    "[Singing Crags, Stone Circle]"
+  ],
+  "description": [
+    "Massive teal and turquoise stones stand in a solemn circle, their surfaces scratched with crude, faded symbols.  Offerings of bone, feather, copper, and coin are heaped at the center of the ring, which is shaded by the spreading branches of a huge strangler fig tree.  Moss flourishes in the giant's shadow, covering the stony ground in vibrant patches of green that contrast starkly with the grey and brown of the surrounding earth.  The strange music of the crags seems a mournful dirge."
+  ],
+  "paths": [
+    "Obvious paths: north, east, southwest, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35718": "north",
+    "35709": "go tree",
+    "35724": "west",
+    "35714": "east",
+    "35700": "southwest"
+  },
+  "timeto": {
+    "35718": 0.2,
+    "35709": 0.2,
+    "35724": 0.2,
+    "35714": 0.2,
+    "35700": 0.2
+  },
+  "uid": [
+    7150307
+  ]
+},{
+  "id": 35718,
+  "title": [
+    "[Singing Crags, Path of Chimes]"
+  ],
+  "description": [
+    "Along a narrow corridor shaded by high trees, lengths of bone, seaglass, and metal scraps, dangle from lengths of braided twine.  They fill the air with jangled music every time the wailing winds blow, rattling together in an oddly discordant song.  Huts peek down from the branches above, walls of bundled branches sealed with dried mud.  Doors of poorly tanned hide stretch across openings, flapping with each whisper of wind."
+  ],
+  "paths": [
+    "Obvious paths: south, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35719": "northwest",
+    "35717": "south"
+  },
+  "timeto": {
+    "35719": 0.2,
+    "35717": 0.2
+  },
+  "uid": [
+    7150308
+  ]
+},{
+  "id": 35719,
+  "title": [
+    "[Singing Crags, Totems]"
+  ],
+  "description": [
+    "Six crooked poles pierce the rocky ground in a rough semicircle, their tops carved into hideous faces with rough wooden beaks and etched feathers.  They glare down on a spent fire pit surrounded by a ring of soot and ash.  Blackened chips of bone lurk within the spent fuel of the bonfire."
+  ],
+  "paths": [
+    "Obvious paths: southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35718": "southeast"
+  },
+  "timeto": {
+    "35718": 0.2
+  },
+  "tags": [
+    "totems"
+  ],
+  "uid": [
+    7150309
+  ]
+},{
+  "id": 35720,
+  "title": [
+    "[Singing Crags, Hut]"
+  ],
+  "description": [
+    "A sheltered alcove nestled within the branches of a blossoming meranti houses a hut secured to the tree's trunk by old ship timbers.  From its hide-covered windows beckons a strange perfume that is a not-unpleasant mixture of dried herbs and the musk of burning incense.  Tiny runes are scratched into strips of pounded bark parchment hanging from the eaves, though a few have fallen and litter the platform before it amid white-petaled meranti blossoms."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35721": "go hut",
+    "35722": "southeast",
+    "35708": "northeast"
+  },
+  "dirto": {
+    "35721": "south"
+  },
+  "timeto": {
+    "35721": 0.2,
+    "35722": 0.2,
+    "35708": 0.2
+  },
+  "uid": [
+    7150323
+  ]
+},{
+  "id": 35721,
+  "title": [
+    "[Singing Crags, Hut]"
+  ],
+  "description": [
+    "Constructed from interwoven branches and dried vines, the hut smells strongly of dried herbs and musky incense.  Bundles of roots and plants hang from carved wooden hooks anchored to the thatched roof, and crude shelves support clay vessels and wooden bowls containing aromatic pastes and tinctures.  The floor, strewn with dried leaf litter, is gritty with spilled powders and tacky with tracked-in sap that has captured a number of glinting feathers."
+  ],
+  "paths": [
+    "Obvious exits: out"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35720": "out"
+  },
+  "dirto": {
+    "35721": "north"
+  },
+  "timeto": {
+    "35720": 0.2
+  },
+  "tags": [
+    "hut"
+  ],
+  "uid": [
+    7150328
+  ]
+},{
+  "id": 35722,
+  "title": [
+    "[Singing Crags, Trumpet Tree]"
+  ],
+  "description": [
+    "Cascading blossoms in all of the hues of the sky at sunrise, from cheery saffron to sedate ash rose, erupt from the foliage of the trumpet tree.  They litter the platforms suspended from its sturdy branches, turning them into a road of dazzling colors.  Dappled sunlight filters through the leaves above, creating shifting patterns on woven mats and uncured hides scattered across the crude planks of wood."
+  ],
+  "paths": [
+    "Obvious paths: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35700": "go tree",
+    "35720": "northwest"
+  },
+  "dirto": {
+    "35700": "northeast"
+  },
+  "timeto": {
+    "35700": 0.2,
+    "35720": 0.2
+  },
+  "uid": [
+    7150324
+  ]
+},{
+  "id": 35723,
+  "title": [
+    "[Singing Crags, Hut of Bones]"
+  ],
+  "description": [
+    "Dimly lit by flickering ship's lanterns that are more corrosion than metal, the hut's walls are a mishmash of branches from various trees, bound tightly with lengths of dried sinew.  Clusters of herbs bound by catgut dangle from the ceiling, swaying counter to bone talismans amidst the pungent, resinous smoke puffing from the lamps.  Crude clay pots filled with murky liquids and strange powders clutter makeshift shelves that are littered with bones fragments old and new."
+  ],
+  "paths": [
+    "Obvious exits: out"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35710": "out"
+  },
+  "dirto": {
+    "35710": "west"
+  },
+  "timeto": {
+    "35710": 0.2
+  },
+  "tags": [
+    "hut of bones"
+  ],
+  "uid": [
+    7150325
+  ]
+},{
+  "id": 35724,
+  "title": [
+    "[Singing Crags, Firepit]"
+  ],
+  "description": [
+    "A circle of blackened stones encloses a bed of ashen embers, long cold and interspersed with fallen leaves and drying blossoms.  Scorched feathers cling to the rim stones, and a faint, dry tang of smoke still lingers in the air.  The surrounding rock walls are stained black with soot where they are not streaked with browning lichen."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35703": "northwest",
+    "35717": "east"
+  },
+  "timeto": {
+    "35703": 0.2,
+    "35717": 0.2
+  },
+  "tags": [
+    "firepit"
+  ],
+  "uid": [
+    7150313
+  ]
+},{
+  "id": 35725,
+  "title": [
+    "[Singing Crags, Wind Cave]"
+  ],
+  "description": [
+    "Wind moans past the entrance of the cave, filling the narrow corridor with a low, reverberating moan as it descends into darkness.  Where the sun's light cannot reach, phosphorescent fungi flourish along the high stone walls, illuminating the path in eerie blues and unnatural greens.  The living curtains have almost entirely occluded primitive carvings etched crudely into the walls depicting upright beings with widespread wings and bloody appetites."
+  ],
+  "paths": [
+    "Obvious exits: southeast, out"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35726": "southeast",
+    "35715": "out"
+  },
+  "dirto": {
+    "35715": "north"
+  },
+  "timeto": {
+    "35726": 0.2,
+    "35715": 0.2
+  },
+  "tags": [
+    "wind cave",
+    "cave"
+  ],
+  "uid": [
+    7150329
+  ]
+},{
+  "id": 35726,
+  "title": [
+    "[Singing Crags, Altar of Wind]"
+  ],
+  "description": [
+    "A towering idol of crudely carved stone stands with outstretched wings at the cave's end, features scantly lit by the phosphorescent fungi thriving in the moist darkness.  Warm, mineral-heavy water drips from above, trailing down the statue's face like tears.  Beneath its raised dais are heaped bowls of cracked porcelain and tarnished brass of a dozen different makes.  They are filled with ash and incense remnants alongside other offerings of fruit and stolen coin."
+  ],
+  "paths": [
+    "Obvious paths: northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35725": "northwest"
+  },
+  "timeto": {
+    "35725": 0.2
+  },
+  "tags": [
+    "idol",
+    "altar of wind"
+  ],
+  "uid": [
+    7150330
+  ]
+},{
+  "id": 35727,
+  "title": [
+    "[Sailor's Grief, Islet]"
+  ],
+  "description": [
+    "Beneath the shadow of a wrecked hulk with a huge gash along the side of its hold, a small scrap of jagged stone rises defiantly from the waters of the sea.  The jagged rock faces are slick with seafoam where they are not crusted in hardy barnacles with bright silver shells.  Fissures in the stony islet run deep, sheltering colorful, squawking seabirds that flit nervously from nest to sky.  Their streaky droppings are starkly white against the black basalt."
+  ],
+  "paths": [
+    "Obvious paths: northwest, up"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35614": "go gash",
+    "35729": "northwest",
+    "35728": "up"
+  },
+  "dirto": {
+    "35614": "northeast"
+  },
+  "timeto": {
+    "35614": 0.2,
+    "35729": 0.2,
+    "35728": 0.2
+  },
+  "uid": [
+    7150513
+  ]
+},{
+  "id": 35728,
+  "title": [
+    "[Sailor's Grief, Islet]"
+  ],
+  "description": [
+    "A slender spire of stone rises from the flat rock of the islet, its sheer sides pockmarked with crevices that host a chaotic collection of nests.  Drab seabirds circle warily overhead, while smaller terns dart swiftly to and fro, filling the air with a cacophony of cries.  Below, monk seals bob gently amid the surf, occasionally dipping beneath the azure waves that unrelentingly batter the islet's shores."
+  ],
+  "paths": [
+    "Obvious paths: down"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35727": "down"
+  },
+  "timeto": {
+    "35727": 0.2
+  },
+  "uid": [
+    7150516
+  ]
+},{
+  "id": 35729,
+  "title": [
+    "[Sailor's Grief, Islet]"
+  ],
+  "description": [
+    "Smooth, wave-polished stones litter the ground in a broad crescent near the waterline of the rocky islet, serving as bedding for a herd of monk seals.  The pinnipeds laze indolently on the hard ground, basking in the ocean spray and largely ignoring the pounding surf.  Despite the span's desolate appearance, scattered tufts of stubborn grass sprout from cracks in the stone, and algae clings tenaciously to the rock faces."
+  ],
+  "paths": [
+    "Obvious paths: southeast, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35730": "west",
+    "35727": "southeast"
+  },
+  "timeto": {
+    "35730": 0.2,
+    "35727": 0.2
+  },
+  "uid": [
+    7150514
+  ]
+},{
+  "id": 35730,
+  "title": [
+    "[Sailor's Grief, Islet]"
+  ],
+  "description": [
+    "A badly listing cog has been hurled against the stony islet by the fury of the waves, its taffrail reduced to splintered timbers that allow access to the main deck.  Monk seals have claimed the shadows of the hulk as their own, and their sleek forms sprawl lazily in the shadows.  Broken shells and fragments of coral litter the rock, washed up by aggressive tides.  Not far off the rocky expanse, the silhouette of a mast breaches through the lightless waters, hinting at another shipwreck below the waves."
+  ],
+  "paths": [
+    "Obvious paths: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35731": "go timbers",
+    "35729": "east"
+  },
+  "dirto": {
+    "35731": "south"
+  },
+  "timeto": {
+    "35731": 0.2,
+    "35729": 0.2
+  },
+  "uid": [
+    7150515
+  ]
+},{
+  "id": 35731,
+  "title": [
+    "[The Kyusharu, Aft]"
+  ],
+  "description": [
+    "Weather-beaten oak planks tilt sharply toward a yawning gap where the merchant cog's shattered taffrail once stood.  Splintered timbers jut outward like broken ribs, offering a perilous climb down to the jagged islet below.  Slick tangles of sargassum drape rotting steps descending toward the scant space of the main deck, their sickly green dark against the sun-bleached wood.  Each rising swell rocks the ship and sends sprays of stinging brine cascading down over its beaten form."
+  ],
+  "paths": [
+    "Obvious paths: west, down"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35730": "go timbers",
+    "35732": "west",
+    "35745": "down"
+  },
+  "dirto": {
+    "35730": "north"
+  },
+  "timeto": {
+    "35730": 0.2,
+    "35732": 0.2,
+    "35745": 0.2
+  },
+  "uid": [
+    7150517
+  ]
+},{
+  "id": 35732,
+  "title": [
+    "[The Kyusharu, Upper Deck]"
+  ],
+  "description": [
+    "Planks of sun-blanched oak stretch beneath tangled rigging, their grain slick with sea spray and multicolored mosses.  Tendrils of kelp snake between rusted portholes not far below the gunnels, shards of glass from their shattered windows littering the rocks of the islet below.  A fallen lantern lies atop a pile of waterlogged planks, its oil reduced to a stain on the deck and a ghost of sweetness on the salt air."
+  ],
+  "paths": [
+    "Obvious paths: east, west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35733": "west",
+    "35731": "east"
+  },
+  "timeto": {
+    "35733": 0.2,
+    "35731": 0.2
+  },
+  "uid": [
+    7150521
+  ]
+},{
+  "id": 35733,
+  "title": [
+    "[The Kyusharu, Upper Deck]"
+  ],
+  "description": [
+    "Cracked wooden barrels lean against the wrecked railing of the gunnel, their spouts rusted over.  They release a sour scent of wine that has run to vinegar and worse, and the warped deck planking around them is stained a striking burgundy.  Overhead, tattered sails rumble in the breeze, accompanied by the creaky commentary of lines that have begun to fray amid the battering of the elements."
+  ],
+  "paths": [
+    "Obvious paths: east, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35734": "southwest",
+    "35732": "east"
+  },
+  "timeto": {
+    "35734": 0.2,
+    "35732": 0.2
+  },
+  "uid": [
+    7150522
+  ]
+},{
+  "id": 35734,
+  "title": [
+    "[The Kyusharu, Bow]"
+  ],
+  "description": [
+    "Despite the decided cant of the deck, the merchant ship's figurehead stands undamaged.  Carved from surpassingly pale wood with a fine, silky grain, it takes the form of a rearing ki-lin with hooves outstretched.  The proud beast's mane is sheened with salt crystals and its snout is wet with spray.  Carved eyes stare out over the bounding main, serene as if undisturbed by the surrounding wreckage."
+  ],
+  "paths": [
+    "Obvious paths: northeast, southeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35735": "southeast",
+    "35733": "northeast"
+  },
+  "timeto": {
+    "35735": 0.2,
+    "35733": 0.2
+  },
+  "uid": [
+    7150523
+  ]
+},{
+  "id": 35735,
+  "title": [
+    "[The Kyusharu, Upper Deck]"
+  ],
+  "description": [
+    "Swollen with long exposure to the brine, the deck planks seem to crowd in on one another, leaving gaps where their edges have curled up.  Even they have been spared the worst of the sea's wrath when compared to the main deck below, which is trapped beneath the restless tides.  The main mast of the vessel has fallen, but its shrouds still whip in the ocean breeze, riddled here and there with jagged slashes."
+  ],
+  "paths": [
+    "Obvious paths: east, northwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35736": "east",
+    "35734": "northwest"
+  },
+  "timeto": {
+    "35736": 0.2,
+    "35734": 0.2
+  },
+  "uid": [
+    7150524
+  ]
+},{
+  "id": 35736,
+  "title": [
+    "[The Kyusharu, Upper Deck]"
+  ],
+  "description": [
+    "The shattered mast lies like a broken spine across bowed deck planks, its rotting length draped in wavering kelp flung there by the angry tide.  Snapped at the middle as if by some gigantic, vengeful hand, the mast intrudes onto the deck of a wrecked warship with rusted-over cannons that proved a poor defense against such an unexpected invader.  Each relentless wave is accompanied by groans of surrendering wood from the two hulks."
+  ],
+  "paths": [
+    "Obvious paths: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35737": "go mast",
+    "35735": "west"
+  },
+  "dirto": {
+    "35737": "southeast"
+  },
+  "timeto": {
+    "35737": 0.2,
+    "35735": 0.2
+  },
+  "uid": [
+    7150525
+  ]
+},{
+  "id": 35737,
+  "title": [
+    "[The Tonbury, Main Deck]"
+  ],
+  "description": [
+    "Planks of cypress stained the color of coal are gritty with black sediment that spills from barrels near the ship's rusting cannons.  Frayed sailcloth, bleached ghostly white by long years in the sun, hangs raggedly from the masts, casting ghostly shadows over the useless weaponry.  Undeterred by the corroded cannons, another wreck, that of a fat-bellied merchant cog, grinds uncomfortably close to the hull and is joined to the warship by its own broken main mast."
+  ],
+  "paths": [
+    "Obvious paths: south"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35738": "south",
+    "35736": "go mast"
+  },
+  "dirto": {
+    "35736": "northwest"
+  },
+  "timeto": {
+    "35738": 0.2,
+    "35736": 0.2
+  },
+  "uid": [
+    7150526
+  ]
+},{
+  "id": 35738,
+  "title": [
+    "[The Tonbury, Main Deck]"
+  ],
+  "description": [
+    "Planks of ebon-hued cypress are silty with the clumpy powder leaking from toppled barrels along the deck.  Fragments of netting, bleached to charcoal grey, dangle from corroded stays, flicking against masts crusty with salt deposits.  A skeleton leaned up against the base of one mast still clutches a rusted iron cup between bony hands as if about to drink, and the metal and bone rattle together unsettlingly in the breeze.  The dead sailor's eye sockets balefully watch the hold's dark entrance."
+  ],
+  "paths": [
+    "Obvious paths: north, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35739": "southwest",
+    "35737": "north",
+    "35740": "go entrance"
+  },
+  "dirto": {
+    "35740": "south"
+  },
+  "timeto": {
+    "35739": 0.2,
+    "35737": 0.2,
+    "35740": 0.2
+  },
+  "uid": [
+    7150527
+  ]
+},{
+  "id": 35739,
+  "title": [
+    "[The Tonbury, Bow]"
+  ],
+  "description": [
+    "A black-planked forecastle slopes toward the broken bowsprit of the ship, the timbers of which sag beneath the weight of their own decay.  Black, damp rigging trails across the deck like tangles of dead worms, fallen from bollards that are little more than rusted stumps.  The warship's peculiar figurehead peeks just over the rail, bald head turned to watch oncoming waves."
+  ],
+  "paths": [
+    "Obvious paths: northeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35738": "northeast"
+  },
+  "timeto": {
+    "35738": 0.2
+  },
+  "uid": [
+    7150528
+  ]
+},{
+  "id": 35740,
+  "title": [
+    "[The Tonbury, Cargo Hold]"
+  ],
+  "description": [
+    "Moldy crates glisten with a thick veneer of briny grime, any clues to their origins lost to time's ravages.  Waterlogged barrels drift, half-submerged, through deep waters that rise and fall with the pounding of the surf outside.  Overhead, slouching beams drip befouled water, dangling the rusted remnants of lantern chains that once lit mildewed steps leading out of the hold.  There is a stale smell to the dark, dank air."
+  ],
+  "paths": [
+    "Obvious exits: southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35741": "southwest",
+    "35738": "go steps"
+  },
+  "dirto": {
+    "35738": "north"
+  },
+  "timeto": {
+    "35741": 0.2,
+    "35738": 0.2
+  },
+  "uid": [
+    7150529
+  ]
+},{
+  "id": 35741,
+  "title": [
+    "[The Tonbury, Belowdecks]"
+  ],
+  "description": [
+    "The pitch sealing the hull of the ship has dried and cracked, allowing in a constant trickle of seawater to join the murky flood already drowning the corridors belowdecks.  Tattered hammocks float on the surface, still attached to corroded hooks, their coarse canvas tattered and nibbled by fish.  Waves pound the outer hull, making the vessel shiver as if with fright.  The air tastes of brine, mildew, and a ghost of old tar."
+  ],
+  "paths": [
+    "Obvious exits: northeast, southwest"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35742": "southwest",
+    "35740": "northeast"
+  },
+  "timeto": {
+    "35742": 0.2,
+    "35740": 0.2
+  },
+  "uid": [
+    7150530
+  ]
+},{
+  "id": 35742,
+  "title": [
+    "[The Tonbury, Belowdecks]"
+  ],
+  "description": [
+    "Mold-covered beams of warped oak sag over a narrow corridor made moreso by stacked crates half-submerged in murky seawater.  A few barrels have mostly rotted away, leaving behind rusted iron hoops resembling grate corroded bracelets.  Rimmed with jagged barnacles, a black steel hatch stands open, nearly torn from its tortured hinges."
+  ],
+  "paths": [
+    "Obvious exits: northeast"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35743": "go hatch",
+    "35741": "northeast"
+  },
+  "dirto": {
+    "35743": "east"
+  },
+  "timeto": {
+    "35743": 0.2,
+    "35741": 0.2
+  },
+  "uid": [
+    7150531
+  ]
+},{
+  "id": 35743,
+  "title": [
+    "[The Tonbury, Forward Hold]"
+  ],
+  "description": [
+    "A faint rotten egg tang lingers on the heavy air of the hold, which has largely been denuded of its cargo, ill-secured by its entry hatch.  Empty ring bolts gape from waterlogged oak beams where crates and barrels once clustered.  The grooves between drowned planks are lined with barnacles and pale tunicates, while shards of shell and bits of frayed rope drift in shallow pools."
+  ],
+  "paths": [
+    "Obvious exits: east"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35744": "east",
+    "35742": "go hatch"
+  },
+  "dirto": {
+    "35742": "west"
+  },
+  "timeto": {
+    "35744": 0.2,
+    "35742": 0.2
+  },
+  "uid": [
+    7150532
+  ]
+},{
+  "id": 35744,
+  "title": [
+    "[The Tonbury, Powder Keg]"
+  ],
+  "description": [
+    "A narrow recess in the hold is framed by a wrought iron cage that encloses double rows of still-sealed barrels bound by rusted iron hoops.  Fissures in the walls weep trickles of brine, but the skim of water on the warped deck planks is shallow and does not appear to have penetrated the aged tar sealing the containers.  Flecks of black powder cling to the lids, and the acrid tang of sulphur hangs heavy in the mildewy air."
+  ],
+  "paths": [
+    "Obvious exits: west"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35743": "west"
+  },
+  "timeto": {
+    "35743": 0.2
+  },
+  "uid": [
+    7150533
+  ]
+},{
+  "id": 35745,
+  "title": [
+    "[The Kyusharu, Main Deck]"
+  ],
+  "description": [
+    "Fractured oak planks converge at a recess beneath the deteriorating aftercastle, where a heavy hatch hangs askew, its iron hinges corroded and yielding.  Lanterns suspended from chains anchored in the wood have long since burnt out, but they sway on the breeze, creakily protesting the state of the ship.  A silver disc depicting a white falcon made from inlaid pearl is fastened to the wood above the hatchway, but one of its mounting nails has corroded away, leaving it hanging at a sad angle."
+  ],
+  "paths": [
+    "Obvious paths: up"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35746": "go hatch",
+    "35731": "up"
+  },
+  "dirto": {
+    "35746": "west"
+  },
+  "timeto": {
+    "35746": 0.2,
+    "35731": 0.2
+  },
+  "uid": [
+    7150518
+  ]
+},{
+  "id": 35746,
+  "title": [
+    "[The Kyusharu, Stateroom]"
+  ],
+  "description": [
+    "Near its entry hatch, crossbeams strain to support the cabin's fractured overhead, though they are slowly yielding to the weight of the ship's damaged aftercastle above.  Several broken planks have fallen into the clots of muck covering what was once a vibrantly colored carpet.  Battered furnishings and ruined treasures are scattered haphazardly about, one marble bust with a crack down its base staring up from the base of a mosaic arch of pearl and agate tesserae that leads further into the stateroom."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35747": "go arch",
+    "35745": "go hatch"
+  },
+  "dirto": {
+    "35745": "east",
+    "35747": "west"
+  },
+  "timeto": {
+    "35747": 0.2,
+    "35745": 0.2
+  },
+  "uid": [
+    7150519
+  ]
+},{
+  "id": 35747,
+  "title": [
+    "[The Kyusharu, Stateroom]"
+  ],
+  "description": [
+    "A mosaic arch of pearl and agate tesserae, damaged by time and the oppressive dampness, frames the threshold of the stateroom's rear chamber.  Brass sconces hold the spent remains of the last candles that burned within them, but the glass cages that shielded the flames are but broken shards in the muck on the deck.  Damaged ebony chests gash the silted planks of the floor, their fittings corroded to crusted ruin, and the cloth they once held has been reduced to moldy tatters."
+  ],
+  "paths": [
+    "Obvious exits: none"
+  ],
+  "location": "Sailor's Grief",
+  "wayto": {
+    "35746": "go arch"
+  },
+  "dirto": {
+    "35746": "east"
+  },
+  "timeto": {
+    "35746": 0.2
+  },
+  "uid": [
+    7150520
+  ]
+}]
