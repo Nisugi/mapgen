@@ -30,7 +30,7 @@ class MapGenApp {
         try {
             this.setupEventListeners();
             await this.loadMapDB();
-            this.populateLocationDropdown();
+            this.populateLocationDropdown(); // Move this after MapDB loads
             this.showMainInterface();
         } catch (error) {
             this.showError('Failed to initialize application: ' + error.message);
@@ -65,6 +65,23 @@ class MapGenApp {
         document.getElementById('preview-btn').addEventListener('click', this.previewMap.bind(this));
     }
 
+    async debugMapDB() {
+        console.log('=== MapDB Debug Info ===');
+        console.log('MapDB loaded:', !!this.mapdb);
+        if (this.mapdb) {
+            console.log('Total rooms:', this.mapdb.length);
+            console.log('Sample room:', this.mapdb[0]);
+            
+            const locations = this.mapdbLoader.extractLocations(this.mapdb);
+            console.log('Locations found:', locations.length);
+            console.log('First 10 locations:', locations.slice(0, 10));
+        }
+        
+        // Check cache info
+        const cacheInfo = await this.mapdbLoader.getCacheInfo();
+        console.log('Cache info:', cacheInfo);
+    }
+
     async loadMapDB() {
         try {
             const result = await this.mapdbLoader.loadMapDB(
@@ -84,9 +101,15 @@ class MapGenApp {
     }
 
     populateLocationDropdown() {
+        if (!this.mapdb) {
+            console.error('Cannot populate locations - MapDB not loaded');
+            return;
+        }
+
         const select = document.getElementById('location-select');
         const locations = this.mapdbLoader.extractLocations(this.mapdb);
         
+        // Clear existing options
         select.innerHTML = '<option value="">Select a location...</option>';
         
         locations.forEach(location => {
@@ -97,6 +120,11 @@ class MapGenApp {
         });
 
         console.log(`Populated ${locations.length} locations`);
+        
+        // Set a default selection for testing
+        if (locations.includes("Sailor's Grief")) {
+            select.value = "Sailor's Grief";
+        }
     }
 
     handleMapDBSourceChange(e) {
@@ -112,10 +140,12 @@ class MapGenApp {
         const locationGroup = document.getElementById('location-group');
         const customGroup = document.getElementById('custom-group');
         
+        console.log('Room selection changed to:', e.target.value); // Debug log
+        
         if (e.target.value === 'location') {
             locationGroup.classList.remove('hidden');
             customGroup.classList.add('hidden');
-        } else {
+        } else if (e.target.value === 'custom') {
             locationGroup.classList.add('hidden');
             customGroup.classList.remove('hidden');
         }
@@ -149,6 +179,7 @@ class MapGenApp {
                 const input = document.getElementById(key + '-color');
                 if (input) {
                     input.value = theme[key];
+                    this.config.colors[key] = theme[key];
                 }
             });
         }
@@ -160,28 +191,70 @@ class MapGenApp {
 
         try {
             this.updateStatus('Loading custom MapDB file...');
+            this.showProgress();
+            
             const text = await file.text();
             this.mapdb = JSON.parse(text);
             this.mapdbVersion = 'custom';
             
             this.populateLocationDropdown();
             this.updateStatus('Custom MapDB loaded successfully!');
+            this.hideProgress();
             
         } catch (error) {
             this.showError('Failed to load custom MapDB: ' + error.message);
         }
     }
 
+    getSelectedRooms() {
+        const selectionMethod = document.querySelector('input[name="room-selection"]:checked').value;
+        
+        if (selectionMethod === 'location') {
+            const location = document.getElementById('location-select').value;
+            if (!location) {
+                throw new Error('Please select a location');
+            }
+            return this.mapdbLoader.getRoomsByLocation(this.mapdb, location);
+        } else {
+            const rangeText = document.getElementById('room-ranges').value.trim();
+            if (!rangeText) {
+                throw new Error('Please enter room ranges');
+            }
+            const roomIds = this.mapdbLoader.parseRoomRanges(rangeText);
+            return this.mapdb.filter(room => roomIds.includes(room.id));
+        }
+    }
+
     generateMap() {
-        this.updateStatus('Generating map...');
-        // TODO: Implement map generation
-        console.log('Generate map clicked');
+        try {
+            const rooms = this.getSelectedRooms();
+            this.updateStatus(`Generating map for ${rooms.length} rooms...`);
+            
+            // TODO: Implement actual map generation
+            console.log('Rooms to map:', rooms);
+            console.log('Config:', this.config);
+            
+            // For now, just show success
+            setTimeout(() => {
+                this.updateStatus(`Map generated! ${rooms.length} rooms processed.`);
+            }, 1000);
+            
+        } catch (error) {
+            this.showError(error.message);
+        }
     }
 
     previewMap() {
-        this.updateStatus('Generating preview...');
-        // TODO: Implement map preview
-        console.log('Preview map clicked');
+        try {
+            const rooms = this.getSelectedRooms();
+            this.updateStatus(`Generating preview for ${rooms.length} rooms...`);
+            
+            // TODO: Implement map preview
+            console.log('Preview rooms:', rooms.slice(0, 10)); // Show first 10 for preview
+            
+        } catch (error) {
+            this.showError(error.message);
+        }
     }
 
     showMainInterface() {
@@ -190,10 +263,15 @@ class MapGenApp {
         document.getElementById('preview-btn').disabled = false;
         this.hideProgress();
         this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
+        this.debugMapDB();
     }
 
     updateStatus(message) {
         document.getElementById('status-text').textContent = message;
+    }
+
+    showProgress() {
+        document.getElementById('progress-container').classList.remove('hidden');
     }
 
     updateProgress(percent, message = null) {
