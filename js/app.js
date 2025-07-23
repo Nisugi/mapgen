@@ -22,8 +22,7 @@ class MapGenApp {
             options: {
                 showRoomIds: true,
                 showLabels: true,
-                showConnections: true,
-                debugMode: false
+                showConnections: true
             }
         };
     }
@@ -175,7 +174,7 @@ class MapGenApp {
         try {
             this.setupEventListeners();
             await this.loadMapDB();
-            this.populateLocationDropdown(); // Move this after MapDB loads
+            this.populateLocationDropdown();
             this.showMainInterface();
         } catch (error) {
             this.showError('Failed to initialize application: ' + error.message);
@@ -183,33 +182,12 @@ class MapGenApp {
     }
 
     setupEventListeners() {
-        // Existing listeners with null checks
-        document.querySelectorAll('input[name="mapdb-source"]').forEach(radio => {
-            radio.addEventListener('change', this.handleMapDBSourceChange.bind(this));
-        });
-
+        // Room selection listeners
         document.querySelectorAll('input[name="room-selection"]').forEach(radio => {
             radio.addEventListener('change', this.handleRoomSelectionChange.bind(this));
         });
 
-        // Safe element access with null checks
-        const themeSelect = document.getElementById('theme-select');
-        if (themeSelect) {
-            themeSelect.addEventListener('change', this.handleThemeChange.bind(this));
-        }
-
-        const gridSlider = document.getElementById('grid-size');
-        if (gridSlider) {
-            gridSlider.addEventListener('input', (e) => {
-                const valueSpan = document.getElementById('grid-size-value');
-                if (valueSpan) {
-                    valueSpan.textContent = e.target.value + 'px';
-                }
-                this.config.options.gridSize = parseInt(e.target.value);
-            });
-        }
-
-        // New controls (with null checks)
+        // Edge length slider
         const edgeLengthSlider = document.getElementById('edge-length');
         if (edgeLengthSlider) {
             edgeLengthSlider.addEventListener('input', (e) => {
@@ -221,6 +199,7 @@ class MapGenApp {
             });
         }
 
+        // Room size slider
         const roomSizeSlider = document.getElementById('room-size');
         if (roomSizeSlider) {
             roomSizeSlider.addEventListener('input', (e) => {
@@ -232,6 +211,7 @@ class MapGenApp {
             });
         }
 
+        // Room shape select
         const roomShapeSelect = document.getElementById('room-shape');
         if (roomShapeSelect) {
             roomShapeSelect.addEventListener('change', (e) => {
@@ -239,20 +219,38 @@ class MapGenApp {
             });
         }
 
+        // Color inputs
+        const defaultColorInput = document.getElementById('default-color');
+        if (defaultColorInput) {
+            defaultColorInput.addEventListener('change', (e) => {
+                this.config.colors.default = e.target.value;
+            });
+        }
+
+        const backgroundColorInput = document.getElementById('background-color');
+        if (backgroundColorInput) {
+            backgroundColorInput.addEventListener('change', (e) => {
+                this.config.colors.background = e.target.value;
+            });
+        }
+
+        const connectionColorInput = document.getElementById('connection-color');
+        if (connectionColorInput) {
+            connectionColorInput.addEventListener('change', (e) => {
+                this.config.colors.connections = e.target.value;
+            });
+        }
+
+        // Tag color button
         const addTagButton = document.getElementById('add-tag-color');
         if (addTagButton) {
             addTagButton.addEventListener('click', this.addTagColor.bind(this));
         }
 
+        // Theme preset
         const themePreset = document.getElementById('theme-preset');
         if (themePreset) {
             themePreset.addEventListener('change', this.applyThemePreset.bind(this));
-        }
-
-        // File upload
-        const fileInput = document.getElementById('mapdb-file');
-        if (fileInput) {
-            fileInput.addEventListener('change', this.handleFileUpload.bind(this));
         }
 
         // Generate buttons
@@ -264,19 +262,6 @@ class MapGenApp {
         const previewBtn = document.getElementById('preview-btn');
         if (previewBtn) {
             previewBtn.addEventListener('click', this.previewMap.bind(this));
-        }
-    }
-
-    async debugMapDB() {
-        console.log('=== MapDB Debug Info ===');
-        console.log('MapDB loaded:', !!this.mapdb);
-        if (this.mapdb) {
-            console.log('Total rooms:', this.mapdb.length);
-            console.log('Sample room:', this.mapdb[0]);
-            
-            const locations = this.mapdbLoader.extractLocations(this.mapdb);
-            console.log('Locations found:', locations.length);
-            console.log('First 10 locations:', locations.slice(0, 10));
         }
     }
 
@@ -325,20 +310,11 @@ class MapGenApp {
         }
     }
 
-    handleMapDBSourceChange(e) {
-        const fileInput = document.getElementById('mapdb-file');
-        if (e.target.value === 'file') {
-            fileInput.classList.remove('hidden');
-        } else {
-            fileInput.classList.add('hidden');
-        }
-    }
-
     handleRoomSelectionChange(e) {
         const locationGroup = document.getElementById('location-group');
         const customGroup = document.getElementById('custom-group');
         
-        console.log('Room selection changed to:', e.target.value); // Debug log
+        console.log('Room selection changed to:', e.target.value);
         
         if (e.target.value === 'location') {
             locationGroup.classList.remove('hidden');
@@ -346,61 +322,6 @@ class MapGenApp {
         } else if (e.target.value === 'custom') {
             locationGroup.classList.add('hidden');
             customGroup.classList.remove('hidden');
-        }
-    }
-
-    handleThemeChange(e) {
-        const themes = {
-            maritime: {
-                default: '#ffffff',
-                water: '#8cc6ff',
-                exit: '#ff6b6b',
-                shop: '#90EE90'
-            },
-            dungeon: {
-                default: '#2c2c2c',
-                water: '#1e3a8a',
-                exit: '#dc2626',
-                shop: '#16a34a'
-            },
-            forest: {
-                default: '#f0f8e8',
-                water: '#4a90e2',
-                exit: '#e74c3c',
-                shop: '#27ae60'
-            }
-        };
-
-        const theme = themes[e.target.value];
-        if (theme) {
-            Object.keys(theme).forEach(key => {
-                const input = document.getElementById(key + '-color');
-                if (input) {
-                    input.value = theme[key];
-                    this.config.colors[key] = theme[key];
-                }
-            });
-        }
-    }
-
-    async handleFileUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        try {
-            this.updateStatus('Loading custom MapDB file...');
-            this.showProgress();
-            
-            const text = await file.text();
-            this.mapdb = JSON.parse(text);
-            this.mapdbVersion = 'custom';
-            
-            this.populateLocationDropdown();
-            this.updateStatus('Custom MapDB loaded successfully!');
-            this.hideProgress();
-            
-        } catch (error) {
-            this.showError('Failed to load custom MapDB: ' + error.message);
         }
     }
 
@@ -433,13 +354,15 @@ class MapGenApp {
             
             // Get current config
             const config = {
-                gridSize: parseInt(document.getElementById('grid-size').value),
+                edgeLength: this.config.edgeLength,
+                roomShape: this.config.roomShape,
+                roomSize: this.config.roomSize,
                 colors: {
-                    default: document.getElementById('default-color').value,
-                    water: document.getElementById('water-color').value,
-                    exit: document.getElementById('exit-color').value,
-                    shop: document.getElementById('shop-color').value
+                    default: this.config.colors.default,
+                    background: this.config.colors.background,
+                    connections: this.config.colors.connections
                 },
+                tagColors: this.config.tagColors,
                 showRoomIds: document.getElementById('show-room-ids').checked,
                 showLabels: document.getElementById('show-labels').checked,
                 showConnections: document.getElementById('show-connections').checked
@@ -462,7 +385,6 @@ class MapGenApp {
         try {
             const rooms = this.getSelectedRooms();
             
-            // Remove the 50 room limit - show all rooms in preview
             this.updateStatus(`Generating preview for ${rooms.length} rooms...`);
             
             // Create map generator
@@ -470,13 +392,15 @@ class MapGenApp {
             
             // Get current config
             const config = {
-                gridSize: parseInt(document.getElementById('grid-size').value),
+                edgeLength: this.config.edgeLength,
+                roomShape: this.config.roomShape,
+                roomSize: this.config.roomSize,
                 colors: {
-                    default: document.getElementById('default-color').value,
-                    water: document.getElementById('water-color').value,
-                    exit: document.getElementById('exit-color').value,
-                    shop: document.getElementById('shop-color').value
+                    default: this.config.colors.default,
+                    background: this.config.colors.background,
+                    connections: this.config.colors.connections
                 },
+                tagColors: this.config.tagColors,
                 showRoomIds: document.getElementById('show-room-ids').checked,
                 showLabels: document.getElementById('show-labels').checked,
                 showConnections: document.getElementById('show-connections').checked
@@ -548,10 +472,9 @@ class MapGenApp {
         document.getElementById('preview-btn').disabled = false;
         this.hideProgress();
         this.populateLocationDropdown();
-        this.populateTagDropdown(); // Add this line
-        this.renderTagColorsList(); // Add this line
+        this.populateTagDropdown();
+        this.renderTagColorsList();
         this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
-        this.debugMapDB();
     }
 
     updateStatus(message) {
