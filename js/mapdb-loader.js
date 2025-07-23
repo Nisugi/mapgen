@@ -28,30 +28,61 @@ class MapDBLoader {
 
     async getLatestRelease() {
         try {
+            console.log('Fetching latest release from GitHub API...');
             const response = await fetch(this.GITHUB_API_URL);
+            
+            console.log('GitHub API response status:', response.status);
+            console.log('GitHub API response headers:', Object.fromEntries(response.headers.entries()));
+            
             if (!response.ok) {
-                throw new Error(`GitHub API error: ${response.status}`);
+                throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
             }
-            return await response.json();
+            
+            const release = await response.json();
+            console.log('Latest release:', release.tag_name);
+            console.log('Assets found:', release.assets.map(a => a.name));
+            
+            return release;
         } catch (error) {
             console.error('Failed to fetch latest release:', error);
-            throw new Error('Unable to check for latest MapDB version');
+            throw new Error(`Unable to check for latest MapDB version: ${error.message}`);
         }
     }
 
     async downloadMapDB(downloadUrl, onProgress = null) {
         try {
+            console.log('Starting download from:', downloadUrl);
+            
+            // Test if we can access the URL
+            const headResponse = await fetch(downloadUrl, { method: 'HEAD' });
+            console.log('HEAD request status:', headResponse.status);
+            console.log('HEAD request headers:', Object.fromEntries(headResponse.headers.entries()));
+            
+            if (!headResponse.ok) {
+                throw new Error(`Download URL not accessible: ${headResponse.status} ${headResponse.statusText}`);
+            }
+
             const response = await fetch(downloadUrl);
+            console.log('Download response status:', response.status);
+            console.log('Download response headers:', Object.fromEntries(response.headers.entries()));
+            
             if (!response.ok) {
-                throw new Error(`Download failed: ${response.status}`);
+                throw new Error(`Download failed: ${response.status} ${response.statusText}`);
             }
 
             const contentLength = response.headers.get('content-length');
             const total = parseInt(contentLength, 10);
-            let loaded = 0;
+            console.log('Content length:', contentLength, 'bytes');
+            
+            if (!response.body) {
+                throw new Error('Response body is null - streaming not supported');
+            }
 
+            let loaded = 0;
             const reader = response.body.getReader();
             const chunks = [];
+
+            console.log('Starting streaming download...');
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -65,16 +96,30 @@ class MapDBLoader {
                     const percent = Math.round((loaded / total) * 100);
                     onProgress(percent, loaded, total);
                 }
+                
+                // Log progress every 5MB
+                if (loaded % (5 * 1024 * 1024) < value.length) {
+                    console.log(`Downloaded ${this.formatFileSize(loaded)} / ${this.formatFileSize(total)}`);
+                }
             }
 
+            console.log('Download complete, parsing JSON...');
+            
             // Convert chunks to text
             const blob = new Blob(chunks);
             const text = await blob.text();
-            return JSON.parse(text);
+            
+            console.log('Text length:', text.length, 'characters');
+            
+            const parsed = JSON.parse(text);
+            console.log('JSON parsed successfully, rooms:', parsed.length);
+            
+            return parsed;
 
         } catch (error) {
-            console.error('Failed to download MapDB:', error);
-            throw new Error('Unable to download MapDB file');
+            console.error('Download failed with error:', error);
+            console.error('Error stack:', error.stack);
+            throw new Error(`Unable to download MapDB file: ${error.message}`);
         }
     }
 
@@ -92,6 +137,7 @@ class MapDBLoader {
                     const result = request.result;
                     
                     if (!result) {
+                        console.log('No cached MapDB found');
                         resolve(null);
                         return;
                     }
@@ -122,6 +168,7 @@ class MapDBLoader {
 
     async setCachedMapDB(mapdb, version) {
         try {
+            console.log('Caching MapDB to IndexedDB...');
             const db = await this.openDB();
             const transaction = db.transaction([this.STORE_NAME], 'readwrite');
             const store = transaction.objectStore(this.STORE_NAME);
@@ -195,9 +242,13 @@ class MapDBLoader {
                 onProgress(0, 0, 0, 'Checking for latest MapDB version...');
             }
 
+            console.log('=== Starting MapDB Load Process ===');
+
             const latestRelease = await this.getLatestRelease();
             const latestVersion = latestRelease.tag_name;
             
+            console.log(`Latest version: ${latestVersion}`);
+
             // Check cache (unless forcing refresh)
             if (!forceRefresh) {
                 const cached = await this.getCachedMapDB();
@@ -227,10 +278,11 @@ class MapDBLoader {
             const asset = latestRelease.assets.find(asset => asset.name === 'mapdb.json');
             
             if (!asset) {
-                throw new Error('MapDB file not found in latest release');
+                throw new Error('MapDB file not found in latest release assets');
             }
 
-            console.log(`Downloading MapDB v${latestVersion} (${this.formatFileSize(asset.size)})`);
+            console.log(`Found asset: ${asset.name}, size: ${this.formatFileSize(asset.size)}`);
+            console.log(`Download URL: ${asset.browser_download_url}`);
 
             // Download with progress
             const mapdb = await this.downloadMapDB(asset.browser_download_url, 
@@ -251,6 +303,8 @@ class MapDBLoader {
                 onProgress(100, 0, 0, `MapDB v${latestVersion} loaded and cached!`);
             }
 
+            console.log('=== MapDB Load Complete ===');
+
             return {
                 data: mapdb,
                 version: latestVersion,
@@ -258,21 +312,26 @@ class MapDBLoader {
             };
 
         } catch (error) {
-            console.error('MapDB loading failed:', error);
+            console.error('=== MapDB Load Failed ===');
+            console.error('Error details:', error);
             
             // If download failed, try to use any cached version as fallback
-            const cached = await this.getCachedMapDB();
-            if (cached) {
-                console.log('Download failed, using cached version as fallback');
-                if (onProgress) {
-                    onProgress(100, 0, 0, `Using cached MapDB v${cached.version} (download failed)`);
+            try {
+                const cached = await this.getCachedMapDB();
+                if (cached) {
+                    console.log('Download failed, using cached version as fallback');
+                    if (onProgress) {
+                        onProgress(100, 0, 0, `Using cached MapDB v${cached.version} (download failed)`);
+                    }
+                    return {
+                        data: cached.data,
+                        version: cached.version,
+                        fromCache: true,
+                        fallback: true
+                    };
                 }
-                return {
-                    data: cached.data,
-                    version: cached.version,
-                    fromCache: true,
-                    fallback: true
-                };
+            } catch (cacheError) {
+                console.error('Cache fallback also failed:', cacheError);
             }
             
             throw error;
