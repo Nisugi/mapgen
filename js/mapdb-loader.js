@@ -1,30 +1,30 @@
 class MapDBLoader {
     constructor() {
-        // Only load from local repository
+        // Load from your own repository - no external URLs!
         this.LOCAL_MAPDB_URL = './mapdb.json';
     }
 
     async loadMapDB(onProgress = null) {
         try {
-            console.log('=== Loading MapDB from local repository ===');
+            console.log('Loading MapDB from local file...');
             
             if (onProgress) {
-                onProgress(0, 0, 0, 'Loading MapDB...');
+                onProgress(10, 0, 0, 'Loading MapDB from repository...');
             }
             
             const response = await fetch(this.LOCAL_MAPDB_URL);
-            console.log('Fetch response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`Failed to load mapdb.json: ${response.status} ${response.statusText}`);
             }
 
             if (onProgress) {
-                onProgress(50, 0, 0, 'Parsing JSON data...');
+                onProgress(50, 0, 0, 'Parsing MapDB data...');
             }
             
             const mapdb = await response.json();
-            console.log(`=== MapDB loaded successfully: ${mapdb.length} rooms ===`);
+            
+            console.log(`MapDB loaded successfully: ${mapdb.length} rooms`);
             
             if (onProgress) {
                 onProgress(100, 0, 0, `MapDB loaded! (${mapdb.length} rooms)`);
@@ -37,7 +37,7 @@ class MapDBLoader {
             };
 
         } catch (error) {
-            console.error('=== MapDB loading failed ===', error);
+            console.error('Failed to load MapDB:', error);
             throw new Error(`Unable to load MapDB: ${error.message}`);
         }
     }
@@ -51,6 +51,17 @@ class MapDBLoader {
             }
         });
         return Array.from(locations).sort();
+    }
+
+    // Extract room tags for theming - ADD THIS FUNCTION
+    extractTags(mapdb) {
+        const tags = new Set();
+        mapdb.forEach(room => {
+            if (room.tags && Array.isArray(room.tags)) {
+                room.tags.forEach(tag => tags.add(tag));
+            }
+        });
+        return Array.from(tags).sort();
     }
 
     // Get rooms by location
