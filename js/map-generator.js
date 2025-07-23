@@ -4,11 +4,32 @@ class MapGenerator {
             colors: {
                 default: '#ffffff',
                 background: '#f8f9fa',
-                connections: '#666666'
+                connections: '#666666',
+                verticalConnections: '#999999'
             },
             showRoomIds: true,
+            showRoomNames: false,
             showLabels: true,
-            showConnections: true
+            showConnections: true,
+            edgeLength: 60,
+            roomShape: 'square',
+            roomSize: 15,
+            strokeWidth: 1,
+            connectionWidth: 2,
+            fonts: {
+                labels: {
+                    size: 8,
+                    color: '#444',
+                    family: 'Arial',
+                    bold: false
+                },
+                rooms: {
+                    size: 10,
+                    color: '#000',
+                    family: 'Arial', 
+                    bold: false
+                }
+            }
         };
         
         // Cardinal directions we recognize
@@ -46,7 +67,15 @@ class MapGenerator {
     }
 
     getDirectionForConnection(room, targetId) {
-        // First check wayto for cardinal directions
+        // First check dirto for overrides
+        if (room.dirto && room.dirto[targetId]) {
+            const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
+            if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
+                return dirtoDirection;
+            }
+        }
+        
+        // Then check wayto for cardinal directions
         if (room.wayto && room.wayto[targetId]) {
             const waytoCommand = room.wayto[targetId].toLowerCase().trim();
             
@@ -63,16 +92,66 @@ class MapGenerator {
             }
         }
         
-        // Fallback to dirto if available
+        // No direction found
+        return null;
+    }
+
+    getConnectionLabel(room, targetId) {
+        if (!room.wayto || !room.wayto[targetId]) {
+            return null;
+        }
+        
+        const wayto = room.wayto[targetId].trim();
+        const waytoLower = wayto.toLowerCase();
+        
+        // Don't show labels for cardinal directions
+        if (this.cardinalDirections.has(waytoLower)) {
+            // Unless there's a dirto that differs
+            if (room.dirto && room.dirto[targetId]) {
+                const dirto = room.dirto[targetId].toLowerCase().trim();
+                if (dirto !== waytoLower && this.cardinalDirections.has(dirto)) {
+                    return wayto; // Show the actual movement direction
+                }
+            }
+            return null;
+        }
+        
+        // Handle "go/climb something" patterns
+        const goClimbPattern = /^(go|climb)\s+(.+)$/i;
+        const match = wayto.match(goClimbPattern);
+        if (match) {
+            return match[2]; // Return the "something" part
+        }
+        
+        // Handle script commands starting with ";e"
+        if (wayto.startsWith(';e')) {
+            // Try to extract meaningful parts
+            // For now, return null for script commands
+            // TODO: Add labelto support
+            return null;
+        }
+        
+        return wayto;
+    }
+
+    isVerticalConnection(room, targetId) {
+        // Check dirto first
         if (room.dirto && room.dirto[targetId]) {
-            const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
-            if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
-                return dirtoDirection;
+            const dirto = room.dirto[targetId].toLowerCase().trim();
+            if (dirto === 'up' || dirto === 'down') {
+                return true;
             }
         }
         
-        // No direction found
-        return null;
+        // Check wayto
+        if (room.wayto && room.wayto[targetId]) {
+            const wayto = room.wayto[targetId].toLowerCase().trim();
+            if (wayto === 'up' || wayto === 'down') {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     // Calculate bounding box for a set of positions
@@ -106,7 +185,7 @@ class MapGenerator {
         const positions = new Map();
         const groups = [];
         
-        // Direction mappings
+        // Direction mappings - reduced offsets for up/down/out
         const directionOffsets = {
             'north': { x: 0, y: -1 },
             'south': { x: 0, y: 1 },
@@ -116,13 +195,10 @@ class MapGenerator {
             'northwest': { x: -1, y: -1 },
             'southeast': { x: 1, y: 1 },
             'southwest': { x: -1, y: 1 },
-            'up': { x: 0, y: -2 },
-            'down': { x: 0, y: 2 },
-            'out': { x: 2, y: 0 }
+            'up': { x: 0, y: -1 },
+            'down': { x: 0, y: 1 },
+            'out': { x: 1, y: 0 }
         };
-        
-        // Track all component bounding boxes
-        const componentBounds = [];
         
         // Multiple passes to find connected components
         const unpositioned = new Set(rooms.map(r => r.id));
@@ -152,9 +228,6 @@ class MapGenerator {
                 nextStart = roomLookup.get(Array.from(unpositioned)[0]);
             }
             
-            // Position this component at origin first
-            let startX = 0, startY = 0;
-            
             console.log(`Starting new component with room ${nextStart.id}`);
             
             // Create a temporary positions map for this component
@@ -162,8 +235,8 @@ class MapGenerator {
             const componentRooms = [];
             
             // BFS for this connected component
-            const queue = [{ room: nextStart, x: startX, y: startY }];
-            componentPositions.set(nextStart.id, { x: startX, y: startY });
+            const queue = [{ room: nextStart, x: 0, y: 0 }];
+            componentPositions.set(nextStart.id, { x: 0, y: 0 });
             componentRooms.push(nextStart);
             unpositioned.delete(nextStart.id);
             
@@ -221,8 +294,30 @@ class MapGenerator {
                 }
             }
             
-            // Get bounding box for this component
-            const bounds = this.getBoundingBox(componentPositions);
+            // Store group info with component positions
+            const groupIndex = groups.length;
+            groups.push({
+                index: groupIndex,
+                rooms: componentRooms,
+                positions: new Map(componentPositions) // Store original positions
+            });
+        }
+        
+        // Now apply offsets to all groups
+        const finalPositions = this.applyGroupOffsets(groups);
+        
+        console.log(`Positioned ${finalPositions.size} rooms in ${groups.length} components`);
+        
+        return { positions: finalPositions, groups };
+    }
+
+    applyGroupOffsets(groups) {
+        const positions = new Map();
+        const componentBounds = [];
+        
+        groups.forEach((group, groupIndex) => {
+            // Get bounding box for this group
+            const bounds = this.getBoundingBox(group.positions);
             
             // Calculate base position for this component
             let baseOffsetX = 0;
@@ -236,13 +331,12 @@ class MapGenerator {
                 baseOffsetX = rightmostX + padding - bounds.minX;
                 baseOffsetY = -bounds.minY; // Align tops
             } else {
-                // First component
+                // First component, center at origin
                 baseOffsetX = -bounds.minX;
                 baseOffsetY = -bounds.minY;
             }
             
             // Apply manual offset if provided
-            const groupIndex = groups.length;
             let manualOffsetX = 0;
             let manualOffsetY = 0;
             
@@ -252,11 +346,11 @@ class MapGenerator {
                 manualOffsetY = manualOffset.y || 0;
             }
             
-            // Apply total offset to all positions in this component
+            // Apply total offset to all positions in this group
             const totalOffsetX = baseOffsetX + manualOffsetX;
             const totalOffsetY = baseOffsetY + manualOffsetY;
             
-            for (const [roomId, pos] of componentPositions) {
+            for (const [roomId, pos] of group.positions) {
                 positions.set(roomId, {
                     x: pos.x + totalOffsetX,
                     y: pos.y + totalOffsetY
@@ -264,36 +358,55 @@ class MapGenerator {
             }
             
             // Update bounds for tracking
-            bounds.minX += totalOffsetX;
-            bounds.maxX += totalOffsetX;
-            bounds.minY += totalOffsetY;
-            bounds.maxY += totalOffsetY;
+            const newBounds = {
+                minX: bounds.minX + totalOffsetX,
+                maxX: bounds.maxX + totalOffsetX,
+                minY: bounds.minY + totalOffsetY,
+                maxY: bounds.maxY + totalOffsetY,
+                width: bounds.width,
+                height: bounds.height
+            };
             
-            componentBounds.push(bounds);
-            
-            // Store group info
-            groups.push({
-                index: groupIndex,
-                rooms: componentRooms,
-                bounds: bounds
-            });
-            
-            console.log(`Component ${componentBounds.length} bounds:`, bounds);
-        }
+            componentBounds.push(newBounds);
+            group.bounds = newBounds;
+        });
         
-        console.log(`Positioned ${positions.size} rooms in ${componentBounds.length} components`);
-        
-        return { positions, groups };
+        return positions;
     }
 
     isPositionOccupied(positions, x, y) {
         return Array.from(positions.values()).some(pos => pos.x === x && pos.y === y);
     }
 
+    wrapText(text, maxWidth, fontSize) {
+        // Simple text wrapping - only break at spaces
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = '';
+        
+        // Approximate character width (very rough)
+        const charWidth = fontSize * 0.6;
+        const maxChars = Math.floor(maxWidth / charWidth);
+        
+        words.forEach(word => {
+            if ((currentLine + ' ' + word).trim().length <= maxChars) {
+                currentLine = (currentLine + ' ' + word).trim();
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        });
+        
+        if (currentLine) lines.push(currentLine);
+        return lines;
+    }
+
     createSVG(rooms, positions, roomLookup) {
-        const edgeLength = this.config.edgeLength || 80;
+        const edgeLength = this.config.edgeLength || 60;
         const roomSize = this.config.roomSize || 15;
-        const roomShape = this.config.roomShape || 'circle';
+        const roomShape = this.config.roomShape || 'square';
+        const strokeWidth = this.config.strokeWidth || 1;
+        const connectionWidth = this.config.connectionWidth || 2;
         
         // Calculate bounds with padding
         const coords = Array.from(positions.values());
@@ -312,6 +425,9 @@ class MapGenerator {
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
         svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
         
+        // Create a set to track drawn connections (to avoid duplicates)
+        const drawnConnections = new Set();
+        
         // Draw connections
         if (this.config.showConnections) {
             rooms.forEach(room => {
@@ -320,8 +436,14 @@ class MapGenerator {
                 
                 for (const targetId of Object.keys(room.wayto)) {
                     const targetIdNum = parseInt(targetId);
+                    const targetRoom = roomLookup.get(targetIdNum);
                     const targetPos = positions.get(targetIdNum);
-                    if (!targetPos) continue;
+                    if (!targetPos || !targetRoom) continue;
+                    
+                    // Create unique key for this connection
+                    const connectionKey = [room.id, targetIdNum].sort().join('-');
+                    if (drawnConnections.has(connectionKey)) continue;
+                    drawnConnections.add(connectionKey);
                     
                     const direction = this.getDirectionForConnection(room, targetId);
                     if (!direction) continue;
@@ -331,14 +453,51 @@ class MapGenerator {
                     const x2 = (targetPos.x + offsetX) * edgeLength;
                     const y2 = (targetPos.y + offsetY) * edgeLength;
                     
-                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${this.config.colors.connections || '#666'}" stroke-width="2"/>`;
+                    // Determine connection color
+                    const isVertical = this.isVerticalConnection(room, targetId) || 
+                                     this.isVerticalConnection(targetRoom, room.id.toString());
+                    const connectionColor = isVertical ? 
+                        (this.config.colors.verticalConnections || '#999') : 
+                        (this.config.colors.connections || '#666');
+                    
+                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${connectionColor}" stroke-width="${connectionWidth}"/>`;
                     
                     if (this.config.showLabels) {
-                        const midX = (x1 + x2) / 2;
-                        const midY = (y1 + y2) / 2;
-                        const label = room.wayto[targetId];
+                        // Get labels from both directions
+                        const label1 = this.getConnectionLabel(room, targetId);
+                        const label2 = targetRoom.wayto && targetRoom.wayto[room.id] ? 
+                            this.getConnectionLabel(targetRoom, room.id.toString()) : null;
                         
-                        svg += `<text x="${midX}" y="${midY - 5}" text-anchor="middle" font-size="8" fill="#444" font-family="Arial">${label}</text>`;
+                        if (label1 || label2) {
+                            const midX = (x1 + x2) / 2;
+                            const midY = (y1 + y2) / 2;
+                            
+                            // Calculate angle for text rotation
+                            const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                            const adjustedAngle = (angle > 90 || angle < -90) ? angle + 180 : angle;
+                            
+                            // Font settings
+                            const fontWeight = this.config.fonts.labels.bold ? 'bold' : 'normal';
+                            const fontSize = this.config.fonts.labels.size;
+                            const fontColor = this.config.fonts.labels.color;
+                            const fontFamily = this.config.fonts.labels.family;
+                            
+                            if (label1 && label2 && label1 !== label2) {
+                                // Two different labels - one above, one below
+                                svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
+                                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                                        transform="rotate(${adjustedAngle} ${midX} ${midY})">${label1}</text>`;
+                                svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="middle" font-size="${fontSize}" 
+                                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                                        transform="rotate(${adjustedAngle} ${midX} ${midY})">${label2}</text>`;
+                            } else if (label1 || label2) {
+                                // Single label
+                                const label = label1 || label2;
+                                svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
+                                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                                        transform="rotate(${adjustedAngle} ${midX} ${midY})">${label}</text>`;
+                            }
+                        }
                     }
                 }
             });
@@ -365,19 +524,47 @@ class MapGenerator {
             
             // Draw room shape
             if (roomShape === 'circle') {
-                svg += `<circle cx="${x}" cy="${y}" r="${roomSize}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+                svg += `<circle cx="${x}" cy="${y}" r="${roomSize}" fill="${color}" stroke="#333" stroke-width="${strokeWidth}"/>`;
             } else if (roomShape === 'square') {
                 const half = roomSize;
-                svg += `<rect x="${x - half}" y="${y - half}" width="${roomSize * 2}" height="${roomSize * 2}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+                svg += `<rect x="${x - half}" y="${y - half}" width="${roomSize * 2}" height="${roomSize * 2}" 
+                        fill="${color}" stroke="#333" stroke-width="${strokeWidth}"/>`;
             } else if (roomShape === 'rectangle') {
                 const width = roomSize * 1.5;
                 const height = roomSize;
-                svg += `<rect x="${x - width}" y="${y - height}" width="${width * 2}" height="${height * 2}" fill="${color}" stroke="#333" stroke-width="1"/>`;
+                svg += `<rect x="${x - width}" y="${y - height}" width="${width * 2}" height="${height * 2}" 
+                        fill="${color}" stroke="#333" stroke-width="${strokeWidth}"/>`;
             }
             
-            // Add room ID
-            if (this.config.showRoomIds) {
-                svg += `<text x="${x}" y="${y + 3}" text-anchor="middle" font-size="10" fill="#000" font-family="Arial">${room.id}</text>`;
+            // Add room text
+            const fontWeight = this.config.fonts.rooms.bold ? 'bold' : 'normal';
+            const fontSize = this.config.fonts.rooms.size;
+            const fontColor = this.config.fonts.rooms.color;
+            const fontFamily = this.config.fonts.rooms.family;
+            
+            if (this.config.showRoomNames && room.title && room.title[0]) {
+                // Extract room name from title (usually in brackets)
+                const titleMatch = room.title[0].match(/\[([^\]]+)\]/);
+                const roomName = titleMatch ? titleMatch[1] : room.title[0];
+                
+                // Wrap text to fit in room
+                const maxWidth = roomShape === 'rectangle' ? roomSize * 3 : roomSize * 2;
+                const lines = this.wrapText(roomName, maxWidth, fontSize);
+                
+                // Draw each line
+                const lineHeight = fontSize * 1.2;
+                const startY = y - ((lines.length - 1) * lineHeight / 2);
+                
+                lines.forEach((line, index) => {
+                    svg += `<text x="${x}" y="${startY + index * lineHeight}" text-anchor="middle" 
+                            font-size="${fontSize}" fill="${fontColor}" font-family="${fontFamily}" 
+                            font-weight="${fontWeight}">${line}</text>`;
+                });
+                
+            } else if (this.config.showRoomIds) {
+                // Just show room ID
+                svg += `<text x="${x}" y="${y + 3}" text-anchor="middle" font-size="${fontSize}" 
+                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}">${room.id}</text>`;
             }
         });
         

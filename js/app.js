@@ -12,19 +12,37 @@ class MapGenApp {
     getDefaultConfig() {
         return {
             theme: 'custom',
-            edgeLength: 80,
-            roomShape: 'circle',
+            edgeLength: 60,
+            roomShape: 'square',
             roomSize: 15,
+            strokeWidth: 1,
+            connectionWidth: 2,
             colors: {
                 default: '#ffffff',
                 background: '#f8f9fa',
-                connections: '#666666'
+                connections: '#666666',
+                verticalConnections: '#999999'
             },
             tagColors: new Map(), // tag -> color mapping
             options: {
                 showRoomIds: true,
+                showRoomNames: false,
                 showLabels: true,
                 showConnections: true
+            },
+            fonts: {
+                labels: {
+                    size: 8,
+                    color: '#444444',
+                    family: 'Arial',
+                    bold: false
+                },
+                rooms: {
+                    size: 10,
+                    color: '#000000',
+                    family: 'Arial',
+                    bold: false
+                }
             }
         };
     }
@@ -213,6 +231,30 @@ class MapGenApp {
             });
         }
 
+        // Stroke width slider
+        const strokeWidthSlider = document.getElementById('stroke-width');
+        if (strokeWidthSlider) {
+            strokeWidthSlider.addEventListener('input', (e) => {
+                const valueSpan = document.getElementById('stroke-width-value');
+                if (valueSpan) {
+                    valueSpan.textContent = e.target.value + 'px';
+                }
+                this.config.strokeWidth = parseInt(e.target.value);
+            });
+        }
+
+        // Connection width slider
+        const connectionWidthSlider = document.getElementById('connection-width');
+        if (connectionWidthSlider) {
+            connectionWidthSlider.addEventListener('input', (e) => {
+                const valueSpan = document.getElementById('connection-width-value');
+                if (valueSpan) {
+                    valueSpan.textContent = e.target.value + 'px';
+                }
+                this.config.connectionWidth = parseInt(e.target.value);
+            });
+        }
+
         // Room shape select
         const roomShapeSelect = document.getElementById('room-shape');
         if (roomShapeSelect) {
@@ -240,6 +282,73 @@ class MapGenApp {
         if (connectionColorInput) {
             connectionColorInput.addEventListener('change', (e) => {
                 this.config.colors.connections = e.target.value;
+            });
+        }
+
+        const verticalConnectionColorInput = document.getElementById('vertical-connection-color');
+        if (verticalConnectionColorInput) {
+            verticalConnectionColorInput.addEventListener('change', (e) => {
+                this.config.colors.verticalConnections = e.target.value;
+            });
+        }
+
+        // Font controls - Labels
+        const labelFontSizeInput = document.getElementById('label-font-size');
+        if (labelFontSizeInput) {
+            labelFontSizeInput.addEventListener('input', (e) => {
+                this.config.fonts.labels.size = parseInt(e.target.value);
+                document.getElementById('label-font-size-value').textContent = e.target.value + 'px';
+            });
+        }
+
+        const labelFontColorInput = document.getElementById('label-font-color');
+        if (labelFontColorInput) {
+            labelFontColorInput.addEventListener('change', (e) => {
+                this.config.fonts.labels.color = e.target.value;
+            });
+        }
+
+        const labelFontFamilySelect = document.getElementById('label-font-family');
+        if (labelFontFamilySelect) {
+            labelFontFamilySelect.addEventListener('change', (e) => {
+                this.config.fonts.labels.family = e.target.value;
+            });
+        }
+
+        const labelFontBoldCheckbox = document.getElementById('label-font-bold');
+        if (labelFontBoldCheckbox) {
+            labelFontBoldCheckbox.addEventListener('change', (e) => {
+                this.config.fonts.labels.bold = e.target.checked;
+            });
+        }
+
+        // Font controls - Rooms
+        const roomFontSizeInput = document.getElementById('room-font-size');
+        if (roomFontSizeInput) {
+            roomFontSizeInput.addEventListener('input', (e) => {
+                this.config.fonts.rooms.size = parseInt(e.target.value);
+                document.getElementById('room-font-size-value').textContent = e.target.value + 'px';
+            });
+        }
+
+        const roomFontColorInput = document.getElementById('room-font-color');
+        if (roomFontColorInput) {
+            roomFontColorInput.addEventListener('change', (e) => {
+                this.config.fonts.rooms.color = e.target.value;
+            });
+        }
+
+        const roomFontFamilySelect = document.getElementById('room-font-family');
+        if (roomFontFamilySelect) {
+            roomFontFamilySelect.addEventListener('change', (e) => {
+                this.config.fonts.rooms.family = e.target.value;
+            });
+        }
+
+        const roomFontBoldCheckbox = document.getElementById('room-font-bold');
+        if (roomFontBoldCheckbox) {
+            roomFontBoldCheckbox.addEventListener('change', (e) => {
+                this.config.fonts.rooms.bold = e.target.checked;
             });
         }
 
@@ -359,16 +468,21 @@ class MapGenApp {
                 edgeLength: this.config.edgeLength,
                 roomShape: this.config.roomShape,
                 roomSize: this.config.roomSize,
+                strokeWidth: this.config.strokeWidth,
+                connectionWidth: this.config.connectionWidth,
                 colors: {
                     default: this.config.colors.default,
                     background: this.config.colors.background,
-                    connections: this.config.colors.connections
+                    connections: this.config.colors.connections,
+                    verticalConnections: this.config.colors.verticalConnections
                 },
                 tagColors: this.config.tagColors,
                 showRoomIds: document.getElementById('show-room-ids').checked,
+                showRoomNames: document.getElementById('show-room-names').checked,
                 showLabels: document.getElementById('show-labels').checked,
                 showConnections: document.getElementById('show-connections').checked,
-                groupOffsets: this.groupOffsets // Pass group offsets
+                groupOffsets: this.groupOffsets, // Pass group offsets
+                fonts: this.config.fonts
             };
             
             // Generate map and get group info
@@ -389,6 +503,7 @@ class MapGenApp {
         }
     }
 
+
     previewMap() {
         try {
             const rooms = this.getSelectedRooms();
@@ -403,16 +518,21 @@ class MapGenApp {
                 edgeLength: this.config.edgeLength,
                 roomShape: this.config.roomShape,
                 roomSize: this.config.roomSize,
+                strokeWidth: this.config.strokeWidth,
+                connectionWidth: this.config.connectionWidth,
                 colors: {
                     default: this.config.colors.default,
                     background: this.config.colors.background,
-                    connections: this.config.colors.connections
+                    connections: this.config.colors.connections,
+                    verticalConnections: this.config.colors.verticalConnections
                 },
                 tagColors: this.config.tagColors,
                 showRoomIds: document.getElementById('show-room-ids').checked,
+                showRoomNames: document.getElementById('show-room-names').checked,
                 showLabels: document.getElementById('show-labels').checked,
                 showConnections: document.getElementById('show-connections').checked,
-                groupOffsets: this.groupOffsets // Pass group offsets
+                groupOffsets: this.groupOffsets, // Pass group offsets
+                fonts: this.config.fonts
             };
             
             // Generate preview and get group info

@@ -64,15 +64,15 @@
                     <!-- Map Appearance -->
                     <div class="form-group">
                         <label for="edge-length">Edge Length:</label>
-                        <input type="range" id="edge-length" min="30" max="150" value="80">
-                        <span id="edge-length-value">80px</span>
+                        <input type="range" id="edge-length" min="30" max="150" value="60">
+                        <span id="edge-length-value">60px</span>
                     </div>
                     
                     <div class="form-group">
                         <label for="room-shape">Room Shape:</label>
                         <select id="room-shape">
+                            <option value="square" selected>Square</option>
                             <option value="circle">Circle</option>
-                            <option value="square">Square</option>
                             <option value="rectangle">Rectangle</option>
                         </select>
                     </div>
@@ -81,6 +81,18 @@
                         <label for="room-size">Room Size:</label>
                         <input type="range" id="room-size" min="8" max="25" value="15">
                         <span id="room-size-value">15px</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stroke-width">Room Border Width:</label>
+                        <input type="range" id="stroke-width" min="1" max="5" value="1">
+                        <span id="stroke-width-value">1px</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="connection-width">Connection Width:</label>
+                        <input type="range" id="connection-width" min="1" max="5" value="2">
+                        <span id="connection-width-value">2px</span>
                     </div>
                     
                     <!-- Default Colors -->
@@ -98,6 +110,10 @@
                             <div class="color-input">
                                 <label for="connection-color">Connections:</label>
                                 <input type="color" id="connection-color" value="#666666">
+                            </div>
+                            <div class="color-input">
+                                <label for="vertical-connection-color">Vertical Connections:</label>
+                                <input type="color" id="vertical-connection-color" value="#999999">
                             </div>
                         </div>
                     </div>
@@ -136,8 +152,64 @@
                     <h3>⚙️ Display Options</h3>
                     <div class="checkbox-group">
                         <label><input type="checkbox" id="show-room-ids" checked> Show Room IDs</label>
+                        <label><input type="checkbox" id="show-room-names"> Show Room Names</label>
                         <label><input type="checkbox" id="show-labels" checked> Show Connection Labels</label>
                         <label><input type="checkbox" id="show-connections" checked> Show Connections</label>
+                    </div>
+                </section>
+
+                <!-- Font Settings Panel -->
+                <section class="panel">
+                    <h3>🔤 Font Settings</h3>
+                    
+                    <!-- Label Fonts -->
+                    <h4>Connection Labels</h4>
+                    <div class="form-group">
+                        <label for="label-font-size">Size:</label>
+                        <input type="range" id="label-font-size" min="6" max="16" value="8">
+                        <span id="label-font-size-value">8px</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="label-font-color">Color:</label>
+                        <input type="color" id="label-font-color" value="#444444">
+                    </div>
+                    <div class="form-group">
+                        <label for="label-font-family">Font:</label>
+                        <select id="label-font-family">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="label-font-bold"> Bold</label>
+                    </div>
+                    
+                    <!-- Room Fonts -->
+                    <h4>Room Text</h4>
+                    <div class="form-group">
+                        <label for="room-font-size">Size:</label>
+                        <input type="range" id="room-font-size" min="8" max="20" value="10">
+                        <span id="room-font-size-value">10px</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="room-font-color">Color:</label>
+                        <input type="color" id="room-font-color" value="#000000">
+                    </div>
+                    <div class="form-group">
+                        <label for="room-font-family">Font:</label>
+                        <select id="room-font-family">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="room-font-bold"> Bold</label>
                     </div>
                 </section>
 
