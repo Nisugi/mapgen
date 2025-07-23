@@ -183,7 +183,7 @@ class MapGenApp {
     }
 
     setupEventListeners() {
-        // Radio button changes
+        // Existing listeners with null checks
         document.querySelectorAll('input[name="mapdb-source"]').forEach(radio => {
             radio.addEventListener('change', this.handleMapDBSourceChange.bind(this));
         });
@@ -192,43 +192,79 @@ class MapGenApp {
             radio.addEventListener('change', this.handleRoomSelectionChange.bind(this));
         });
 
-        // Theme changes
-        document.getElementById('theme-select').addEventListener('change', this.handleThemeChange.bind(this));
+        // Safe element access with null checks
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) {
+            themeSelect.addEventListener('change', this.handleThemeChange.bind(this));
+        }
 
-        // Grid size slider
         const gridSlider = document.getElementById('grid-size');
-        gridSlider.addEventListener('input', (e) => {
-            document.getElementById('grid-size-value').textContent = e.target.value + 'px';
-            this.config.options.gridSize = parseInt(e.target.value);
-        });
+        if (gridSlider) {
+            gridSlider.addEventListener('input', (e) => {
+                const valueSpan = document.getElementById('grid-size-value');
+                if (valueSpan) {
+                    valueSpan.textContent = e.target.value + 'px';
+                }
+                this.config.options.gridSize = parseInt(e.target.value);
+            });
+        }
 
-        // New appearance controls
+        // New controls (with null checks)
         const edgeLengthSlider = document.getElementById('edge-length');
-        edgeLengthSlider.addEventListener('input', (e) => {
-            document.getElementById('edge-length-value').textContent = e.target.value + 'px';
-            this.config.edgeLength = parseInt(e.target.value);
-        });
+        if (edgeLengthSlider) {
+            edgeLengthSlider.addEventListener('input', (e) => {
+                const valueSpan = document.getElementById('edge-length-value');
+                if (valueSpan) {
+                    valueSpan.textContent = e.target.value + 'px';
+                }
+                this.config.edgeLength = parseInt(e.target.value);
+            });
+        }
 
         const roomSizeSlider = document.getElementById('room-size');
-        roomSizeSlider.addEventListener('input', (e) => {
-            document.getElementById('room-size-value').textContent = e.target.value + 'px';
-            this.config.roomSize = parseInt(e.target.value);
-        });
+        if (roomSizeSlider) {
+            roomSizeSlider.addEventListener('input', (e) => {
+                const valueSpan = document.getElementById('room-size-value');
+                if (valueSpan) {
+                    valueSpan.textContent = e.target.value + 'px';
+                }
+                this.config.roomSize = parseInt(e.target.value);
+            });
+        }
 
-        document.getElementById('room-shape').addEventListener('change', (e) => {
-            this.config.roomShape = e.target.value;
-        });
-    
-        // Tag color management
-        document.getElementById('add-tag-color').addEventListener('click', this.addTagColor.bind(this));
-        document.getElementById('theme-preset').addEventListener('change', this.applyThemePreset.bind(this));
+        const roomShapeSelect = document.getElementById('room-shape');
+        if (roomShapeSelect) {
+            roomShapeSelect.addEventListener('change', (e) => {
+                this.config.roomShape = e.target.value;
+            });
+        }
+
+        const addTagButton = document.getElementById('add-tag-color');
+        if (addTagButton) {
+            addTagButton.addEventListener('click', this.addTagColor.bind(this));
+        }
+
+        const themePreset = document.getElementById('theme-preset');
+        if (themePreset) {
+            themePreset.addEventListener('change', this.applyThemePreset.bind(this));
+        }
 
         // File upload
-        document.getElementById('mapdb-file').addEventListener('change', this.handleFileUpload.bind(this));
+        const fileInput = document.getElementById('mapdb-file');
+        if (fileInput) {
+            fileInput.addEventListener('change', this.handleFileUpload.bind(this));
+        }
 
-        // Generate button
-        document.getElementById('generate-btn').addEventListener('click', this.generateMap.bind(this));
-        document.getElementById('preview-btn').addEventListener('click', this.previewMap.bind(this));
+        // Generate buttons
+        const generateBtn = document.getElementById('generate-btn');
+        if (generateBtn) {
+            generateBtn.addEventListener('click', this.generateMap.bind(this));
+        }
+
+        const previewBtn = document.getElementById('preview-btn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', this.previewMap.bind(this));
+        }
     }
 
     async debugMapDB() {
