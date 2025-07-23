@@ -655,14 +655,14 @@ class MapGenApp {
                         <div class="offset-control">
                             <label>X Offset:</label>
                             <input type="range" class="x-offset" data-group="${index}" 
-                                   min="-50" max="50" value="${offset.x}" 
+                                   min="-100" max="100" value="${offset.x}" 
                                    oninput="this.nextElementSibling.textContent = this.value">
                             <span class="offset-value">${offset.x}</span>
                         </div>
                         <div class="offset-control">
                             <label>Y Offset:</label>
                             <input type="range" class="y-offset" data-group="${index}" 
-                                   min="-50" max="50" value="${offset.y}"
+                                   min="-100" max="100" value="${offset.y}"
                                    oninput="this.nextElementSibling.textContent = this.value">
                             <span class="offset-value">${offset.y}</span>
                         </div>
