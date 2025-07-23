@@ -104,9 +104,9 @@ class MapGenerator {
             'northwest': { x: -1, y: -1 },
             'southeast': { x: 1, y: 1 },
             'southwest': { x: -1, y: 1 },
-            'up': { x: 0, y: -2 },
-            'down': { x: 0, y: 2 },
-            'out': { x: 2, y: 0 }
+            'up': { x: 0, y: -1 },
+            'down': { x: 0, y: 1 },
+            'out': { x: 1, y: 0 }
         };
         
         // Track all component bounding boxes
