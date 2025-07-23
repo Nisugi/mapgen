@@ -264,10 +264,8 @@ class MapGenApp {
         try {
             const rooms = this.getSelectedRooms();
             
-            // Limit preview to first 50 rooms for performance
-            const previewRooms = rooms.slice(0, 50);
-            
-            this.updateStatus(`Generating preview for ${previewRooms.length} rooms...`);
+            // Remove the 50 room limit - show all rooms in preview
+            this.updateStatus(`Generating preview for ${rooms.length} rooms...`);
             
             // Create map generator
             const generator = new MapGenerator();
@@ -286,13 +284,13 @@ class MapGenApp {
                 showConnections: document.getElementById('show-connections').checked
             };
             
-            // Generate preview
-            const svg = generator.generateMap(previewRooms, config);
+            // Generate preview with ALL rooms
+            const svg = generator.generateMap(rooms, config);
             
             // Show preview in a new window
             this.showPreview(svg);
             
-            this.updateStatus(`Preview generated for ${previewRooms.length} rooms.`);
+            this.updateStatus(`Preview generated for ${rooms.length} rooms.`);
             
         } catch (error) {
             this.showError(error.message);
@@ -312,14 +310,35 @@ class MapGenApp {
     }
 
     showPreview(svgContent) {
-        const previewWindow = window.open('', '_blank', 'width=800,height=600');
+        const previewWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes');
         previewWindow.document.write(`
             <!DOCTYPE html>
             <html>
-            <head><title>Map Preview</title></head>
-            <body style="margin:0; padding:20px; background:#f0f0f0;">
-                <h3>Map Preview</h3>
-                ${svgContent}
+            <head>
+                <title>Map Preview</title>
+                <style>
+                    body { 
+                        margin: 0; 
+                        padding: 20px; 
+                        background: #f0f0f0; 
+                        font-family: Arial, sans-serif;
+                    }
+                    .map-container {
+                        background: white;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        padding: 10px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                        overflow: auto;
+                    }
+                </style>
+            </head>
+            <body>
+                <h3>Map Preview - Full Scale</h3>
+                <p>Scroll to explore the entire map. Use browser zoom (Ctrl +/-) to adjust size.</p>
+                <div class="map-container">
+                    ${svgContent}
+                </div>
             </body>
             </html>
         `);
