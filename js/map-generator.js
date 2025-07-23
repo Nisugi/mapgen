@@ -1,13 +1,6 @@
 class MapGenerator {
     constructor() {
         this.config = {
-            gridSize: 50,
-            colors: {
-                default: '#ffffff',
-                water: '#8cc6ff',
-                exit: '#ff6b6b',
-                shop: '#90EE90'
-            },
             showRoomIds: true,
             showLabels: true,
             showConnections: true

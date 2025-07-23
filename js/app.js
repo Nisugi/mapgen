@@ -278,10 +278,6 @@ class MapGenApp {
             console.log('Locations found:', locations.length);
             console.log('First 10 locations:', locations.slice(0, 10));
         }
-        
-        // Check cache info
-        const cacheInfo = await this.mapdbLoader.getCacheInfo();
-        console.log('Cache info:', cacheInfo);
     }
 
     async loadMapDB() {
