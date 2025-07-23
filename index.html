@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elanthia Map Generator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗺️ Elanthia Map Generator</h1>
+            <p>Generate custom maps from the Elanthia MapDB</p>
+        </header>
+
+        <div class="status-section">
+            <div id="status-text">Initializing application...</div>
+            <div id="progress-container" class="hidden">
+                <div id="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <span id="progress-text">0%</span>
+            </div>
+        </div>
+
+        <main id="app-content" class="hidden">
+            <div class="panel-grid">
+                <!-- Input Files Panel -->
+                <section class="panel">
+                    <h3>📁 Data Source</h3>
+                    <div class="form-group">
+                        <label>MapDB Source:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="mapdb-source" value="github" checked> Latest from GitHub</label>
+                            <label><input type="radio" name="mapdb-source" value="file"> Upload Custom File</label>
+                        </div>
+                        <input type="file" id="mapdb-file" accept=".json" class="hidden">
+                    </div>
+                    <div class="form-group">
+                        <label for="output-name">Map Name:</label>
+                        <input type="text" id="output-name" value="elanthia_map" placeholder="Enter map name">
+                    </div>
+                </section>
+
+                <!-- Room Selection Panel -->
+                <section class="panel">
+                    <h3>🏠 Room Selection</h3>
+                    <div class="form-group">
+                        <label>Selection Method:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="room-selection" value="location" checked> By Location</label>
+                            <label><input type="radio" name="room-selection" value="custom"> Custom Room Range</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="location-group">
+                        <label for="location-select">Location:</label>
+                        <select id="location-select">
+                            <option value="">Loading locations...</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="custom-group">
+                        <label for="room-ranges">Room Ranges:</label>
+                        <input type="text" id="room-ranges" placeholder="e.g. 35593-35601, 35608-35619">
+                        <small>Enter room ID ranges separated by commas</small>
+                    </div>
+                </section>
+
+                <!-- Theme Panel -->
+                <section class="panel">
+                    <h3>🎨 Theme & Colors</h3>
+                    <div class="form-group">
+                        <label for="theme-select">Theme Preset:</label>
+                        <select id="theme-select">
+                            <option value="maritime">Maritime</option>
+                            <option value="dungeon">Dungeon</option>
+                            <option value="forest">Forest</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="color-grid">
+                        <div class="color-input">
+                            <label for="default-color">Default Rooms:</label>
+                            <input type="color" id="default-color" value="#ffffff">
+                        </div>
+                        <div class="color-input">
+                            <label for="water-color">Water Rooms:</label>
+                            <input type="color" id="water-color" value="#8cc6ff">
+                        </div>
+                        <div class="color-input">
+                            <label for="exit-color">Exit Rooms:</label>
+                            <input type="color" id="exit-color" value="#ff6b6b">
+                        </div>
+                        <div class="color-input">
+                            <label for="shop-color">Shop Rooms:</label>
+                            <input type="color" id="shop-color" value="#90EE90">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Options Panel -->
+                <section class="panel">
+                    <h3>⚙️ Options</h3>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="show-room-ids" checked> Show Room IDs</label>
+                        <label><input type="checkbox" id="show-labels" checked> Show Connection Labels</label>
+                        <label><input type="checkbox" id="show-connections" checked> Show Connections</label>
+                        <label><input type="checkbox" id="debug-mode"> Debug Mode</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="grid-size">Grid Size:</label>
+                        <input type="range" id="grid-size" min="30" max="100" value="50">
+                        <span id="grid-size-value">50px</span>
+                    </div>
+                </section>
+            </div>
+
+            <div class="action-section">
+                <button id="generate-btn" class="btn-primary" disabled>Generate Map</button>
+                <button id="preview-btn" class="btn-secondary" disabled>Preview</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Data from <a href="https://github.com/elanthia-online/mapdb" target="_blank">Elanthia MapDB</a></p>
+        </footer>
+    </div>
+
+    <!-- Loading Scripts -->
+    <script src="js/mapdb-loader.js"></script>
+    <script src="js/map-generator.js"></script>
+    <script src="js/ui-controls.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
