@@ -1,12 +1,12 @@
 class MapDBLoader {
     constructor() {
+        // Load from your own repository - no CORS issues!
+        this.LOCAL_MAPDB_URL = 'mapdb.json';
         this.GITHUB_API_URL = 'https://api.github.com/repos/elanthia-online/mapdb/releases/latest';
-        // Use GitHub's raw content URL which supports CORS
-        this.RAW_CONTENT_URL = 'https://raw.githubusercontent.com/elanthia-online/mapdb/main/mapdb.json';
         this.DB_NAME = 'ElanthiaMapDB';
         this.DB_VERSION = 1;
         this.STORE_NAME = 'mapdb';
-        this.CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+        this.CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
     }
 
     // Initialize IndexedDB
@@ -53,70 +53,51 @@ class MapDBLoader {
 
     async downloadMapDB(onProgress = null) {
         try {
-            console.log('Starting download from raw GitHub content...');
-            console.log('URL:', this.RAW_CONTENT_URL);
+            console.log('Loading MapDB from local repository...');
             
-            const response = await fetch(this.RAW_CONTENT_URL);
-            console.log('Download response status:', response.status);
-            console.log('Download response headers:', Object.fromEntries(response.headers.entries()));
+            const response = await fetch(this.LOCAL_MAPDB_URL);
+            console.log('Response status:', response.status);
             
             if (!response.ok) {
-                throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to load: ${response.status} ${response.statusText}`);
             }
 
+            // Get file size if available
             const contentLength = response.headers.get('content-length');
             const total = parseInt(contentLength, 10);
-            console.log('Content length:', contentLength, 'bytes');
             
-            if (!response.body) {
-                // Fallback for browsers that don't support streaming
-                console.log('Streaming not supported, downloading as text...');
+            if (response.body && total) {
+                // Stream with progress
+                let loaded = 0;
+                const reader = response.body.getReader();
+                const chunks = [];
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    chunks.push(value);
+                    loaded += value.length;
+                    
+                    if (onProgress) {
+                        const percent = Math.round((loaded / total) * 100);
+                        onProgress(percent, loaded, total);
+                    }
+                }
+
+                const blob = new Blob(chunks);
+                const text = await blob.text();
+                return JSON.parse(text);
+            } else {
+                // Simple download
                 const text = await response.text();
                 if (onProgress) onProgress(100, text.length, text.length);
                 return JSON.parse(text);
             }
 
-            let loaded = 0;
-            const reader = response.body.getReader();
-            const chunks = [];
-
-            console.log('Starting streaming download...');
-
-            while (true) {
-                const { done, value } = await reader.read();
-                
-                if (done) break;
-                
-                chunks.push(value);
-                loaded += value.length;
-                
-                if (onProgress && total) {
-                    const percent = Math.round((loaded / total) * 100);
-                    onProgress(percent, loaded, total);
-                }
-                
-                // Log progress every 5MB
-                if (loaded % (5 * 1024 * 1024) < value.length) {
-                    console.log(`Downloaded ${this.formatFileSize(loaded)} / ${this.formatFileSize(total)}`);
-                }
-            }
-
-            console.log('Download complete, parsing JSON...');
-            
-            // Convert chunks to text
-            const blob = new Blob(chunks);
-            const text = await blob.text();
-            
-            console.log('Text length:', text.length, 'characters');
-            
-            const parsed = JSON.parse(text);
-            console.log('JSON parsed successfully, rooms:', parsed.length);
-            
-            return parsed;
-
         } catch (error) {
-            console.error('Download failed with error:', error);
-            throw new Error(`Unable to download MapDB file: ${error.message}`);
+            console.error('Failed to load MapDB:', error);
+            throw new Error(`Unable to load MapDB: ${error.message}`);
         }
     }
 
@@ -234,96 +215,56 @@ class MapDBLoader {
 
     async loadMapDB(onProgress = null, forceRefresh = false) {
         try {
-            console.log('=== Starting MapDB Load Process ===');
-
-            // Get version info (but don't fail if this doesn't work)
-            let latestVersion = 'unknown';
-            try {
-                const latestRelease = await this.getLatestRelease();
-                latestVersion = latestRelease.tag_name;
-                console.log(`Latest version: ${latestVersion}`);
-            } catch (error) {
-                console.log('Could not get version info, proceeding with download anyway');
-            }
-
-            // Check cache (unless forcing refresh)
+            // Check cache first
             if (!forceRefresh) {
                 const cached = await this.getCachedMapDB();
-                
                 if (cached) {
-                    // Use cache if it exists and is recent enough
                     const cacheAge = this.formatCacheAge(cached.timestamp);
-                    console.log(`Using cached MapDB v${cached.version} (${cacheAge})`);
+                    console.log(`Using cached MapDB (${cacheAge})`);
                     
                     if (onProgress) {
-                        onProgress(100, 0, 0, `Using cached MapDB v${cached.version} (${cacheAge})`);
+                        onProgress(100, 0, 0, `Using cached MapDB (${cacheAge})`);
                     }
                     
                     return {
                         data: cached.data,
                         version: cached.version,
-                        fromCache: true,
-                        cacheAge: cacheAge
+                        fromCache: true
                     };
                 }
             }
 
-            console.log('No valid cache found, downloading from main branch...');
-
+            // Load from repository
             if (onProgress) {
-                onProgress(0, 0, 0, 'Downloading latest MapDB...');
+                onProgress(0, 0, 0, 'Loading MapDB...');
             }
 
-            // Download with progress
             const mapdb = await this.downloadMapDB(
                 (percent, loaded, total) => {
                     if (onProgress) {
                         const loadedStr = this.formatFileSize(loaded);
-                        const totalStr = total ? this.formatFileSize(total) : 'Unknown';
+                        const totalStr = total ? this.formatFileSize(total) : '';
                         onProgress(percent, loaded, total, 
-                            `Downloading MapDB - ${loadedStr}${total ? ` / ${totalStr}` : ''}`);
+                            `Loading MapDB - ${loadedStr}${totalStr ? ` / ${totalStr}` : ''}`);
                     }
                 }
             );
 
-            // Cache the result
-            await this.setCachedMapDB(mapdb, latestVersion);
+            // Cache it
+            await this.setCachedMapDB(mapdb, 'v0.2.1');
 
             if (onProgress) {
-                onProgress(100, 0, 0, `MapDB loaded and cached! (${mapdb.length} rooms)`);
+                onProgress(100, 0, 0, `MapDB loaded! (${mapdb.length} rooms)`);
             }
-
-            console.log('=== MapDB Load Complete ===');
 
             return {
                 data: mapdb,
-                version: latestVersion,
+                version: 'v0.2.1',
                 fromCache: false
             };
 
         } catch (error) {
-            console.error('=== MapDB Load Failed ===');
-            console.error('Error details:', error);
-            
-            // If download failed, try to use any cached version as fallback
-            try {
-                const cached = await this.getCachedMapDB();
-                if (cached) {
-                    console.log('Download failed, using cached version as fallback');
-                    if (onProgress) {
-                        onProgress(100, 0, 0, `Using cached MapDB v${cached.version} (download failed)`);
-                    }
-                    return {
-                        data: cached.data,
-                        version: cached.version,
-                        fromCache: true,
-                        fallback: true
-                    };
-                }
-            } catch (cacheError) {
-                console.error('Cache fallback also failed:', cacheError);
-            }
-            
+            console.error('MapDB loading failed:', error);
             throw error;
         }
     }
