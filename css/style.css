@@ -331,9 +331,20 @@ small {
     margin-bottom: 10px;
 }
 
-.group-header strong {
-    color: #4a5568;
+.group-name-input {
+    flex: 1;
+    margin-right: 10px;
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
     font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.group-name-input:focus {
+    outline: none;
+    border-color: #5a67d8;
 }
 
 .room-count {
@@ -399,4 +410,12 @@ small {
 
 #group-positioning button {
     margin-right: 10px;
+}
+
+/* Additional font panel styles */
+h4 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #4a5568;
+    font-size: 14px;
 }

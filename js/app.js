@@ -6,6 +6,7 @@ class MapGenApp {
         this.config = this.getDefaultConfig();
         this.currentGroups = []; // Store detected groups
         this.groupOffsets = new Map(); // Store manual offsets for groups
+        this.groupNames = new Map(); // Store custom names for groups
         this.init();
     }
 
@@ -463,6 +464,12 @@ class MapGenApp {
             // Create map generator
             const generator = new MapGenerator();
             
+            // Prepare groups with names
+            const groupsWithNames = this.currentGroups.map((group, index) => ({
+                ...group,
+                name: this.groupNames.get(index) || `Group ${index + 1}`
+            }));
+            
             // Get current config
             const config = {
                 edgeLength: this.config.edgeLength,
@@ -481,7 +488,9 @@ class MapGenApp {
                 showRoomNames: document.getElementById('show-room-names').checked,
                 showLabels: document.getElementById('show-labels').checked,
                 showConnections: document.getElementById('show-connections').checked,
-                groupOffsets: this.groupOffsets, // Pass group offsets
+                showGroupLabels: document.getElementById('show-group-labels').checked,
+                groupOffsets: this.groupOffsets,
+                groups: groupsWithNames,
                 fonts: this.config.fonts
             };
             
@@ -503,7 +512,6 @@ class MapGenApp {
         }
     }
 
-
     previewMap() {
         try {
             const rooms = this.getSelectedRooms();
@@ -512,6 +520,12 @@ class MapGenApp {
             
             // Create map generator
             const generator = new MapGenerator();
+            
+            // Prepare groups with names
+            const groupsWithNames = this.currentGroups.map((group, index) => ({
+                ...group,
+                name: this.groupNames.get(index) || `Group ${index + 1}`
+            }));
             
             // Get current config
             const config = {
@@ -531,7 +545,9 @@ class MapGenApp {
                 showRoomNames: document.getElementById('show-room-names').checked,
                 showLabels: document.getElementById('show-labels').checked,
                 showConnections: document.getElementById('show-connections').checked,
-                groupOffsets: this.groupOffsets, // Pass group offsets
+                showGroupLabels: true, // Always show group labels in preview
+                groupOffsets: this.groupOffsets,
+                groups: groupsWithNames,
                 fonts: this.config.fonts
             };
             
@@ -626,13 +642,13 @@ class MapGenApp {
         this.currentGroups.forEach((group, index) => {
             const offset = this.groupOffsets.get(index) || { x: 0, y: 0 };
             const roomCount = group.rooms.length;
-            const locations = [...new Set(group.rooms.map(r => r.location).filter(Boolean))];
-            const label = locations.length > 0 ? locations.join(', ') : `Group ${index + 1}`;
+            const groupName = this.groupNames.get(index) || `Group ${index + 1}`;
             
             html += `
                 <div class="group-item" data-group="${index}">
                     <div class="group-header">
-                        <strong>${label}</strong>
+                        <input type="text" class="group-name-input" data-group="${index}" 
+                               value="${groupName}" placeholder="Group ${index + 1}">
                         <span class="room-count">${roomCount} rooms</span>
                     </div>
                     <div class="offset-controls">
@@ -661,6 +677,14 @@ class MapGenApp {
         
         container.innerHTML = html;
         
+        // Add event listeners to group name inputs
+        container.querySelectorAll('.group-name-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const groupIndex = parseInt(input.dataset.group);
+                this.groupNames.set(groupIndex, input.value);
+            });
+        });
+        
         // Add event listeners to sliders
         container.querySelectorAll('.x-offset, .y-offset').forEach(slider => {
             slider.addEventListener('change', () => {
@@ -683,6 +707,7 @@ class MapGenApp {
     
     resetGroupOffsets() {
         this.groupOffsets.clear();
+        this.groupNames.clear();
         this.updateGroupPositioningPanel();
     }
     

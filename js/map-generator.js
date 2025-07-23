@@ -313,30 +313,33 @@ class MapGenerator {
 
     applyGroupOffsets(groups) {
         const positions = new Map();
-        const componentBounds = [];
         
-        groups.forEach((group, groupIndex) => {
-            // Get bounding box for this group
-            const bounds = this.getBoundingBox(group.positions);
-            
-            // Calculate base position for this component
-            let baseOffsetX = 0;
-            let baseOffsetY = 0;
-            
-            if (componentBounds.length > 0) {
-                // Position new component to the right of all previous components with padding
-                const rightmostX = Math.max(...componentBounds.map(b => b.maxX));
-                const padding = 3; // Space between components
+        // First pass: calculate base positions if not already done
+        if (!groups[0].baseOffset) {
+            let currentX = 0;
+            groups.forEach((group, groupIndex) => {
+                const bounds = this.getBoundingBox(group.positions);
                 
-                baseOffsetX = rightmostX + padding - bounds.minX;
-                baseOffsetY = -bounds.minY; // Align tops
-            } else {
-                // First component, center at origin
-                baseOffsetX = -bounds.minX;
-                baseOffsetY = -bounds.minY;
-            }
-            
-            // Apply manual offset if provided
+                if (groupIndex === 0) {
+                    // First group starts at origin
+                    group.baseOffset = { x: -bounds.minX, y: -bounds.minY };
+                } else {
+                    // Subsequent groups positioned to the right
+                    const prevGroup = groups[groupIndex - 1];
+                    const prevBounds = this.getBoundingBox(prevGroup.positions);
+                    const prevTotalX = prevGroup.baseOffset.x + prevBounds.maxX;
+                    
+                    group.baseOffset = {
+                        x: prevTotalX + 3 - bounds.minX, // 3 units padding
+                        y: -bounds.minY // Align tops
+                    };
+                }
+            });
+        }
+        
+        // Second pass: apply base + manual offsets
+        groups.forEach((group, groupIndex) => {
+            // Get manual offset if provided
             let manualOffsetX = 0;
             let manualOffsetY = 0;
             
@@ -347,8 +350,8 @@ class MapGenerator {
             }
             
             // Apply total offset to all positions in this group
-            const totalOffsetX = baseOffsetX + manualOffsetX;
-            const totalOffsetY = baseOffsetY + manualOffsetY;
+            const totalOffsetX = group.baseOffset.x + manualOffsetX;
+            const totalOffsetY = group.baseOffset.y + manualOffsetY;
             
             for (const [roomId, pos] of group.positions) {
                 positions.set(roomId, {
@@ -357,8 +360,9 @@ class MapGenerator {
                 });
             }
             
-            // Update bounds for tracking
-            const newBounds = {
+            // Update bounds for rendering
+            const bounds = this.getBoundingBox(group.positions);
+            group.bounds = {
                 minX: bounds.minX + totalOffsetX,
                 maxX: bounds.maxX + totalOffsetX,
                 minY: bounds.minY + totalOffsetY,
@@ -366,9 +370,6 @@ class MapGenerator {
                 width: bounds.width,
                 height: bounds.height
             };
-            
-            componentBounds.push(newBounds);
-            group.bounds = newBounds;
         });
         
         return positions;
@@ -424,6 +425,27 @@ class MapGenerator {
         // Start SVG
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
         svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
+        
+        // Draw group labels if enabled
+        if (this.config.showGroupLabels && this.config.groups) {
+            this.config.groups.forEach((group) => {
+                if (group.bounds) {
+                    const labelX = (group.bounds.minX + group.bounds.width / 2 + offsetX) * edgeLength;
+                    const labelY = (group.bounds.minY + offsetY) * edgeLength - 10; // Above the group
+                    const label = group.name || `Group ${group.index + 1}`;
+                    
+                    // Draw background for label
+                    svg += `<rect x="${labelX - 40}" y="${labelY - 15}" width="80" height="20" 
+                            fill="${this.config.colors.background}" stroke="${this.config.colors.connections}" 
+                            stroke-width="1" rx="3" ry="3"/>`;
+                    
+                    // Draw label text
+                    svg += `<text x="${labelX}" y="${labelY}" text-anchor="middle" 
+                            font-size="12" fill="${this.config.colors.connections}" 
+                            font-family="Arial" font-weight="bold">${label}</text>`;
+                }
+            });
+        }
         
         // Create a set to track drawn connections (to avoid duplicates)
         const drawnConnections = new Set();
