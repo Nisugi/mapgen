@@ -1,6 +1,8 @@
 class MapDBLoader {
     constructor() {
         this.GITHUB_API_URL = 'https://api.github.com/repos/elanthia-online/mapdb/releases/latest';
+        // Use GitHub's raw content URL which supports CORS
+        this.RAW_CONTENT_URL = 'https://raw.githubusercontent.com/elanthia-online/mapdb/main/mapdb.json';
         this.DB_NAME = 'ElanthiaMapDB';
         this.DB_VERSION = 1;
         this.STORE_NAME = 'mapdb';
@@ -32,7 +34,6 @@ class MapDBLoader {
             const response = await fetch(this.GITHUB_API_URL);
             
             console.log('GitHub API response status:', response.status);
-            console.log('GitHub API response headers:', Object.fromEntries(response.headers.entries()));
             
             if (!response.ok) {
                 throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
@@ -40,29 +41,22 @@ class MapDBLoader {
             
             const release = await response.json();
             console.log('Latest release:', release.tag_name);
-            console.log('Assets found:', release.assets.map(a => a.name));
             
             return release;
         } catch (error) {
             console.error('Failed to fetch latest release:', error);
-            throw new Error(`Unable to check for latest MapDB version: ${error.message}`);
+            // Don't throw here - we can still try to download from main branch
+            console.log('Will use main branch version instead');
+            return { tag_name: 'main-branch' };
         }
     }
 
-    async downloadMapDB(downloadUrl, onProgress = null) {
+    async downloadMapDB(onProgress = null) {
         try {
-            console.log('Starting download from:', downloadUrl);
+            console.log('Starting download from raw GitHub content...');
+            console.log('URL:', this.RAW_CONTENT_URL);
             
-            // Test if we can access the URL
-            const headResponse = await fetch(downloadUrl, { method: 'HEAD' });
-            console.log('HEAD request status:', headResponse.status);
-            console.log('HEAD request headers:', Object.fromEntries(headResponse.headers.entries()));
-            
-            if (!headResponse.ok) {
-                throw new Error(`Download URL not accessible: ${headResponse.status} ${headResponse.statusText}`);
-            }
-
-            const response = await fetch(downloadUrl);
+            const response = await fetch(this.RAW_CONTENT_URL);
             console.log('Download response status:', response.status);
             console.log('Download response headers:', Object.fromEntries(response.headers.entries()));
             
@@ -75,7 +69,11 @@ class MapDBLoader {
             console.log('Content length:', contentLength, 'bytes');
             
             if (!response.body) {
-                throw new Error('Response body is null - streaming not supported');
+                // Fallback for browsers that don't support streaming
+                console.log('Streaming not supported, downloading as text...');
+                const text = await response.text();
+                if (onProgress) onProgress(100, text.length, text.length);
+                return JSON.parse(text);
             }
 
             let loaded = 0;
@@ -118,7 +116,6 @@ class MapDBLoader {
 
         } catch (error) {
             console.error('Download failed with error:', error);
-            console.error('Error stack:', error.stack);
             throw new Error(`Unable to download MapDB file: ${error.message}`);
         }
     }
@@ -237,23 +234,24 @@ class MapDBLoader {
 
     async loadMapDB(onProgress = null, forceRefresh = false) {
         try {
-            // Always check GitHub for latest version first
-            if (onProgress) {
-                onProgress(0, 0, 0, 'Checking for latest MapDB version...');
-            }
-
             console.log('=== Starting MapDB Load Process ===');
 
-            const latestRelease = await this.getLatestRelease();
-            const latestVersion = latestRelease.tag_name;
-            
-            console.log(`Latest version: ${latestVersion}`);
+            // Get version info (but don't fail if this doesn't work)
+            let latestVersion = 'unknown';
+            try {
+                const latestRelease = await this.getLatestRelease();
+                latestVersion = latestRelease.tag_name;
+                console.log(`Latest version: ${latestVersion}`);
+            } catch (error) {
+                console.log('Could not get version info, proceeding with download anyway');
+            }
 
             // Check cache (unless forcing refresh)
             if (!forceRefresh) {
                 const cached = await this.getCachedMapDB();
                 
-                if (cached && cached.version === latestVersion) {
+                if (cached) {
+                    // Use cache if it exists and is recent enough
                     const cacheAge = this.formatCacheAge(cached.timestamp);
                     console.log(`Using cached MapDB v${cached.version} (${cacheAge})`);
                     
@@ -267,31 +265,23 @@ class MapDBLoader {
                         fromCache: true,
                         cacheAge: cacheAge
                     };
-                } else if (cached) {
-                    console.log(`Cached version v${cached.version} != latest v${latestVersion}, downloading update...`);
-                } else {
-                    console.log('No cached MapDB found, downloading...');
                 }
             }
 
-            // Find the mapdb.json asset
-            const asset = latestRelease.assets.find(asset => asset.name === 'mapdb.json');
-            
-            if (!asset) {
-                throw new Error('MapDB file not found in latest release assets');
+            console.log('No valid cache found, downloading from main branch...');
+
+            if (onProgress) {
+                onProgress(0, 0, 0, 'Downloading latest MapDB...');
             }
 
-            console.log(`Found asset: ${asset.name}, size: ${this.formatFileSize(asset.size)}`);
-            console.log(`Download URL: ${asset.browser_download_url}`);
-
             // Download with progress
-            const mapdb = await this.downloadMapDB(asset.browser_download_url, 
+            const mapdb = await this.downloadMapDB(
                 (percent, loaded, total) => {
                     if (onProgress) {
                         const loadedStr = this.formatFileSize(loaded);
-                        const totalStr = this.formatFileSize(total);
+                        const totalStr = total ? this.formatFileSize(total) : 'Unknown';
                         onProgress(percent, loaded, total, 
-                            `Downloading MapDB v${latestVersion} - ${loadedStr} / ${totalStr}`);
+                            `Downloading MapDB - ${loadedStr}${total ? ` / ${totalStr}` : ''}`);
                     }
                 }
             );
@@ -300,7 +290,7 @@ class MapDBLoader {
             await this.setCachedMapDB(mapdb, latestVersion);
 
             if (onProgress) {
-                onProgress(100, 0, 0, `MapDB v${latestVersion} loaded and cached!`);
+                onProgress(100, 0, 0, `MapDB loaded and cached! (${mapdb.length} rooms)`);
             }
 
             console.log('=== MapDB Load Complete ===');
