@@ -1,6 +1,11 @@
 class MapGenerator {
     constructor() {
         this.config = {
+            colors: {
+                default: '#ffffff',
+                background: '#f8f9fa',
+                connections: '#666666'
+            },
             showRoomIds: true,
             showLabels: true,
             showConnections: true
@@ -63,29 +68,31 @@ class MapGenerator {
         return null;
     }
 
+    // Calculate bounding box for a set of positions
+    getBoundingBox(positions) {
+        if (positions.size === 0) {
+            return { minX: 0, maxX: 0, minY: 0, maxY: 0, width: 0, height: 0 };
+        }
+        
+        const coords = Array.from(positions.values());
+        const minX = Math.min(...coords.map(p => p.x));
+        const maxX = Math.max(...coords.map(p => p.x));
+        const minY = Math.min(...coords.map(p => p.y));
+        const maxY = Math.max(...coords.map(p => p.y));
+        
+        return {
+            minX,
+            maxX,
+            minY,
+            maxY,
+            width: maxX - minX + 1,
+            height: maxY - minY + 1
+        };
+    }
+
     calculateRoomPositions(rooms, roomLookup) {
         const positions = new Map();
         const visited = new Set();
-        
-        // Find the best starting room (one with the most connections)
-        let startRoom = rooms[0];
-        let maxConnections = 0;
-        
-        rooms.forEach(room => {
-            if (room.wayto) {
-                const validConnections = Object.keys(room.wayto).filter(targetId => {
-                    const direction = this.getDirectionForConnection(room, targetId);
-                    return direction && roomLookup.has(parseInt(targetId));
-                }).length;
-                
-                if (validConnections > maxConnections) {
-                    maxConnections = validConnections;
-                    startRoom = room;
-                }
-            }
-        });
-        
-        console.log(`Starting with room ${startRoom.id} (${maxConnections} connections)`);
         
         // Direction mappings
         const directionOffsets = {
@@ -102,11 +109,14 @@ class MapGenerator {
             'out': { x: 2, y: 0 }
         };
         
+        // Track all component bounding boxes
+        const componentBounds = [];
+        
         // Multiple passes to find connected components
         const unpositioned = new Set(rooms.map(r => r.id));
         
         while (unpositioned.size > 0) {
-            // Find the next starting room (either unvisited with most connections, or any unvisited)
+            // Find the best starting room for this component
             let nextStart = null;
             let nextStartConnections = 0;
             
@@ -115,7 +125,7 @@ class MapGenerator {
                 if (room && room.wayto) {
                     const validConnections = Object.keys(room.wayto).filter(targetId => {
                         const direction = this.getDirectionForConnection(room, targetId);
-                        return direction && unpositioned.has(parseInt(targetId));
+                        return direction && roomLookup.has(parseInt(targetId));
                     }).length;
                     
                     if (validConnections > nextStartConnections) {
@@ -130,20 +140,17 @@ class MapGenerator {
                 nextStart = roomLookup.get(Array.from(unpositioned)[0]);
             }
             
-            // Find a good position for this component
+            // Position this component at origin first
             let startX = 0, startY = 0;
-            if (positions.size > 0) {
-                // Position new components away from existing ones
-                const existingCoords = Array.from(positions.values());
-                const maxX = Math.max(...existingCoords.map(p => p.x));
-                startX = maxX + 5; // Leave some space
-            }
             
-            console.log(`Starting new component with room ${nextStart.id} at (${startX}, ${startY})`);
+            console.log(`Starting new component with room ${nextStart.id}`);
+            
+            // Create a temporary positions map for this component
+            const componentPositions = new Map();
             
             // BFS for this connected component
             const queue = [{ room: nextStart, x: startX, y: startY }];
-            positions.set(nextStart.id, { x: startX, y: startY });
+            componentPositions.set(nextStart.id, { x: startX, y: startY });
             unpositioned.delete(nextStart.id);
             
             while (queue.length > 0) {
@@ -169,9 +176,9 @@ class MapGenerator {
                                 let newX = x + offset.x;
                                 let newY = y + offset.y;
                                 
-                                // Check for position conflicts and resolve them
+                                // Check for position conflicts within this component
                                 let attempts = 0;
-                                while (this.isPositionOccupied(positions, newX, newY) && attempts < 8) {
+                                while (this.isPositionOccupied(componentPositions, newX, newY) && attempts < 8) {
                                     // Try slight offsets to resolve conflicts
                                     switch (attempts) {
                                         case 0: newX += 1; break;
@@ -186,40 +193,56 @@ class MapGenerator {
                                     attempts++;
                                 }
                                 
-                                if (!this.isPositionOccupied(positions, newX, newY)) {
-                                    positions.set(targetRoom.id, { x: newX, y: newY });
+                                if (!this.isPositionOccupied(componentPositions, newX, newY)) {
+                                    componentPositions.set(targetRoom.id, { x: newX, y: newY });
                                     unpositioned.delete(targetRoom.id);
                                     queue.push({ room: targetRoom, x: newX, y: newY });
                                     
                                     console.log(`Positioned room ${targetRoom.id} at (${newX}, ${newY}) via ${direction} from room ${room.id}`);
-                                } else {
-                                    console.log(`Could not resolve position conflict for room ${targetRoom.id}`);
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        
-        console.log(`Positioned ${positions.size} rooms in connected components`);
-        
-        // Handle any remaining unpositioned rooms (should be rare now)
-        if (unpositioned.size > 0) {
-            console.log(`Positioning ${unpositioned.size} remaining unconnected rooms`);
-            const existingCoords = Array.from(positions.values());
-            const maxY = existingCoords.length > 0 ? Math.max(...existingCoords.map(p => p.y)) : 0;
             
-            let gridX = 0, gridY = maxY + 3;
-            for (const roomId of unpositioned) {
-                positions.set(roomId, { x: gridX, y: gridY });
-                gridX++;
-                if (gridX > 5) {
-                    gridX = 0;
-                    gridY++;
+            // Get bounding box for this component
+            const bounds = this.getBoundingBox(componentPositions);
+            
+            // Find a good position for this component that doesn't overlap with previous ones
+            if (componentBounds.length > 0) {
+                // Position new component to the right of all previous components with padding
+                const rightmostX = Math.max(...componentBounds.map(b => b.maxX));
+                const padding = 3; // Space between components
+                
+                // Offset all positions in this component
+                const offsetX = rightmostX + padding - bounds.minX;
+                const offsetY = -bounds.minY; // Align tops
+                
+                for (const [roomId, pos] of componentPositions) {
+                    positions.set(roomId, {
+                        x: pos.x + offsetX,
+                        y: pos.y + offsetY
+                    });
+                }
+                
+                // Update bounds for tracking
+                bounds.minX += offsetX;
+                bounds.maxX += offsetX;
+                bounds.minY += offsetY;
+                bounds.maxY += offsetY;
+            } else {
+                // First component, just copy positions
+                for (const [roomId, pos] of componentPositions) {
+                    positions.set(roomId, pos);
                 }
             }
+            
+            componentBounds.push(bounds);
+            console.log(`Component ${componentBounds.length} bounds:`, bounds);
         }
+        
+        console.log(`Positioned ${positions.size} rooms in ${componentBounds.length} components`);
         
         return positions;
     }
@@ -233,17 +256,18 @@ class MapGenerator {
         const roomSize = this.config.roomSize || 15;
         const roomShape = this.config.roomShape || 'circle';
         
-        // Calculate bounds
+        // Calculate bounds with padding
         const coords = Array.from(positions.values());
         const minX = Math.min(...coords.map(p => p.x));
         const maxX = Math.max(...coords.map(p => p.x));
         const minY = Math.min(...coords.map(p => p.y));
         const maxY = Math.max(...coords.map(p => p.y));
         
-        const width = (maxX - minX + 2) * edgeLength;
-        const height = (maxY - minY + 2) * edgeLength;
-        const offsetX = -minX + 1;
-        const offsetY = -minY + 1;
+        const padding = 2; // Grid units of padding
+        const width = (maxX - minX + 2 * padding) * edgeLength;
+        const height = (maxY - minY + 2 * padding) * edgeLength;
+        const offsetX = -minX + padding;
+        const offsetY = -minY + padding;
         
         // Start SVG
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
