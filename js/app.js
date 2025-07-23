@@ -230,14 +230,30 @@ class MapGenApp {
             const rooms = this.getSelectedRooms();
             this.updateStatus(`Generating map for ${rooms.length} rooms...`);
             
-            // TODO: Implement actual map generation
-            console.log('Rooms to map:', rooms);
-            console.log('Config:', this.config);
+            // Create map generator
+            const generator = new MapGenerator();
             
-            // For now, just show success
-            setTimeout(() => {
-                this.updateStatus(`Map generated! ${rooms.length} rooms processed.`);
-            }, 1000);
+            // Get current config
+            const config = {
+                gridSize: parseInt(document.getElementById('grid-size').value),
+                colors: {
+                    default: document.getElementById('default-color').value,
+                    water: document.getElementById('water-color').value,
+                    exit: document.getElementById('exit-color').value,
+                    shop: document.getElementById('shop-color').value
+                },
+                showRoomIds: document.getElementById('show-room-ids').checked,
+                showLabels: document.getElementById('show-labels').checked,
+                showConnections: document.getElementById('show-connections').checked
+            };
+            
+            // Generate map
+            const svg = generator.generateMap(rooms, config);
+            
+            // Download the SVG file
+            this.downloadSVG(svg, document.getElementById('output-name').value);
+            
+            this.updateStatus(`Map generated! ${rooms.length} rooms processed.`);
             
         } catch (error) {
             this.showError(error.message);
@@ -247,14 +263,66 @@ class MapGenApp {
     previewMap() {
         try {
             const rooms = this.getSelectedRooms();
-            this.updateStatus(`Generating preview for ${rooms.length} rooms...`);
             
-            // TODO: Implement map preview
-            console.log('Preview rooms:', rooms.slice(0, 10)); // Show first 10 for preview
+            // Limit preview to first 50 rooms for performance
+            const previewRooms = rooms.slice(0, 50);
+            
+            this.updateStatus(`Generating preview for ${previewRooms.length} rooms...`);
+            
+            // Create map generator
+            const generator = new MapGenerator();
+            
+            // Get current config
+            const config = {
+                gridSize: parseInt(document.getElementById('grid-size').value),
+                colors: {
+                    default: document.getElementById('default-color').value,
+                    water: document.getElementById('water-color').value,
+                    exit: document.getElementById('exit-color').value,
+                    shop: document.getElementById('shop-color').value
+                },
+                showRoomIds: document.getElementById('show-room-ids').checked,
+                showLabels: document.getElementById('show-labels').checked,
+                showConnections: document.getElementById('show-connections').checked
+            };
+            
+            // Generate preview
+            const svg = generator.generateMap(previewRooms, config);
+            
+            // Show preview in a new window
+            this.showPreview(svg);
+            
+            this.updateStatus(`Preview generated for ${previewRooms.length} rooms.`);
             
         } catch (error) {
             this.showError(error.message);
         }
+    }
+
+    downloadSVG(svgContent, filename) {
+        const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    showPreview(svgContent) {
+        const previewWindow = window.open('', '_blank', 'width=800,height=600');
+        previewWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Map Preview</title></head>
+            <body style="margin:0; padding:20px; background:#f0f0f0;">
+                <h3>Map Preview</h3>
+                ${svgContent}
+            </body>
+            </html>
+        `);
     }
 
     showMainInterface() {
