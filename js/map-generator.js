@@ -608,13 +608,18 @@ class MapGenerator {
             const fontColor = this.config.fonts.rooms.color;
             const fontFamily = this.config.fonts.rooms.family;
             
+
             if (this.config.showRoomNames && room.title && room.title[0]) {
+                // Extract room name from title (usually in brackets)
                 const titleMatch = room.title[0].match(/\[([^\]]+)\]/);
                 let roomName = titleMatch ? titleMatch[1] : room.title[0];
+                
+                // If there's a comma, use the part after it
                 if (roomName.includes(',')) {
-                    const parts = fullTitle.split(',').map(s => s.trim());
-                    const roomName = parts.length > 1 ? parts[parts.length - 1] : fullTitle;
+                    const parts = roomName.split(',').map(s => s.trim());
+                    roomName = parts[parts.length - 1]; // Use the last part
                 }
+                
                 // Wrap text to fit in room
                 const maxWidth = roomShape === 'rectangle' ? roomSize * 3 : roomSize * 2;
                 const lines = this.wrapText(roomName, maxWidth, fontSize);
