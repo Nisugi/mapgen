@@ -44,7 +44,9 @@ class MapGenApp {
                     family: 'Arial',
                     bold: false
                 }
-            }
+            },
+            backgroundImage: null,
+            useBackground: true
         };
     }
 
@@ -370,6 +372,36 @@ class MapGenApp {
             themePreset.addEventListener('change', this.applyThemePreset.bind(this));
         }
 
+        // Background image controls
+        const backgroundImageInput = document.getElementById('background-image');
+        if (backgroundImageInput) {
+            backgroundImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        this.config.backgroundImage = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        const clearBackgroundBtn = document.getElementById('clear-background');
+        if (clearBackgroundBtn) {
+            clearBackgroundBtn.addEventListener('click', () => {
+                this.config.backgroundImage = null;
+                if (backgroundImageInput) backgroundImageInput.value = '';
+            });
+        }
+
+        const useBackgroundCheckbox = document.getElementById('use-background');
+        if (useBackgroundCheckbox) {
+            useBackgroundCheckbox.addEventListener('change', (e) => {
+                this.config.useBackground = e.target.checked;
+            });
+        }
+
         // Generate buttons
         const generateBtn = document.getElementById('generate-btn');
         if (generateBtn) {
@@ -379,6 +411,12 @@ class MapGenApp {
         const previewBtn = document.getElementById('preview-btn');
         if (previewBtn) {
             previewBtn.addEventListener('click', this.previewMap.bind(this));
+        }
+
+        // Export coordinates button
+        const exportCoordsBtn = document.getElementById('export-coords-btn');
+        if (exportCoordsBtn) {
+            exportCoordsBtn.addEventListener('click', this.exportCoordinates.bind(this));
         }
     }
 
@@ -510,7 +548,9 @@ class MapGenApp {
                 showGroupLabels: document.getElementById('show-group-labels').checked,
                 groupOffsets: this.groupOffsets,
                 groups: groupsWithNames,
-                fonts: this.config.fonts
+                fonts: this.config.fonts,
+                backgroundImage: this.config.backgroundImage,
+                useBackground: this.config.useBackground
             };
             
             // Generate map and get group info
@@ -567,7 +607,9 @@ class MapGenApp {
                 showGroupLabels: true, // Always show group labels in preview
                 groupOffsets: this.groupOffsets,
                 groups: groupsWithNames,
-                fonts: this.config.fonts
+                fonts: this.config.fonts,
+                backgroundImage: this.config.backgroundImage,
+                useBackground: this.config.useBackground
             };
             
             // Generate preview and get group info
@@ -768,6 +810,178 @@ class MapGenApp {
     applyGroupOffsets() {
         // Regenerate preview with new offsets
         this.previewMap();
+    }
+
+    exportCoordinates() {
+        if (!this.currentGroups || this.currentGroups.length === 0) {
+            alert('Please generate or preview a map first');
+            return;
+        }
+
+        try {
+            const rooms = this.getSelectedRooms();
+            const generator = new MapGenerator();
+            
+            // Get the same config as generate/preview
+            const groupsWithNames = this.currentGroups.map((group, index) => ({
+                ...group,
+                name: this.groupNames.get(index) || `Group ${index + 1}`
+            }));
+            
+            const config = {
+                edgeLength: this.config.edgeLength,
+                roomShape: this.config.roomShape,
+                roomSize: this.config.roomSize,
+                groupOffsets: this.groupOffsets,
+                groups: groupsWithNames
+            };
+            
+            // Generate positions
+            const result = generator.generateMapWithGroups(rooms, config);
+            const positions = generator.calculateRoomPositionsWithGroups(rooms, new Map(rooms.map(r => [r.id, r]))).positions;
+            
+            // Calculate actual positions with offsets
+            const finalPositions = generator.applyGroupOffsets(result.groups);
+            
+            // Get bounds for offset calculation
+            const coords = Array.from(finalPositions.values());
+            const minX = Math.min(...coords.map(p => p.x));
+            const minY = Math.min(...coords.map(p => p.y));
+            const padding = 2;
+            const offsetX = -minX + padding;
+            const offsetY = -minY + padding;
+            
+            // Generate coordinate data
+            let coordData = [];
+            rooms.forEach(room => {
+                const pos = finalPositions.get(room.id);
+                if (pos) {
+                    const x = (pos.x + offsetX) * config.edgeLength;
+                    const y = (pos.y + offsetY) * config.edgeLength;
+                    const half = config.roomSize;
+                    
+                    // Calculate bounding box based on room shape
+                    let left, top, right, bottom;
+                    if (config.roomShape === 'circle') {
+                        left = x - half;
+                        top = y - half;
+                        right = x + half;
+                        bottom = y + half;
+                    } else if (config.roomShape === 'square') {
+                        left = x - half;
+                        top = y - half;
+                        right = x + half;
+                        bottom = y + half;
+                    } else if (config.roomShape === 'rectangle') {
+                        const width = half * 1.5;
+                        const height = half;
+                        left = x - width;
+                        top = y - height;
+                        right = x + width;
+                        bottom = y + height;
+                    }
+                    
+                    coordData.push({
+                        id: room.id,
+                        image: document.getElementById('output-name').value + '.png',
+                        image_coords: [
+                            Math.round(left),
+                            Math.round(top),
+                            Math.round(right),
+                            Math.round(bottom)
+                        ]
+                    });
+                }
+            });
+            
+            // Create export window
+            this.showCoordinatesExport(coordData);
+            
+        } catch (error) {
+            alert('Error exporting coordinates: ' + error.message);
+        }
+    }
+
+    showCoordinatesExport(coordData) {
+        const exportWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
+        
+        // Format the data for mapdb
+        let mapdbFormat = coordData.map(room => {
+            return `  "${room.id}": {\n` +
+                   `    "image": "${room.image}",\n` +
+                   `    "image_coords": [${room.image_coords.join(', ')}]\n` +
+                   `  }`;
+        }).join(',\n');
+        
+        exportWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Room Coordinates Export</title>
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        padding: 20px;
+                        background: #f5f5f5;
+                    }
+                    h2 { color: #333; }
+                    .export-container {
+                        background: white;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                    }
+                    textarea {
+                        width: 100%;
+                        height: 400px;
+                        font-family: 'Courier New', monospace;
+                        font-size: 12px;
+                        border: 1px solid #ccc;
+                        padding: 10px;
+                    }
+                    button {
+                        background: #5a67d8;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin-right: 10px;
+                    }
+                    button:hover {
+                        background: #4c51bf;
+                    }
+                    .info {
+                        background: #e6f3ff;
+                        padding: 10px;
+                        border-radius: 5px;
+                        margin-bottom: 15px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h2>Room Coordinates Export</h2>
+                <div class="info">
+                    <strong>Image name:</strong> ${document.getElementById('output-name').value}.png<br>
+                    <strong>Total rooms:</strong> ${coordData.length}<br>
+                    <strong>Format:</strong> MapDB image_coords format (left, top, right, bottom)
+                </div>
+                <div class="export-container">
+                    <h3>MapDB Format (for room definitions):</h3>
+                    <textarea id="mapdb-format" readonly>{
+${mapdbFormat}
+}</textarea>
+                    <button onclick="document.getElementById('mapdb-format').select(); document.execCommand('copy'); alert('Copied to clipboard!');">Copy MapDB Format</button>
+                </div>
+                <div class="export-container">
+                    <h3>JSON Format (for reference):</h3>
+                    <textarea id="json-format" readonly>${JSON.stringify(coordData, null, 2)}</textarea>
+                    <button onclick="document.getElementById('json-format').select(); document.execCommand('copy'); alert('Copied to clipboard!');">Copy JSON Format</button>
+                </div>
+            </body>
+            </html>
+        `);
     }
 
     updateStatus(message) {

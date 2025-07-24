@@ -430,26 +430,29 @@ class MapGenerator {
         
         // Start SVG
         let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
-        svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
         
-        // In createSVG method, after opening <svg> tag:
-        if (this.config.backgroundImage) {
-            svg += `
-                <defs>
-                    <pattern id="bgImage" x="0" y="0" width="100%" height="100%" 
-                            patternUnits="userSpaceOnUse">
-                        <image href="${this.config.backgroundImage}" 
-                            x="0" y="0" 
-                            width="${width}" height="${height}"
-                            preserveAspectRatio="xMidYMid slice"/>
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#bgImage)"/>
-            `;
-        } else {
-            svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
+        // Add background
+        if (this.config.useBackground) {
+            if (this.config.backgroundImage) {
+                // Use background image
+                svg += `
+                    <defs>
+                        <pattern id="bgImage" x="0" y="0" width="100%" height="100%" patternUnits="userSpaceOnUse">
+                            <image href="${this.config.backgroundImage}" 
+                                   x="0" y="0" 
+                                   width="${width}" height="${height}"
+                                   preserveAspectRatio="xMidYMid slice"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#bgImage)"/>
+                `;
+            } else {
+                // Use background color
+                svg += `<rect width="100%" height="100%" fill="${this.config.colors.background || '#f8f9fa'}"/>`;
+            }
         }
-
+        // If useBackground is false, no background rect is added (transparent)
+        
         // Draw group labels if enabled
         if (this.config.showGroupLabels && this.config.groups) {
             this.config.groups.forEach((group) => {

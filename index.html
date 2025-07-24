@@ -98,12 +98,6 @@
                         <input type="range" id="connection-width" min="1" max="5" value="2">
                         <span id="connection-width-value">2px</span>
                     </div>
-
-                    <div class="form-group">
-                        <label for="background-image">Background Image (optional):</label>
-                        <input type="file" id="background-image" accept="image/*">
-                        <button type="button" id="clear-background" class="btn-small">Clear</button>
-                    </div>
                     
                     <!-- Default Colors -->
                     <div class="form-group">
@@ -125,6 +119,19 @@
                                 <label for="vertical-connection-color">Vertical Connections:</label>
                                 <input type="color" id="vertical-connection-color" value="#999999">
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Background Options -->
+                    <div class="form-group">
+                        <label>Background Options:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="use-background" checked> Use Background</label>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label for="background-image">Background Image (optional):</label>
+                            <input type="file" id="background-image" accept="image/*">
+                            <button type="button" id="clear-background" class="btn-small" style="margin-top: 5px;">Clear Image</button>
                         </div>
                     </div>
                     
@@ -236,6 +243,7 @@
             <div class="action-section">
                 <button id="generate-btn" class="btn-primary" disabled>Generate Map</button>
                 <button id="preview-btn" class="btn-secondary" disabled>Preview</button>
+                <button id="export-coords-btn" class="btn-secondary">Export Coordinates</button>
             </div>
         </main>
 
