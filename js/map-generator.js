@@ -609,10 +609,12 @@ class MapGenerator {
             const fontFamily = this.config.fonts.rooms.family;
             
             if (this.config.showRoomNames && room.title && room.title[0]) {
-                // Extract room name from title (usually in brackets)
                 const titleMatch = room.title[0].match(/\[([^\]]+)\]/);
-                const roomName = titleMatch ? titleMatch[1] : room.title[0];
-                
+                let roomName = titleMatch ? titleMatch[1] : room.title[0];
+                if (roomName.includes(',')) {
+                    const parts = fullTitle.split(',').map(s => s.trim());
+                    const roomName = parts.length > 1 ? parts[parts.length - 1] : fullTitle;
+                }
                 // Wrap text to fit in room
                 const maxWidth = roomShape === 'rectangle' ? roomSize * 3 : roomSize * 2;
                 const lines = this.wrapText(roomName, maxWidth, fontSize);

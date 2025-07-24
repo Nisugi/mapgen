@@ -13,11 +13,12 @@ class MapGenApp {
     getDefaultConfig() {
         return {
             theme: 'custom',
-            edgeLength: 60,
+            edgeLength: 80,
             roomShape: 'square',
             roomSize: 15,
             strokeWidth: 1,
             connectionWidth: 2,
+            resolution: 2,
             colors: {
                 default: '#ffffff',
                 background: '#f8f9fa',
@@ -883,7 +884,7 @@ class MapGenApp {
                     
                     coordData.push({
                         id: room.id,
-                        image: document.getElementById('output-name').value + '.png',
+                        image: document.getElementById('output-name').value,
                         image_coords: [
                             Math.round(left),
                             Math.round(top),
