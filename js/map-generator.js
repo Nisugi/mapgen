@@ -70,6 +70,10 @@ class MapGenerator {
         // First check dirto for overrides (also check "dir" for legacy compatibility)
         if (room.dirto && room.dirto[targetId]) {
             const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
+            // Check for cross-group connection
+            if (dirtoDirection === 'cross-group') {
+                return null; // Don't use for positioning
+            }
             if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
                 return dirtoDirection;
             }
@@ -157,6 +161,13 @@ class MapGenerator {
             }
         }
         
+        return false;
+    }
+
+    isCrossGroupConnection(room, targetId) {
+        if (room.dirto && room.dirto[targetId]) {
+            return room.dirto[targetId].toLowerCase().trim() === 'cross-group';
+        }
         return false;
     }
 
@@ -493,9 +504,11 @@ class MapGenerator {
         
         // Create a set to track drawn connections (to avoid duplicates)
         const drawnConnections = new Set();
+        const crossGroupConnections = [];
         
         // Draw connections
         if (this.config.showConnections) {
+            // First pass: collect cross-group connections
             rooms.forEach(room => {
                 const pos = positions.get(room.id);
                 if (!pos || !room.wayto) return;
@@ -505,6 +518,69 @@ class MapGenerator {
                     const targetRoom = roomLookup.get(targetIdNum);
                     const targetPos = positions.get(targetIdNum);
                     if (!targetPos || !targetRoom) continue;
+                    
+                    if (this.isCrossGroupConnection(room, targetId)) {
+                        crossGroupConnections.push({
+                            from: { room, pos },
+                            to: { room: targetRoom, pos: targetPos }
+                        });
+                    }
+                }
+            });
+            
+            // Draw cross-group connections first (under everything else)
+            if (this.config.crossGroupConnections || crossGroupConnections.length > 0) {
+                svg += `<g id="cross-group-connections">`;
+                
+                // From UI-specified connections
+                if (this.config.crossGroupConnections) {
+                    this.config.crossGroupConnections.forEach(conn => {
+                        const fromPos = positions.get(conn.fromId);
+                        const toPos = positions.get(conn.toId);
+                        if (fromPos && toPos) {
+                            const x1 = (fromPos.x + offsetX) * edgeLength;
+                            const y1 = (fromPos.y + offsetY) * edgeLength;
+                            const x2 = (toPos.x + offsetX) * edgeLength;
+                            const y2 = (toPos.y + offsetY) * edgeLength;
+                            
+                            const dashArray = conn.dashSpacing || '5,5';
+                            const color = conn.color || this.config.colors.connections;
+                            
+                            svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                                    stroke="${color}" stroke-width="${connectionWidth}" 
+                                    stroke-dasharray="${dashArray}" opacity="0.6"/>`;
+                        }
+                    });
+                }
+                
+                // From dirto cross-group connections
+                crossGroupConnections.forEach(({ from, to }) => {
+                    const x1 = (from.pos.x + offsetX) * edgeLength;
+                    const y1 = (from.pos.y + offsetY) * edgeLength;
+                    const x2 = (to.pos.x + offsetX) * edgeLength;
+                    const y2 = (to.pos.y + offsetY) * edgeLength;
+                    
+                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                            stroke="${this.config.colors.connections}" stroke-width="${connectionWidth}" 
+                            stroke-dasharray="5,5" opacity="0.6"/>`;
+                });
+                
+                svg += `</g>`;
+            }
+            
+            // Draw normal connections
+            rooms.forEach(room => {
+                const pos = positions.get(room.id);
+                if (!pos || !room.wayto) return;
+                
+                for (const targetId of Object.keys(room.wayto)) {
+                    const targetIdNum = parseInt(targetId);
+                    const targetRoom = roomLookup.get(targetIdNum);
+                    const targetPos = positions.get(targetIdNum);
+                    if (!targetPos || !targetRoom) continue;
+                    
+                    // Skip cross-group connections here
+                    if (this.isCrossGroupConnection(room, targetId)) continue;
                     
                     // Create unique key for this connection
                     const connectionKey = [room.id, targetIdNum].sort().join('-');
@@ -544,7 +620,7 @@ class MapGenerator {
                             
                             // Font settings
                             const fontWeight = this.config.fonts.labels.bold ? 'bold' : 'normal';
-                            const fontSize = this.config.fonts.labels.size;
+                            const fontSize = this.config.fonts.labels.size || 8;
                             const fontColor = this.config.fonts.labels.color;
                             const fontFamily = this.config.fonts.labels.family;
                             
@@ -552,16 +628,19 @@ class MapGenerator {
                                 // Two different labels - one above, one below
                                 svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
                                         fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                                        transform="rotate(${adjustedAngle} ${midX} ${midY})">${label1}</text>`;
+                                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
+                                        text-rendering="optimizeLegibility">${label1}</text>`;
                                 svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="middle" font-size="${fontSize}" 
                                         fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                                        transform="rotate(${adjustedAngle} ${midX} ${midY})">${label2}</text>`;
+                                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
+                                        text-rendering="optimizeLegibility">${label2}</text>`;
                             } else if (label1 || label2) {
                                 // Single label
                                 const label = label1 || label2;
                                 svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
                                         fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                                        transform="rotate(${adjustedAngle} ${midX} ${midY})">${label}</text>`;
+                                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
+                                        text-rendering="optimizeLegibility">${label}</text>`;
                             }
                         }
                     }
@@ -604,11 +683,10 @@ class MapGenerator {
             
             // Add room text
             const fontWeight = this.config.fonts.rooms.bold ? 'bold' : 'normal';
-            const fontSize = this.config.fonts.rooms.size;
+            const fontSize = this.config.fonts.rooms.size || 10;
             const fontColor = this.config.fonts.rooms.color;
             const fontFamily = this.config.fonts.rooms.family;
             
-
             if (this.config.showRoomNames && room.title && room.title[0]) {
                 // Extract room name from title (usually in brackets)
                 const titleMatch = room.title[0].match(/\[([^\]]+)\]/);
@@ -631,13 +709,14 @@ class MapGenerator {
                 lines.forEach((line, index) => {
                     svg += `<text x="${x}" y="${startY + index * lineHeight}" text-anchor="middle" 
                             font-size="${fontSize}" fill="${fontColor}" font-family="${fontFamily}" 
-                            font-weight="${fontWeight}">${line}</text>`;
+                            font-weight="${fontWeight}" text-rendering="optimizeLegibility">${line}</text>`;
                 });
                 
             } else if (this.config.showRoomIds) {
-                // Just show room ID
-                svg += `<text x="${x}" y="${y + 3}" text-anchor="middle" font-size="${fontSize}" 
-                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}">${room.id}</text>`;
+                // Just show room ID - center text vertically using dominant-baseline
+                svg += `<text x="${x}" y="${y}" text-anchor="middle" font-size="${fontSize}" 
+                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                        text-rendering="optimizeLegibility" dominant-baseline="middle">${room.id}</text>`;
             }
         });
         
