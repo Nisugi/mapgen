@@ -53,7 +53,7 @@ class MapDBLoader {
         return Array.from(locations).sort();
     }
 
-    // Extract room tags for theming - ADD THIS FUNCTION
+    // Extract room tags for theming
     extractTags(mapdb) {
         const tags = new Set();
         mapdb.forEach(room => {

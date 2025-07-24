@@ -7,6 +7,9 @@ class MapGenApp {
         this.currentGroups = []; // Store detected groups
         this.groupOffsets = new Map(); // Store manual offsets for groups
         this.groupNames = new Map(); // Store custom names for groups
+        this.groupLabelOffsets = new Map(); // Store label position offsets
+        this.crossGroupConnections = []; // Store cross-group connections
+        this.customLabels = []; // Store custom labels
         this.init();
     }
 
@@ -18,7 +21,6 @@ class MapGenApp {
             roomSize: 15,
             strokeWidth: 1,
             connectionWidth: 2,
-            resolution: 2,
             colors: {
                 default: '#ffffff',
                 background: '#f8f9fa',
@@ -419,6 +421,18 @@ class MapGenApp {
         if (exportCoordsBtn) {
             exportCoordsBtn.addEventListener('click', this.exportCoordinates.bind(this));
         }
+
+        // Cross-group connection button
+        const addCrossGroupBtn = document.getElementById('add-cross-group');
+        if (addCrossGroupBtn) {
+            addCrossGroupBtn.addEventListener('click', this.addCrossGroupConnection.bind(this));
+        }
+
+        // Custom label button
+        const addCustomLabelBtn = document.getElementById('add-custom-label');
+        if (addCustomLabelBtn) {
+            addCustomLabelBtn.addEventListener('click', this.addCustomLabel.bind(this));
+        }
     }
 
     async loadMapDB() {
@@ -548,10 +562,13 @@ class MapGenApp {
                 showConnections: document.getElementById('show-connections').checked,
                 showGroupLabels: document.getElementById('show-group-labels').checked,
                 groupOffsets: this.groupOffsets,
+                groupLabelOffsets: this.groupLabelOffsets,
                 groups: groupsWithNames,
                 fonts: this.config.fonts,
                 backgroundImage: this.config.backgroundImage,
-                useBackground: this.config.useBackground
+                useBackground: this.config.useBackground,
+                crossGroupConnections: this.crossGroupConnections,
+                customLabels: this.customLabels
             };
             
             // Generate map and get group info
@@ -607,10 +624,13 @@ class MapGenApp {
                 showConnections: document.getElementById('show-connections').checked,
                 showGroupLabels: true, // Always show group labels in preview
                 groupOffsets: this.groupOffsets,
+                groupLabelOffsets: this.groupLabelOffsets,
                 groups: groupsWithNames,
                 fonts: this.config.fonts,
                 backgroundImage: this.config.backgroundImage,
-                useBackground: this.config.useBackground
+                useBackground: this.config.useBackground,
+                crossGroupConnections: this.crossGroupConnections,
+                customLabels: this.customLabels
             };
             
             // Generate preview and get group info
@@ -620,6 +640,8 @@ class MapGenApp {
             
             // Update group positioning panel
             this.updateGroupPositioningPanel();
+            this.updateCrossGroupConnectionsList();
+            this.updateCustomLabelsList();
             
             // Show preview in a new window
             this.showPreview(svg);
@@ -686,6 +708,8 @@ class MapGenApp {
         this.populateLocationDropdown();
         this.populateTagDropdown();
         this.renderTagColorsList();
+        this.updateCrossGroupConnectionsList();
+        this.updateCustomLabelsList();
         this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
 
@@ -703,6 +727,7 @@ class MapGenApp {
         
         this.currentGroups.forEach((group, index) => {
             const offset = this.groupOffsets.get(index) || { x: 0, y: 0 };
+            const labelOffset = this.groupLabelOffsets.get(index) || { x: 0, y: 0 };
             const roomCount = group.rooms.length;
             const groupName = this.groupNames.get(index) || `Group ${index + 1}`;
             
@@ -714,6 +739,7 @@ class MapGenApp {
                         <span class="room-count">${roomCount} rooms</span>
                     </div>
                     <div class="offset-controls">
+                        <h5>Group Position</h5>
                         <div class="offset-control">
                             <label>X Offset:</label>
                             <input type="range" class="x-offset" data-group="${index}" 
@@ -727,6 +753,21 @@ class MapGenApp {
                                    min="-100" max="100" value="${offset.y}">
                             <input type="number" class="offset-number y-offset-number" data-group="${index}"
                                    min="-100" max="100" value="${offset.y}">
+                        </div>
+                        <h5>Label Position</h5>
+                        <div class="offset-control">
+                            <label>Label X:</label>
+                            <input type="range" class="label-x-offset" data-group="${index}" 
+                                   min="-50" max="50" value="${labelOffset.x}">
+                            <input type="number" class="offset-number label-x-offset-number" data-group="${index}"
+                                   min="-50" max="50" value="${labelOffset.x}">
+                        </div>
+                        <div class="offset-control">
+                            <label>Label Y:</label>
+                            <input type="range" class="label-y-offset" data-group="${index}" 
+                                   min="-50" max="50" value="${labelOffset.y}">
+                            <input type="number" class="offset-number label-y-offset-number" data-group="${index}"
+                                   min="-50" max="50" value="${labelOffset.y}">
                         </div>
                     </div>
                 </div>
@@ -747,7 +788,7 @@ class MapGenApp {
             });
         });
         
-        // Add event listeners to sliders and number inputs
+        // Add event listeners to group position sliders
         container.querySelectorAll('.x-offset, .y-offset').forEach(slider => {
             slider.addEventListener('input', () => {
                 const groupIndex = parseInt(slider.dataset.group);
@@ -767,6 +808,31 @@ class MapGenApp {
                     this.groupOffsets.get(groupIndex).y = value;
                     // Update corresponding number input
                     const numberInput = container.querySelector(`.y-offset-number[data-group="${groupIndex}"]`);
+                    if (numberInput) numberInput.value = value;
+                }
+            });
+        });
+        
+        // Add event listeners to label position sliders
+        container.querySelectorAll('.label-x-offset, .label-y-offset').forEach(slider => {
+            slider.addEventListener('input', () => {
+                const groupIndex = parseInt(slider.dataset.group);
+                const isX = slider.classList.contains('label-x-offset');
+                const value = parseInt(slider.value);
+                
+                if (!this.groupLabelOffsets.has(groupIndex)) {
+                    this.groupLabelOffsets.set(groupIndex, { x: 0, y: 0 });
+                }
+                
+                if (isX) {
+                    this.groupLabelOffsets.get(groupIndex).x = value;
+                    // Update corresponding number input
+                    const numberInput = container.querySelector(`.label-x-offset-number[data-group="${groupIndex}"]`);
+                    if (numberInput) numberInput.value = value;
+                } else {
+                    this.groupLabelOffsets.get(groupIndex).y = value;
+                    // Update corresponding number input
+                    const numberInput = container.querySelector(`.label-y-offset-number[data-group="${groupIndex}"]`);
                     if (numberInput) numberInput.value = value;
                 }
             });
@@ -800,17 +866,362 @@ class MapGenApp {
                 }
             });
         });
+        
+        // Add event listeners to label number inputs
+        container.querySelectorAll('.label-x-offset-number, .label-y-offset-number').forEach(input => {
+            input.addEventListener('change', () => {
+                const groupIndex = parseInt(input.dataset.group);
+                const isX = input.classList.contains('label-x-offset-number');
+                const value = parseInt(input.value) || 0;
+                
+                // Clamp value to range
+                const clampedValue = Math.max(-50, Math.min(50, value));
+                input.value = clampedValue;
+                
+                if (!this.groupLabelOffsets.has(groupIndex)) {
+                    this.groupLabelOffsets.set(groupIndex, { x: 0, y: 0 });
+                }
+                
+                if (isX) {
+                    this.groupLabelOffsets.get(groupIndex).x = clampedValue;
+                    // Update corresponding slider
+                    const slider = container.querySelector(`.label-x-offset[data-group="${groupIndex}"]`);
+                    if (slider) slider.value = clampedValue;
+                } else {
+                    this.groupLabelOffsets.get(groupIndex).y = clampedValue;
+                    // Update corresponding slider
+                    const slider = container.querySelector(`.label-y-offset[data-group="${groupIndex}"]`);
+                    if (slider) slider.value = clampedValue;
+                }
+            });
+        });
     }
     
     resetGroupOffsets() {
         this.groupOffsets.clear();
         this.groupNames.clear();
+        this.groupLabelOffsets.clear();
         this.updateGroupPositioningPanel();
     }
     
     applyGroupOffsets() {
         // Regenerate preview with new offsets
         this.previewMap();
+    }
+
+    addCrossGroupConnection() {
+        const fromId = parseInt(document.getElementById('cross-from-room').value);
+        const toId = parseInt(document.getElementById('cross-to-room').value);
+        
+        if (!fromId || !toId) {
+            alert('Please enter both room IDs');
+            return;
+        }
+        
+        if (fromId === toId) {
+            alert('Cannot connect a room to itself');
+            return;
+        }
+        
+        // Check if connection already exists
+        if (this.crossGroupConnections.some(conn => 
+            (conn.fromId === fromId && conn.toId === toId) ||
+            (conn.fromId === toId && conn.toId === fromId)
+        )) {
+            alert('This connection already exists');
+            return;
+        }
+        
+        // Add connection with default settings
+        this.crossGroupConnections.push({
+            fromId: fromId,
+            toId: toId,
+            style: 'dashed',
+            dashSpacing: '5,5',
+            color: this.config.colors.connections
+        });
+        
+        // Clear inputs
+        document.getElementById('cross-from-room').value = '';
+        document.getElementById('cross-to-room').value = '';
+        
+        // Update list
+        this.updateCrossGroupConnectionsList();
+    }
+    
+    updateCrossGroupConnectionsList() {
+        const container = document.getElementById('cross-group-list');
+        
+        if (this.crossGroupConnections.length === 0) {
+            container.innerHTML = '<p class="empty-message">No cross-group connections defined</p>';
+            return;
+        }
+        
+        let html = '<div class="connection-list">';
+        
+        this.crossGroupConnections.forEach((conn, index) => {
+            html += `
+                <div class="connection-item" data-index="${index}">
+                    <div class="connection-header">
+                        <span>Room ${conn.fromId} → Room ${conn.toId}</span>
+                        <button class="btn-small remove-connection" data-index="${index}">Remove</button>
+                    </div>
+                    <div class="connection-controls">
+                        <div class="control-group">
+                            <label>Style:</label>
+                            <select class="conn-style" data-index="${index}">
+                                <option value="dashed" ${conn.style === 'dashed' ? 'selected' : ''}>Dashed</option>
+                                <option value="dotted" ${conn.style === 'dotted' ? 'selected' : ''}>Dotted</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Spacing:</label>
+                            <input type="text" class="conn-spacing" data-index="${index}" 
+                                   value="${conn.dashSpacing}" placeholder="5,5">
+                        </div>
+                        <div class="control-group">
+                            <label>Color:</label>
+                            <input type="color" class="conn-color" data-index="${index}" 
+                                   value="${conn.color}">
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+        // Add event listeners
+        container.querySelectorAll('.remove-connection').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.dataset.index);
+                this.crossGroupConnections.splice(index, 1);
+                this.updateCrossGroupConnectionsList();
+            });
+        });
+        
+        container.querySelectorAll('.conn-style').forEach(select => {
+            select.addEventListener('change', () => {
+                const index = parseInt(select.dataset.index);
+                this.crossGroupConnections[index].style = select.value;
+                // Update dash spacing based on style
+                if (select.value === 'dotted') {
+                    this.crossGroupConnections[index].dashSpacing = '2,3';
+                } else {
+                    this.crossGroupConnections[index].dashSpacing = '5,5';
+                }
+                this.updateCrossGroupConnectionsList();
+            });
+        });
+        
+        container.querySelectorAll('.conn-spacing').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.crossGroupConnections[index].dashSpacing = input.value;
+            });
+        });
+        
+        container.querySelectorAll('.conn-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.crossGroupConnections[index].color = input.value;
+            });
+        });
+    }
+
+    addCustomLabel() {
+        const text = document.getElementById('custom-label-text').value.trim();
+        
+        if (!text) {
+            alert('Please enter label text');
+            return;
+        }
+        
+        // Add label with default settings
+        this.customLabels.push({
+            text: text,
+            x: 50, // Default position
+            y: 50,
+            fontSize: 12,
+            fontColor: '#000000',
+            fontFamily: 'Arial',
+            bold: false,
+            background: true,
+            backgroundColor: this.config.colors.background,
+            borderColor: this.config.colors.connections,
+            borderWidth: 1
+        });
+        
+        // Clear input
+        document.getElementById('custom-label-text').value = '';
+        
+        // Update list
+        this.updateCustomLabelsList();
+    }
+    
+    updateCustomLabelsList() {
+        const container = document.getElementById('custom-labels-list');
+        
+        if (this.customLabels.length === 0) {
+            container.innerHTML = '<p class="empty-message">No custom labels defined</p>';
+            return;
+        }
+        
+        let html = '<div class="label-list">';
+        
+        this.customLabels.forEach((label, index) => {
+            html += `
+                <div class="label-item" data-index="${index}">
+                    <div class="label-header">
+                        <input type="text" class="label-text-input" data-index="${index}" 
+                               value="${label.text}">
+                        <button class="btn-small remove-label" data-index="${index}">Remove</button>
+                    </div>
+                    <div class="label-controls">
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>X:</label>
+                                <input type="number" class="label-x" data-index="${index}" 
+                                       value="${label.x}" min="-1000" max="1000">
+                            </div>
+                            <div class="control-group">
+                                <label>Y:</label>
+                                <input type="number" class="label-y" data-index="${index}" 
+                                       value="${label.y}" min="-1000" max="1000">
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <input type="number" class="label-size" data-index="${index}" 
+                                       value="${label.fontSize}" min="8" max="48">
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>Font:</label>
+                                <select class="label-font" data-index="${index}">
+                                    <option value="Arial" ${label.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+                                    <option value="Times New Roman" ${label.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
+                                    <option value="Courier New" ${label.fontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
+                                    <option value="Georgia" ${label.fontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
+                                    <option value="Verdana" ${label.fontFamily === 'Verdana' ? 'selected' : ''}>Verdana</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Color:</label>
+                                <input type="color" class="label-color" data-index="${index}" 
+                                       value="${label.fontColor}">
+                            </div>
+                            <div class="control-group">
+                                <label><input type="checkbox" class="label-bold" data-index="${index}" 
+                                        ${label.bold ? 'checked' : ''}> Bold</label>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label><input type="checkbox" class="label-background" data-index="${index}" 
+                                        ${label.background ? 'checked' : ''}> Background</label>
+                            </div>
+                            <div class="control-group ${!label.background ? 'disabled' : ''}">
+                                <label>BG Color:</label>
+                                <input type="color" class="label-bg-color" data-index="${index}" 
+                                       value="${label.backgroundColor}" ${!label.background ? 'disabled' : ''}>
+                            </div>
+                            <div class="control-group ${!label.background ? 'disabled' : ''}">
+                                <label>Border:</label>
+                                <input type="color" class="label-border-color" data-index="${index}" 
+                                       value="${label.borderColor}" ${!label.background ? 'disabled' : ''}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+        // Add event listeners
+        container.querySelectorAll('.label-text-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.customLabels[index].text = input.value;
+            });
+        });
+        
+        container.querySelectorAll('.remove-label').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.dataset.index);
+                this.customLabels.splice(index, 1);
+                this.updateCustomLabelsList();
+            });
+        });
+        
+        // Position controls
+        container.querySelectorAll('.label-x, .label-y').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                const value = parseInt(input.value) || 0;
+                
+                if (input.classList.contains('label-x')) {
+                    this.customLabels[index].x = value;
+                } else {
+                    this.customLabels[index].y = value;
+                }
+            });
+        });
+        
+        // Font controls
+        container.querySelectorAll('.label-size').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.customLabels[index].fontSize = parseInt(input.value) || 12;
+            });
+        });
+        
+        container.querySelectorAll('.label-font').forEach(select => {
+            select.addEventListener('change', () => {
+                const index = parseInt(select.dataset.index);
+                this.customLabels[index].fontFamily = select.value;
+            });
+        });
+        
+        container.querySelectorAll('.label-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.customLabels[index].fontColor = input.value;
+            });
+        });
+        
+        container.querySelectorAll('.label-bold').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.customLabels[index].bold = checkbox.checked;
+            });
+        });
+        
+        // Background controls
+        container.querySelectorAll('.label-background').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.customLabels[index].background = checkbox.checked;
+                this.updateCustomLabelsList(); // Re-render to enable/disable controls
+            });
+        });
+        
+        container.querySelectorAll('.label-bg-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.customLabels[index].backgroundColor = input.value;
+            });
+        });
+        
+        container.querySelectorAll('.label-border-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.customLabels[index].borderColor = input.value;
+            });
+        });
     }
 
     exportCoordinates() {
@@ -884,7 +1295,7 @@ class MapGenApp {
                     
                     coordData.push({
                         id: room.id,
-                        image: document.getElementById('output-name').value,
+                        image: document.getElementById('output-name').value + '.png',
                         image_coords: [
                             Math.round(left),
                             Math.round(top),

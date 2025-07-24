@@ -98,6 +98,7 @@ header p {
 }
 
 .form-group input[type="text"],
+.form-group input[type="number"],
 .form-group select {
     width: 100%;
     padding: 10px;
@@ -108,6 +109,7 @@ header p {
 }
 
 .form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
 .form-group select:focus {
     outline: none;
     border-color: #5a67d8;
@@ -424,4 +426,149 @@ h4 {
     margin-bottom: 10px;
     color: #4a5568;
     font-size: 14px;
+}
+
+h5 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #718096;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Cross-group connections styles */
+.connection-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.connection-item {
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.connection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.connection-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.control-group label {
+    font-size: 12px;
+    color: #718096;
+    margin-bottom: 0;
+}
+
+.control-group select,
+.control-group input[type="text"],
+.control-group input[type="color"] {
+    padding: 2px 4px;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+}
+
+.control-group select {
+    width: 80px;
+}
+
+.control-group input[type="text"] {
+    width: 60px;
+}
+
+.control-group input[type="color"] {
+    width: 30px;
+    height: 24px;
+    padding: 0;
+}
+
+.remove-connection {
+    background: #e53e3e;
+}
+
+.remove-connection:hover {
+    background: #c53030;
+}
+
+/* Custom labels styles */
+.label-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.label-item {
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.label-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.label-text-input {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.label-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.control-group input[type="number"] {
+    width: 60px;
+    padding: 2px 4px;
+    font-size: 12px;
+}
+
+.control-group.disabled {
+    opacity: 0.5;
+}
+
+.control-group.disabled input {
+    cursor: not-allowed;
+}
+
+.remove-label {
+    background: #e53e3e;
+}
+
+.remove-label:hover {
+    background: #c53030;
 }

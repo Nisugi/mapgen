@@ -85,9 +85,21 @@ class MapGenerator {
             }
         }
         
-        // Then check wayto for cardinal directions
+        // Then check wayto for cardinal directions or simple commands
         if (room.wayto && room.wayto[targetId]) {
             const waytoCommand = room.wayto[targetId].toLowerCase().trim();
+            
+            // Skip stringprocs (commands starting with ;e) unless there's a dirto
+            if (waytoCommand.startsWith(';e')) {
+                // Only use stringprocs if there's a corresponding dirto
+                if (room.dirto && room.dirto[targetId]) {
+                    const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
+                    if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
+                        return dirtoDirection;
+                    }
+                }
+                return null; // Ignore stringprocs without dirto
+            }
             
             // Check if it's a direct cardinal direction
             if (this.cardinalDirections.has(waytoCommand)) {
@@ -114,6 +126,38 @@ class MapGenerator {
         const wayto = room.wayto[targetId].trim();
         const waytoLower = wayto.toLowerCase();
         
+        // Handle script commands starting with ";e" FIRST
+        if (wayto.startsWith(';e')) {
+            // Only show labels for stringprocs if there's a dirto (meaning it's mappable)
+            if (room.dirto && room.dirto[targetId]) {
+                // Try to extract meaningful movement from stringproc
+                // Look for common patterns like "move climb wall", "go door", etc.
+                const moveMatch = wayto.match(/move\s+(.+?)(?:;|$)/i);
+                if (moveMatch) {
+                    const movement = moveMatch[1].trim();
+                    // Don't show if it's just a cardinal direction
+                    if (!this.cardinalDirections.has(movement.toLowerCase())) {
+                        return movement;
+                    }
+                }
+                
+                // Look for other movement patterns
+                const actionMatch = wayto.match(/;e\s*(?:fput\s*['"])?(.+?)(?:['"])?(?:;|$)/i);
+                if (actionMatch) {
+                    const action = actionMatch[1].trim();
+                    // Skip cardinal directions and common script commands
+                    if (!this.cardinalDirections.has(action.toLowerCase()) && 
+                        !action.includes('empty_hands') && 
+                        !action.includes('fill_hands') &&
+                        !action.includes('waitrt') &&
+                        !action.includes('fput')) {
+                        return action;
+                    }
+                }
+            }
+            return null; // Don't show labels for most stringprocs
+        }
+        
         // Don't show labels for cardinal directions
         if (this.cardinalDirections.has(waytoLower)) {
             // Unless there's a dirto that differs
@@ -131,14 +175,6 @@ class MapGenerator {
         const match = wayto.match(goClimbPattern);
         if (match) {
             return match[2]; // Return the "something" part
-        }
-        
-        // Handle script commands starting with ";e"
-        if (wayto.startsWith(';e')) {
-            // Try to extract meaningful parts
-            // For now, return null for script commands
-            // TODO: Add labelto support
-            return null;
         }
         
         return wayto;
@@ -645,6 +681,34 @@ class MapGenerator {
                         }
                     }
                 }
+            });
+        }
+        
+        // Draw custom labels if provided
+        if (this.config.customLabels && this.config.customLabels.length > 0) {
+            this.config.customLabels.forEach(label => {
+                const x = (label.x / this.config.edgeLength + offsetX) * edgeLength;
+                const y = (label.y / this.config.edgeLength + offsetY) * edgeLength;
+                
+                const fontWeight = label.bold ? 'bold' : 'normal';
+                
+                if (label.background) {
+                    // Estimate text width for background
+                    const textWidth = label.text.length * label.fontSize * 0.6 + 10;
+                    const textHeight = label.fontSize + 6;
+                    
+                    svg += `<rect x="${x - textWidth/2}" y="${y - textHeight/2}" 
+                            width="${textWidth}" height="${textHeight}" 
+                            fill="${label.backgroundColor}" 
+                            stroke="${label.borderColor}" 
+                            stroke-width="${label.borderWidth}" 
+                            rx="2" ry="2"/>`;
+                }
+                
+                svg += `<text x="${x}" y="${y}" text-anchor="middle" 
+                        font-size="${label.fontSize}" fill="${label.fontColor}" 
+                        font-family="${label.fontFamily}" font-weight="${fontWeight}"
+                        dominant-baseline="middle">${label.text}</text>`;
             });
         }
         
