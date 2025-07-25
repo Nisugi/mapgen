@@ -66,6 +66,45 @@ class MapGenerator {
         return { svg, groups };
     }
 
+    // Calculate room bounding box based on shape and size
+    getRoomBounds(x, y, roomShape, roomSize) {
+        let left, top, right, bottom, width, height;
+        
+        switch (roomShape) {
+            case 'circle':
+                left = x - roomSize;
+                top = y - roomSize;
+                right = x + roomSize;
+                bottom = y + roomSize;
+                width = roomSize * 2;
+                height = roomSize * 2;
+                break;
+                
+            case 'rectangle':
+                width = roomSize * 1.5;
+                height = roomSize;
+                left = x - width;
+                top = y - height;
+                right = x + width;
+                bottom = y + height;
+                width = width * 2;
+                height = height * 2;
+                break;
+                
+            case 'square':
+            default:
+                left = x - roomSize;
+                top = y - roomSize;
+                right = x + roomSize;
+                bottom = y + roomSize;
+                width = roomSize * 2;
+                height = roomSize * 2;
+                break;
+        }
+        
+        return { left, top, right, bottom, width, height };
+    }
+
     getDirectionForConnection(room, targetId) {
         // First check dirto for overrides (also check "dir" for legacy compatibility)
         if (room.dirto && room.dirto[targetId]) {
@@ -508,6 +547,15 @@ class MapGenerator {
                     const centerX = (group.bounds.minX + group.bounds.width / 2 + offsetX) * edgeLength;
                     let labelY = (group.bounds.minY + offsetY) * edgeLength - 20; // Default above
                     
+                    // Apply manual label offset if provided
+                    let labelOffsetX = 0;
+                    let labelOffsetY = 0;
+                    if (this.config.groupLabelOffsets && this.config.groupLabelOffsets.has(group.index)) {
+                        const labelOffset = this.config.groupLabelOffsets.get(group.index);
+                        labelOffsetX = labelOffset.x || 0;
+                        labelOffsetY = labelOffset.y || 0;
+                    }
+                    
                     // Check if there's a room at the top center - if so, move label to the side
                     const topCenterGridX = Math.round(group.bounds.minX + group.bounds.width / 2);
                     const topGridY = group.bounds.minY;
@@ -521,6 +569,10 @@ class MapGenerator {
                         labelX = (group.bounds.minX + offsetX - 0.5) * edgeLength;
                         labelY = (group.bounds.minY + group.bounds.height / 2 + offsetY) * edgeLength;
                     }
+                    
+                    // Apply manual offsets
+                    labelX += labelOffsetX;
+                    labelY += labelOffsetY;
                     
                     const label = group.name || `Group ${group.index + 1}`;
                     
@@ -731,17 +783,16 @@ class MapGenerator {
                 }
             }
             
-            // Draw room shape
+            // Draw room shape using the getRoomBounds method for consistency
+            const bounds = this.getRoomBounds(x, y, roomShape, roomSize);
+            
             if (roomShape === 'circle') {
                 svg += `<circle cx="${x}" cy="${y}" r="${roomSize}" fill="${color}" stroke="#333" stroke-width="${strokeWidth}"/>`;
             } else if (roomShape === 'square') {
-                const half = roomSize;
-                svg += `<rect x="${x - half}" y="${y - half}" width="${roomSize * 2}" height="${roomSize * 2}" 
+                svg += `<rect x="${bounds.left}" y="${bounds.top}" width="${bounds.width}" height="${bounds.height}" 
                         fill="${color}" stroke="#333" stroke-width="${strokeWidth}"/>`;
             } else if (roomShape === 'rectangle') {
-                const width = roomSize * 1.5;
-                const height = roomSize;
-                svg += `<rect x="${x - width}" y="${y - height}" width="${width * 2}" height="${height * 2}" 
+                svg += `<rect x="${bounds.left}" y="${bounds.top}" width="${bounds.width}" height="${bounds.height}" 
                         fill="${color}" stroke="#333" stroke-width="${strokeWidth}"/>`;
             }
             

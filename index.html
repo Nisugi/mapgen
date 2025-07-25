@@ -79,6 +79,7 @@
                             <option value="circle">Circle</option>
                             <option value="rectangle">Rectangle</option>
                         </select>
+                        <small>Note: Room shape affects coordinate calculations</small>
                     </div>
                     
                     <div class="form-group">
@@ -144,6 +145,7 @@
                             </select>
                             <button type="button" id="add-tag-color" class="btn-small">Add</button>
                         </div>
+                        <small>Tags shown are from currently selected rooms</small>
                     </div>
                     
                     <!-- Tag Color List -->
@@ -234,6 +236,13 @@
                 <!-- Group Positioning Panel -->
                 <section class="panel">
                     <h3>📍 Group Positioning</h3>
+                    <div class="form-group">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button type="button" class="btn-small" onclick="window.mapApp.exportCoordinateFile()">📤 Export Settings</button>
+                            <button type="button" class="btn-small" onclick="window.mapApp.importCoordinateFile()">📥 Import Settings</button>
+                        </div>
+                        <small>Export/import all positioning, colors, and connection data for reuse</small>
+                    </div>
                     <div id="group-positioning">
                         <p class="empty-message">Generate or preview a map to see groups</p>
                     </div>
@@ -264,6 +273,7 @@
                             <input type="text" id="custom-label-text" placeholder="Enter label text" style="flex: 1;">
                             <button type="button" id="add-custom-label" class="btn-small">Add Label</button>
                         </div>
+                        <small>Coordinates are in grid units (multiply by edge length for pixels)</small>
                     </div>
                     <div id="custom-labels-list">
                         <p class="empty-message">No custom labels defined</p>
@@ -279,7 +289,8 @@
         </main>
 
         <footer>
-            <p>Data from <a href="https://github.com/elanthia-online/mapdb" target="_blank">Elanthia MapDB</a></p>
+            <p>Data from <a href="https://github.com/elanthia-online/mapdb" target="_blank">Elanthia MapDB</a> | 
+               <span style="opacity: 0.7;">Coordinates auto-saved locally</span></p>
         </footer>
     </div>
 

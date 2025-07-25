@@ -10,6 +10,7 @@ class MapGenApp {
         this.groupLabelOffsets = new Map(); // Store label position offsets
         this.crossGroupConnections = []; // Store cross-group connections
         this.customLabels = []; // Store custom labels
+        this.coordinateStorage = new CoordinateStorage(); // New coordinate persistence
         this.init();
     }
 
@@ -56,19 +57,47 @@ class MapGenApp {
     populateTagDropdown() {
         if (!this.mapdb) return;
 
-        const tagSelect = document.getElementById('tag-select');
-        const allTags = this.mapdbLoader.extractTags(this.mapdb);
-        
-        tagSelect.innerHTML = '<option value="">Select a tag...</option>';
-        
-        allTags.forEach(tag => {
-            const option = document.createElement('option');
-            option.value = tag;
-            option.textContent = tag;
-            tagSelect.appendChild(option);
-        });
+        try {
+            const rooms = this.getSelectedRooms();
+            const tagSelect = document.getElementById('tag-select');
+            
+            // Extract tags only from selected rooms
+            const selectedTags = new Set();
+            rooms.forEach(room => {
+                if (room.tags && Array.isArray(room.tags)) {
+                    room.tags.forEach(tag => selectedTags.add(tag));
+                }
+            });
+            
+            const sortedTags = Array.from(selectedTags).sort();
+            
+            tagSelect.innerHTML = '<option value="">Select a tag...</option>';
+            
+            sortedTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.textContent = tag;
+                tagSelect.appendChild(option);
+            });
 
-        console.log(`Populated ${allTags.length} tags`);
+            console.log(`Populated ${sortedTags.length} tags from selected rooms`);
+            
+        } catch (error) {
+            // If we can't get selected rooms yet, show all tags
+            const tagSelect = document.getElementById('tag-select');
+            const allTags = this.mapdbLoader.extractTags(this.mapdb);
+            
+            tagSelect.innerHTML = '<option value="">Select a tag...</option>';
+            
+            allTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.textContent = tag;
+                tagSelect.appendChild(option);
+            });
+
+            console.log(`Populated ${allTags.length} tags (fallback to all)`);
+        }
     }
 
     addTagColor() {
@@ -217,6 +246,14 @@ class MapGenApp {
         document.querySelectorAll('input[name="room-selection"]').forEach(radio => {
             radio.addEventListener('change', this.handleRoomSelectionChange.bind(this));
         });
+
+        // Location selection listener - repopulate tags when location changes
+        const locationSelect = document.getElementById('location-select');
+        if (locationSelect) {
+            locationSelect.addEventListener('change', () => {
+                this.populateTagDropdown();
+            });
+        }
 
         // Edge length slider
         const edgeLengthSlider = document.getElementById('edge-length');
@@ -493,6 +530,9 @@ class MapGenApp {
             locationGroup.classList.add('hidden');
             customGroup.classList.remove('hidden');
         }
+        
+        // Repopulate tags for new selection
+        this.populateTagDropdown();
     }
 
     getSelectedRooms() {
@@ -528,10 +568,59 @@ class MapGenApp {
         }
     }
 
+    getCurrentMapIdentifier() {
+        const selectionMethod = document.querySelector('input[name="room-selection"]:checked').value;
+        
+        if (selectionMethod === 'location') {
+            const location = document.getElementById('location-select').value;
+            return `location_${location}`;
+        } else {
+            const rangeText = document.getElementById('room-ranges').value.trim();
+            const useUID = document.querySelector('input[name="room-id-type"]:checked').value === 'uid';
+            return `${useUID ? 'uid' : 'id'}_${rangeText}`;
+        }
+    }
+
+    loadSavedCoordinates() {
+        const mapId = this.getCurrentMapIdentifier();
+        const savedCoords = this.coordinateStorage.loadCoordinates(mapId, this.mapdbVersion);
+        
+        if (savedCoords) {
+            console.log('Loading saved coordinates for', mapId);
+            this.groupOffsets = new Map(savedCoords.groupOffsets || []);
+            this.groupNames = new Map(savedCoords.groupNames || []);
+            this.groupLabelOffsets = new Map(savedCoords.groupLabelOffsets || []);
+            this.crossGroupConnections = savedCoords.crossGroupConnections || [];
+            this.customLabels = savedCoords.customLabels || [];
+            return true;
+        }
+        return false;
+    }
+
+    saveCurrentCoordinates() {
+        const mapId = this.getCurrentMapIdentifier();
+        const coordData = {
+            mapId: mapId,
+            version: this.mapdbVersion,
+            groupOffsets: Array.from(this.groupOffsets.entries()),
+            groupNames: Array.from(this.groupNames.entries()),
+            groupLabelOffsets: Array.from(this.groupLabelOffsets.entries()),
+            crossGroupConnections: this.crossGroupConnections,
+            customLabels: this.customLabels,
+            created: new Date().toISOString()
+        };
+        
+        this.coordinateStorage.saveCoordinates(mapId, this.mapdbVersion, coordData);
+        console.log('Saved coordinates for', mapId);
+    }
+
     generateMap() {
         try {
             const rooms = this.getSelectedRooms();
             this.updateStatus(`Generating map for ${rooms.length} rooms...`);
+            
+            // Load saved coordinates if available
+            this.loadSavedCoordinates();
             
             // Create map generator
             const generator = new MapGenerator();
@@ -576,6 +665,9 @@ class MapGenApp {
             const svg = result.svg;
             this.currentGroups = result.groups;
             
+            // Save coordinates
+            this.saveCurrentCoordinates();
+            
             // Update group positioning panel
             this.updateGroupPositioningPanel();
             
@@ -594,6 +686,9 @@ class MapGenApp {
             const rooms = this.getSelectedRooms();
             
             this.updateStatus(`Generating preview for ${rooms.length} rooms...`);
+            
+            // Load saved coordinates if available
+            this.loadSavedCoordinates();
             
             // Create map generator
             const generator = new MapGenerator();
@@ -637,6 +732,9 @@ class MapGenApp {
             const result = generator.generateMapWithGroups(rooms, config);
             const svg = result.svg;
             this.currentGroups = result.groups;
+            
+            // Save coordinates
+            this.saveCurrentCoordinates();
             
             // Update group positioning panel
             this.updateGroupPositioningPanel();
@@ -698,19 +796,6 @@ class MapGenApp {
             </body>
             </html>
         `);
-    }
-
-    showMainInterface() {
-        document.getElementById('app-content').classList.remove('hidden');
-        document.getElementById('generate-btn').disabled = false;
-        document.getElementById('preview-btn').disabled = false;
-        this.hideProgress();
-        this.populateLocationDropdown();
-        this.populateTagDropdown();
-        this.renderTagColorsList();
-        this.updateCrossGroupConnectionsList();
-        this.updateCustomLabelsList();
-        this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
 
     updateGroupPositioningPanel() {
@@ -777,6 +862,8 @@ class MapGenApp {
         html += '</div>';
         html += '<button class="btn-small" onclick="window.mapApp.resetGroupOffsets()">Reset All</button>';
         html += '<button class="btn-small" onclick="window.mapApp.applyGroupOffsets()">Apply Changes</button>';
+        html += '<button class="btn-small" onclick="window.mapApp.exportCoordinateFile()">Export Coords</button>';
+        html += '<button class="btn-small" onclick="window.mapApp.importCoordinateFile()">Import Coords</button>';
         
         container.innerHTML = html;
         
@@ -785,6 +872,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const groupIndex = parseInt(input.dataset.group);
                 this.groupNames.set(groupIndex, input.value);
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -810,6 +898,7 @@ class MapGenApp {
                     const numberInput = container.querySelector(`.y-offset-number[data-group="${groupIndex}"]`);
                     if (numberInput) numberInput.value = value;
                 }
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -835,6 +924,7 @@ class MapGenApp {
                     const numberInput = container.querySelector(`.label-y-offset-number[data-group="${groupIndex}"]`);
                     if (numberInput) numberInput.value = value;
                 }
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -864,6 +954,7 @@ class MapGenApp {
                     const slider = container.querySelector(`.y-offset[data-group="${groupIndex}"]`);
                     if (slider) slider.value = clampedValue;
                 }
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -893,6 +984,7 @@ class MapGenApp {
                     const slider = container.querySelector(`.label-y-offset[data-group="${groupIndex}"]`);
                     if (slider) slider.value = clampedValue;
                 }
+                this.saveCurrentCoordinates();
             });
         });
     }
@@ -901,12 +993,150 @@ class MapGenApp {
         this.groupOffsets.clear();
         this.groupNames.clear();
         this.groupLabelOffsets.clear();
+        this.saveCurrentCoordinates();
         this.updateGroupPositioningPanel();
     }
     
     applyGroupOffsets() {
         // Regenerate preview with new offsets
         this.previewMap();
+    }
+
+    exportCoordinateFile() {
+        if (!this.currentGroups || this.currentGroups.length === 0) {
+            alert('Please generate or preview a map first');
+            return;
+        }
+
+        const mapId = this.getCurrentMapIdentifier();
+        const coordData = {
+            mapName: document.getElementById('output-name').value,
+            mapId: mapId,
+            version: this.mapdbVersion,
+            created: new Date().toISOString(),
+            groups: this.currentGroups.map((group, index) => ({
+                index: index,
+                name: this.groupNames.get(index) || `Group ${index + 1}`,
+                offset: this.groupOffsets.get(index) || { x: 0, y: 0 },
+                labelOffset: this.groupLabelOffsets.get(index) || { x: 0, y: 0 },
+                rooms: group.rooms.map(room => ({
+                    id: room.id,
+                    position: group.positions.get(room.id)
+                }))
+            })),
+            crossGroupConnections: this.crossGroupConnections,
+            customLabels: this.customLabels,
+            config: {
+                edgeLength: this.config.edgeLength,
+                roomShape: this.config.roomShape,
+                roomSize: this.config.roomSize,
+                strokeWidth: this.config.strokeWidth,
+                connectionWidth: this.config.connectionWidth,
+                colors: this.config.colors,
+                tagColors: Array.from(this.config.tagColors.entries()),
+                fonts: this.config.fonts
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(coordData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${mapId}_coordinates.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.updateStatus('Coordinate file exported!');
+    }
+
+    importCoordinateFile() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const coordData = JSON.parse(event.target.result);
+                    
+                    // Validate structure
+                    if (!coordData.groups || !Array.isArray(coordData.groups)) {
+                        throw new Error('Invalid coordinate file format');
+                    }
+                    
+                    // Apply coordinate data
+                    this.groupOffsets.clear();
+                    this.groupNames.clear();
+                    this.groupLabelOffsets.clear();
+                    
+                    coordData.groups.forEach(group => {
+                        this.groupOffsets.set(group.index, group.offset || { x: 0, y: 0 });
+                        this.groupNames.set(group.index, group.name || `Group ${group.index + 1}`);
+                        this.groupLabelOffsets.set(group.index, group.labelOffset || { x: 0, y: 0 });
+                    });
+                    
+                    if (coordData.crossGroupConnections) {
+                        this.crossGroupConnections = coordData.crossGroupConnections;
+                    }
+                    
+                    if (coordData.customLabels) {
+                        this.customLabels = coordData.customLabels;
+                    }
+                    
+                    // Apply config if available
+                    if (coordData.config) {
+                        const config = coordData.config;
+                        if (config.edgeLength) {
+                            this.config.edgeLength = config.edgeLength;
+                            document.getElementById('edge-length').value = config.edgeLength;
+                            document.getElementById('edge-length-value').textContent = config.edgeLength + 'px';
+                        }
+                        if (config.roomShape) {
+                            this.config.roomShape = config.roomShape;
+                            document.getElementById('room-shape').value = config.roomShape;
+                        }
+                        if (config.roomSize) {
+                            this.config.roomSize = config.roomSize;
+                            document.getElementById('room-size').value = config.roomSize;
+                            document.getElementById('room-size-value').textContent = config.roomSize + 'px';
+                        }
+                        if (config.colors) {
+                            this.config.colors = { ...this.config.colors, ...config.colors };
+                            document.getElementById('default-color').value = config.colors.default || this.config.colors.default;
+                            document.getElementById('background-color').value = config.colors.background || this.config.colors.background;
+                            document.getElementById('connection-color').value = config.colors.connections || this.config.colors.connections;
+                            document.getElementById('vertical-connection-color').value = config.colors.verticalConnections || this.config.colors.verticalConnections;
+                        }
+                        if (config.tagColors) {
+                            this.config.tagColors = new Map(config.tagColors);
+                            this.renderTagColorsList();
+                        }
+                    }
+                    
+                    // Save to storage
+                    this.saveCurrentCoordinates();
+                    
+                    // Update UI
+                    this.updateGroupPositioningPanel();
+                    this.updateCrossGroupConnectionsList();
+                    this.updateCustomLabelsList();
+                    
+                    this.updateStatus(`Coordinates imported from ${file.name}!`);
+                    
+                } catch (error) {
+                    alert('Error importing coordinate file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        input.click();
     }
 
     addCrossGroupConnection() {
@@ -945,7 +1175,8 @@ class MapGenApp {
         document.getElementById('cross-from-room').value = '';
         document.getElementById('cross-to-room').value = '';
         
-        // Update list
+        // Save and update
+        this.saveCurrentCoordinates();
         this.updateCrossGroupConnectionsList();
     }
     
@@ -997,6 +1228,7 @@ class MapGenApp {
             btn.addEventListener('click', () => {
                 const index = parseInt(btn.dataset.index);
                 this.crossGroupConnections.splice(index, 1);
+                this.saveCurrentCoordinates();
                 this.updateCrossGroupConnectionsList();
             });
         });
@@ -1011,6 +1243,7 @@ class MapGenApp {
                 } else {
                     this.crossGroupConnections[index].dashSpacing = '5,5';
                 }
+                this.saveCurrentCoordinates();
                 this.updateCrossGroupConnectionsList();
             });
         });
@@ -1019,6 +1252,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.crossGroupConnections[index].dashSpacing = input.value;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1026,6 +1260,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.crossGroupConnections[index].color = input.value;
+                this.saveCurrentCoordinates();
             });
         });
     }
@@ -1056,7 +1291,8 @@ class MapGenApp {
         // Clear input
         document.getElementById('custom-label-text').value = '';
         
-        // Update list
+        // Save and update
+        this.saveCurrentCoordinates();
         this.updateCustomLabelsList();
     }
     
@@ -1146,6 +1382,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.customLabels[index].text = input.value;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1153,6 +1390,7 @@ class MapGenApp {
             btn.addEventListener('click', () => {
                 const index = parseInt(btn.dataset.index);
                 this.customLabels.splice(index, 1);
+                this.saveCurrentCoordinates();
                 this.updateCustomLabelsList();
             });
         });
@@ -1168,6 +1406,7 @@ class MapGenApp {
                 } else {
                     this.customLabels[index].y = value;
                 }
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1176,6 +1415,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.customLabels[index].fontSize = parseInt(input.value) || 12;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1183,6 +1423,7 @@ class MapGenApp {
             select.addEventListener('change', () => {
                 const index = parseInt(select.dataset.index);
                 this.customLabels[index].fontFamily = select.value;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1190,6 +1431,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.customLabels[index].fontColor = input.value;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1197,6 +1439,7 @@ class MapGenApp {
             checkbox.addEventListener('change', () => {
                 const index = parseInt(checkbox.dataset.index);
                 this.customLabels[index].bold = checkbox.checked;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1205,6 +1448,7 @@ class MapGenApp {
             checkbox.addEventListener('change', () => {
                 const index = parseInt(checkbox.dataset.index);
                 this.customLabels[index].background = checkbox.checked;
+                this.saveCurrentCoordinates();
                 this.updateCustomLabelsList(); // Re-render to enable/disable controls
             });
         });
@@ -1213,6 +1457,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.customLabels[index].backgroundColor = input.value;
+                this.saveCurrentCoordinates();
             });
         });
         
@@ -1220,6 +1465,7 @@ class MapGenApp {
             input.addEventListener('change', () => {
                 const index = parseInt(input.dataset.index);
                 this.customLabels[index].borderColor = input.value;
+                this.saveCurrentCoordinates();
             });
         });
     }
@@ -1426,6 +1672,97 @@ ${mapdbFormat}
         this.updateStatus('❌ ' + message);
         this.hideProgress();
         console.error(message);
+    }
+}
+
+// Coordinate Storage Class for persistence
+class CoordinateStorage {
+    constructor() {
+        this.storageKey = 'elanthia_map_coordinates';
+        this.maxStorageAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+    }
+
+    saveCoordinates(mapId, version, coordData) {
+        try {
+            const storage = this.getStorage();
+            storage[mapId] = {
+                version: version,
+                data: coordData,
+                savedAt: Date.now()
+            };
+            
+            // Clean old entries
+            this.cleanOldEntries(storage);
+            
+            localStorage.setItem(this.storageKey, JSON.stringify(storage));
+        } catch (error) {
+            console.warn('Failed to save coordinates to localStorage:', error);
+        }
+    }
+
+    loadCoordinates(mapId, version) {
+        try {
+            const storage = this.getStorage();
+            const entry = storage[mapId];
+            
+            if (!entry) return null;
+            
+            // Check if version matches and entry is not too old
+            const age = Date.now() - entry.savedAt;
+            if (entry.version === version && age < this.maxStorageAge) {
+                return entry.data;
+            }
+            
+            // Remove outdated entry
+            delete storage[mapId];
+            localStorage.setItem(this.storageKey, JSON.stringify(storage));
+            return null;
+            
+        } catch (error) {
+            console.warn('Failed to load coordinates from localStorage:', error);
+            return null;
+        }
+    }
+
+    getStorage() {
+        try {
+            const stored = localStorage.getItem(this.storageKey);
+            return stored ? JSON.parse(stored) : {};
+        } catch (error) {
+            console.warn('Failed to parse stored coordinates:', error);
+            return {};
+        }
+    }
+
+    cleanOldEntries(storage) {
+        const now = Date.now();
+        const toDelete = [];
+        
+        for (const [mapId, entry] of Object.entries(storage)) {
+            const age = now - entry.savedAt;
+            if (age > this.maxStorageAge) {
+                toDelete.push(mapId);
+            }
+        }
+        
+        toDelete.forEach(mapId => delete storage[mapId]);
+    }
+
+    listSavedMaps() {
+        const storage = this.getStorage();
+        return Object.keys(storage).map(mapId => ({
+            mapId,
+            version: storage[mapId].version,
+            savedAt: new Date(storage[mapId].savedAt).toISOString()
+        }));
+    }
+
+    clearAll() {
+        try {
+            localStorage.removeItem(this.storageKey);
+        } catch (error) {
+            console.warn('Failed to clear coordinate storage:', error);
+        }
     }
 }
 

@@ -420,26 +420,9 @@ small {
     margin-right: 10px;
 }
 
-/* Additional font panel styles */
-h4 {
-    margin-top: 15px;
-    margin-bottom: 10px;
-    color: #4a5568;
-    font-size: 14px;
-}
-
-h5 {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    color: #718096;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-/* Cross-group connections styles */
+/* Cross-Group Connections Styles */
 .connection-list {
-    max-height: 200px;
-    overflow-y: auto;
+    margin-top: 10px;
 }
 
 .connection-item {
@@ -447,7 +430,7 @@ h5 {
     border: 1px solid #e2e8f0;
     border-radius: 5px;
     padding: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .connection-header {
@@ -455,88 +438,107 @@ h5 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
-    font-weight: 600;
-    color: #4a5568;
+    font-weight: 500;
 }
 
 .connection-controls {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
 .control-group {
     display: flex;
-    align-items: center;
-    gap: 5px;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 80px;
 }
 
 .control-group label {
-    font-size: 12px;
-    color: #718096;
-    margin-bottom: 0;
+    font-size: 11px;
+    color: #666;
+    font-weight: normal;
 }
 
 .control-group select,
 .control-group input[type="text"],
 .control-group input[type="color"] {
-    padding: 2px 4px;
-    font-size: 12px;
+    padding: 4px 6px;
     border: 1px solid #e2e8f0;
     border-radius: 3px;
+    font-size: 12px;
 }
 
-.control-group select {
-    width: 80px;
+.control-group.disabled {
+    opacity: 0.5;
 }
 
-.control-group input[type="text"] {
-    width: 60px;
-}
-
-.control-group input[type="color"] {
-    width: 30px;
-    height: 24px;
-    padding: 0;
+.control-group.disabled input,
+.control-group.disabled select {
+    pointer-events: none;
 }
 
 .remove-connection {
     background: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
 }
 
 .remove-connection:hover {
     background: #c53030;
 }
 
-/* Custom labels styles */
+/* Custom Labels Styles */
 .label-list {
-    max-height: 300px;
-    overflow-y: auto;
+    margin-top: 10px;
 }
 
 .label-item {
     background: #f8f9fa;
     border: 1px solid #e2e8f0;
     border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
 }
 
 .label-header {
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .label-text-input {
     flex: 1;
-    padding: 4px 8px;
+    padding: 6px 8px;
     border: 1px solid #e2e8f0;
     border-radius: 3px;
     font-size: 14px;
-    font-weight: 600;
-    color: #4a5568;
+}
+
+.label-text-input:focus {
+    outline: none;
+    border-color: #5a67d8;
+}
+
+.remove-label {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.remove-label:hover {
+    background: #c53030;
 }
 
 .label-controls {
@@ -548,27 +550,102 @@ h5 {
 .control-row {
     display: flex;
     gap: 10px;
+    align-items: center;
     flex-wrap: wrap;
 }
 
-.control-group input[type="number"] {
-    width: 60px;
-    padding: 2px 4px;
+.control-row .control-group {
+    flex: 1;
+    min-width: 80px;
+}
+
+.control-row .control-group label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.control-row .control-group input,
+.control-row .control-group select {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
     font-size: 12px;
 }
 
-.control-group.disabled {
-    opacity: 0.5;
+.control-row .control-group input:focus,
+.control-row .control-group select:focus {
+    outline: none;
+    border-color: #5a67d8;
 }
 
-.control-group.disabled input {
-    cursor: not-allowed;
+/* Additional font panel styles */
+h4 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #4a5568;
+    font-size: 14px;
 }
 
-.remove-label {
-    background: #e53e3e;
+h5 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-.remove-label:hover {
-    background: #c53030;
+/* Coordinate persistence info */
+.coordinate-info {
+    background: #e6f3ff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #0066cc;
+}
+
+/* File input styling */
+input[type="file"] {
+    padding: 8px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 5px;
+    background: #f8f9fa;
+    cursor: pointer;
+    width: 100%;
+}
+
+input[type="file"]:hover {
+    border-color: #5a67d8;
+    background: #f1f5f9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .panel-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-row .control-group {
+        min-width: auto;
+    }
+    
+    .connection-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-group {
+        min-width: auto;
+    }
+    
+    .color-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
 }
