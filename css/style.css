@@ -580,6 +580,48 @@ small {
     border-color: #5a67d8;
 }
 
+/* Multi-select location styling */
+#location-select[multiple] {
+    height: auto;
+    min-height: 120px;
+    padding: 8px;
+}
+
+#location-select[multiple] option {
+    padding: 4px 8px;
+    margin: 1px 0;
+    border-radius: 3px;
+}
+
+#location-select[multiple] option:checked {
+    background: #5a67d8;
+    color: white;
+}
+
+#location-select[multiple] option:hover {
+    background: #e2e8f0;
+}
+
+#location-select[multiple] option:checked:hover {
+    background: #4c51bf;
+}
+
+/* Exclusion input styling */
+#exclude-rooms {
+    border: 2px solid #ffd6cc;
+    background: #fffaf9;
+}
+
+#exclude-rooms:focus {
+    border-color: #f56565;
+    background: white;
+}
+
+#exclude-rooms::placeholder {
+    color: #a0aec0;
+    font-style: italic;
+}
+
 /* Additional font panel styles */
 h4 {
     margin-top: 15px;

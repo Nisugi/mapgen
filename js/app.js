@@ -500,7 +500,7 @@ class MapGenApp {
         const locations = this.mapdbLoader.extractLocations(this.mapdb);
         
         // Clear existing options
-        select.innerHTML = '<option value="">Select a location...</option>';
+        select.innerHTML = '';
         
         locations.forEach(location => {
             const option = document.createElement('option');
@@ -513,7 +513,8 @@ class MapGenApp {
         
         // Set a default selection for testing
         if (locations.includes("Sailor's Grief")) {
-            select.value = "Sailor's Grief";
+            const option = select.querySelector(`option[value="Sailor's Grief"]`);
+            if (option) option.selected = true;
         }
     }
 
@@ -537,13 +538,32 @@ class MapGenApp {
 
     getSelectedRooms() {
         const selectionMethod = document.querySelector('input[name="room-selection"]:checked').value;
+        let selectedRooms = [];
         
         if (selectionMethod === 'location') {
-            const location = document.getElementById('location-select').value;
-            if (!location) {
-                throw new Error('Please select a location');
+            const locationSelect = document.getElementById('location-select');
+            const selectedOptions = Array.from(locationSelect.selectedOptions);
+            
+            if (selectedOptions.length === 0) {
+                throw new Error('Please select at least one location');
             }
-            return this.mapdbLoader.getRoomsByLocation(this.mapdb, location);
+            
+            // Get rooms from all selected locations
+            selectedOptions.forEach(option => {
+                const locationRooms = this.mapdbLoader.getRoomsByLocation(this.mapdb, option.value);
+                selectedRooms = selectedRooms.concat(locationRooms);
+            });
+            
+            // Remove duplicates (in case rooms exist in multiple locations)
+            const roomIds = new Set();
+            selectedRooms = selectedRooms.filter(room => {
+                if (roomIds.has(room.id)) {
+                    return false;
+                }
+                roomIds.add(room.id);
+                return true;
+            });
+            
         } else {
             const rangeText = document.getElementById('room-ranges').value.trim();
             if (!rangeText) {
@@ -555,7 +575,7 @@ class MapGenApp {
             
             if (useUID) {
                 // Filter by UID
-                return this.mapdb.filter(room => {
+                selectedRooms = this.mapdb.filter(room => {
                     if (room.uid && Array.isArray(room.uid)) {
                         return roomIds.some(id => room.uid.includes(id));
                     }
@@ -563,21 +583,55 @@ class MapGenApp {
                 });
             } else {
                 // Filter by ID (default)
-                return this.mapdb.filter(room => roomIds.includes(room.id));
+                selectedRooms = this.mapdb.filter(room => roomIds.includes(room.id));
             }
         }
+        
+        // Apply exclusions
+        const excludeText = document.getElementById('exclude-rooms').value.trim();
+        if (excludeText) {
+            const useExcludeUID = document.querySelector('input[name="exclude-id-type"]:checked').value === 'uid';
+            const excludeIds = this.mapdbLoader.parseRoomRanges(excludeText);
+            
+            if (useExcludeUID) {
+                // Exclude by UID
+                selectedRooms = selectedRooms.filter(room => {
+                    if (room.uid && Array.isArray(room.uid)) {
+                        return !excludeIds.some(id => room.uid.includes(id));
+                    }
+                    return true; // Keep rooms without UIDs
+                });
+            } else {
+                // Exclude by ID (default)
+                selectedRooms = selectedRooms.filter(room => !excludeIds.includes(room.id));
+            }
+        }
+        
+        return selectedRooms;
     }
 
     getCurrentMapIdentifier() {
         const selectionMethod = document.querySelector('input[name="room-selection"]:checked').value;
         
         if (selectionMethod === 'location') {
-            const location = document.getElementById('location-select').value;
-            return `location_${location}`;
+            const locationSelect = document.getElementById('location-select');
+            const selectedOptions = Array.from(locationSelect.selectedOptions);
+            const locations = selectedOptions.map(opt => opt.value).sort().join(',');
+            
+            // Include exclusions in identifier if present
+            const excludeText = document.getElementById('exclude-rooms').value.trim();
+            const excludeSuffix = excludeText ? `_exclude_${excludeText.replace(/[^0-9,-]/g, '')}` : '';
+            
+            return `location_${locations}${excludeSuffix}`;
         } else {
             const rangeText = document.getElementById('room-ranges').value.trim();
             const useUID = document.querySelector('input[name="room-id-type"]:checked').value === 'uid';
-            return `${useUID ? 'uid' : 'id'}_${rangeText}`;
+            
+            // Include exclusions in identifier if present
+            const excludeText = document.getElementById('exclude-rooms').value.trim();
+            const excludeSuffix = excludeText ? `_exclude_${excludeText.replace(/[^0-9,-]/g, '')}` : '';
+            
+            return `${useUID ? 'uid' : 'id'}_${rangeText}${excludeSuffix}`;
         }
     }
 

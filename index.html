@@ -45,10 +45,11 @@
                         </div>
                     </div>
                     <div class="form-group" id="location-group">
-                        <label for="location-select">Location:</label>
-                        <select id="location-select">
+                        <label for="location-select">Locations:</label>
+                        <select id="location-select" multiple size="6">
                             <option value="">Loading locations...</option>
                         </select>
+                        <small>Hold Ctrl (Cmd on Mac) to select multiple locations</small>
                     </div>
                     <div class="form-group hidden" id="custom-group">
                         <label for="room-ranges">Room Ranges:</label>
@@ -58,6 +59,17 @@
                         </div>
                         <input type="text" id="room-ranges" placeholder="e.g. 35593-35601, 35608-35619">
                         <small>Enter room ID/UID ranges separated by commas</small>
+                    </div>
+                    
+                    <!-- Room Exclusion -->
+                    <div class="form-group">
+                        <label for="exclude-rooms">Exclude Rooms (optional):</label>
+                        <div class="radio-group" style="margin-bottom: 10px;">
+                            <label><input type="radio" name="exclude-id-type" value="id" checked> Use Room IDs</label>
+                            <label><input type="radio" name="exclude-id-type" value="uid"> Use Room UIDs</label>
+                        </div>
+                        <input type="text" id="exclude-rooms" placeholder="e.g. 35595, 35600-35602">
+                        <small>Enter room ID/UID ranges to exclude from the map</small>
                     </div>
                 </section>
 
