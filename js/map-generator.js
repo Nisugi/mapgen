@@ -113,13 +113,13 @@ class MapGenerator {
             if (dirtoDirection === 'cross-group') {
                 return null; // Don't use for positioning
             }
-            if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
+            if (dirtoDirection !== 'none' && dirtoDirection !== 'skip' && this.cardinalDirections.has(dirtoDirection)) {
                 return dirtoDirection;
             }
         } else if (room.dir && room.dir[targetId]) {
             // Check legacy "dir" field
             const dirDirection = room.dir[targetId].toLowerCase().trim();
-            if (dirDirection !== 'none' && this.cardinalDirections.has(dirDirection)) {
+            if (dirDirection !== 'none' && dirtoDirection !== 'skip' && this.cardinalDirections.has(dirDirection)) {
                 return dirDirection;
             }
         }
@@ -133,7 +133,7 @@ class MapGenerator {
                 // Only use stringprocs if there's a corresponding dirto
                 if (room.dirto && room.dirto[targetId]) {
                     const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
-                    if (dirtoDirection !== 'none' && this.cardinalDirections.has(dirtoDirection)) {
+                    if (dirtoDirection !== 'none' && dirtoDirection !== 'skip' && this.cardinalDirections.has(dirtoDirection)) {
                         return dirtoDirection;
                     }
                 }
@@ -170,27 +170,60 @@ class MapGenerator {
             // Only show labels for stringprocs if there's a dirto (meaning it's mappable)
             if (room.dirto && room.dirto[targetId]) {
                 // Try to extract meaningful movement from stringproc
-                // Look for common patterns like "move climb wall", "go door", etc.
-                const moveMatch = wayto.match(/move\s+(.+?)(?:;|$)/i);
-                if (moveMatch) {
-                    const movement = moveMatch[1].trim();
+                // Look for 'go <something>' or 'move <something>' patterns
+                const goMovePattern = /(?:fput\s*['"]|multifput\s*['"]|^|\s)(?:go|move)\s+([^'";\s]+)/i;
+                const match = wayto.match(goMovePattern);
+                if (match) {
+                    const movement = match[1].trim();
                     // Don't show if it's just a cardinal direction
                     if (!this.cardinalDirections.has(movement.toLowerCase())) {
                         return movement;
                     }
                 }
                 
-                // Look for other movement patterns
-                const actionMatch = wayto.match(/;e\s*(?:fput\s*['"])?(.+?)(?:['"])?(?:;|$)/i);
-                if (actionMatch) {
-                    const action = actionMatch[1].trim();
+                // Look for other movement patterns in fput commands
+                const fputPattern = /fput\s*['"]([^'"]+)['"]/i;
+                const fputMatch = wayto.match(fputPattern);
+                if (fputMatch) {
+                    const command = fputMatch[1].trim();
+                    
+                    // Extract go/move commands
+                    const commandGoMatch = command.match(/^(?:go|move)\s+(.+)$/i);
+                    if (commandGoMatch) {
+                        const target = commandGoMatch[1].trim();
+                        if (!this.cardinalDirections.has(target.toLowerCase())) {
+                            return target;
+                        }
+                    }
+                    
                     // Skip cardinal directions and common script commands
-                    if (!this.cardinalDirections.has(action.toLowerCase()) && 
-                        !action.includes('empty_hands') && 
-                        !action.includes('fill_hands') &&
-                        !action.includes('waitrt') &&
-                        !action.includes('fput')) {
-                        return action;
+                    if (!this.cardinalDirections.has(command.toLowerCase()) && 
+                        !command.includes('empty_hands') && 
+                        !command.includes('fill_hands') &&
+                        !command.includes('waitrt') &&
+                        !command.includes('stand') &&
+                        !command.includes('speak') &&
+                        !command.includes('ask') &&
+                        !command.includes('pull') &&
+                        !command.includes('push') &&
+                        !command.includes('search') &&
+                        !command.includes('look') &&
+                        command.length < 20) { // Avoid very long commands
+                        return command;
+                    }
+                }
+                
+                // For very short stringprocs that might be meaningful
+                if (wayto.length < 50) {
+                    // Look for simple patterns like "go arch" in multifput
+                    const multifputPattern = /multifput[^'"]+'([^'",]+)/i;
+                    const multifputMatch = wayto.match(multifputPattern);
+                    if (multifputMatch) {
+                        const command = multifputMatch[1].trim();
+                        const commandGoMatch = command.match(/^(?:go|move)\s+(.+)$/i);
+                        if (commandGoMatch) {
+                            return commandGoMatch[1].trim();
+                        }
                     }
                 }
             }
@@ -209,14 +242,19 @@ class MapGenerator {
             return null;
         }
         
-        // Handle "go/climb something" patterns
-        const goClimbPattern = /^(go|climb)\s+(.+)$/i;
-        const match = wayto.match(goClimbPattern);
+        // Handle "go/climb/move something" patterns
+        const actionPattern = /^(go|climb|move)\s+(.+)$/i;
+        const match = wayto.match(actionPattern);
         if (match) {
             return match[2]; // Return the "something" part
         }
         
-        return wayto;
+        // For other non-cardinal wayto commands, show them as-is (up to reasonable length)
+        if (wayto.length <= 20) {
+            return wayto;
+        }
+        
+        return null;
     }
 
     isVerticalConnection(room, targetId) {
