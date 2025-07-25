@@ -798,6 +798,19 @@ class MapGenApp {
         `);
     }
 
+    showMainInterface() {
+        document.getElementById('app-content').classList.remove('hidden');
+        document.getElementById('generate-btn').disabled = false;
+        document.getElementById('preview-btn').disabled = false;
+        this.hideProgress();
+        this.populateLocationDropdown();
+        this.populateTagDropdown();
+        this.renderTagColorsList();
+        this.updateCrossGroupConnectionsList();
+        this.updateCustomLabelsList();
+        this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
+    }
+
     updateGroupPositioningPanel() {
         const container = document.getElementById('group-positioning');
         if (!container) return;
