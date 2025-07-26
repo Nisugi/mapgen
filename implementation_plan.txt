@@ -1,0 +1,204 @@
+# Elanthia Map Generator - GitHub Integration Implementation Plan
+
+## Project Overview
+We're adding GitHub API integration to allow users to save and load maps directly to/from GitHub repositories. This creates a complete mapping ecosystem with sharing, versioning, and collaboration features.
+
+## Current Application State
+- **Working map generator** with location-based and custom room selection
+- **Group positioning system** with manual offsets and coordinate persistence
+- **Cross-group connections** and custom labels
+- **Theme system** with tag-based colors and font controls
+- **Export functionality** for SVG maps and coordinate files
+- **LocalStorage persistence** for user settings
+
+## Files in Current Project
+1. `index.html` - Main UI with all panels and controls
+2. `app.js` - Main application class with UI logic and coordination storage
+3. `mapdb-loader.js` - Loads and parses MapDB data
+4. `map-generator.js` - Core map generation and SVG creation
+5. `style.css` - Complete styling for all UI components
+6. `sgmapdb.json` - Sample MapDB data (Sailor's Grief area)
+
+## GitHub Integration Goals
+
+### Three-File Save System
+For each map, save:
+1. **`mapname.svg`** - The visual map file
+2. **`mapname_coords.json`** - Room coordinates for external tools
+3. **`mapname_config.json`** - Complete UI state for map recreation
+
+### Repository Structure
+```
+/maps/
+├── sailors_grief/
+│   ├── full_area.svg
+│   ├── full_area_coords.json
+│   ├── full_area_config.json
+│   ├── ships_only.svg
+│   ├── ships_only_coords.json
+│   └── ships_only_config.json
+├── hinterwildes/
+├── custom/
+└── gallery_index.json
+```
+
+### Config File Structure
+Complete UI state including:
+- **Metadata**: name, author, created date, description, mapdbVersion
+- **Room Selection**: method, locations, ranges, exclusions
+- **Appearance**: edge length, room shape/size, stroke widths
+- **Colors**: default colors, tag colors, background settings
+- **Display Options**: show IDs/names/labels/connections
+- **Fonts**: label and room font settings
+- **Group Positioning**: offsets, names, label positions
+- **Cross-Group Connections**: custom connections between groups
+- **Custom Labels**: user-added text labels with positioning
+
+## Implementation Plan
+
+### Phase 1: GitHub Authentication & Basic Save
+1. **OAuth Setup**: Register GitHub OAuth app, handle auth flow
+2. **Repository Detection**: Detect if running on fork vs main repo
+3. **Basic File Saving**: Implement GitHub API file creation
+4. **Three-File Export**: Extend current export to save all three files
+
+### Phase 2: Map Gallery & Loading
+1. **Gallery Interface**: New UI panel to browse saved maps
+2. **Map Listing**: Fetch and display maps by location/folder
+3. **Config Loading**: Restore complete UI state from config files
+4. **Preview Integration**: Show loaded maps immediately
+
+### Phase 3: Enhanced Features
+1. **Metadata Management**: Author info, descriptions, versioning
+2. **Search & Filtering**: Find maps by location, author, date
+3. **Fork Support**: Handle personal vs community repositories
+4. **Error Handling**: Robust error handling and user feedback
+
+## Key Technical Components
+
+### GitHub API Integration
+```javascript
+class GitHubIntegration {
+  constructor() {
+    this.apiBase = 'https://api.github.com';
+    this.repoOwner = this.detectRepoOwner();
+    this.repoName = 'elanthia-map-generator';
+    this.token = null;
+  }
+  
+  async authenticate() { /* OAuth flow */ }
+  async saveFile(path, content) { /* API call */ }
+  async loadFile(path) { /* API call */ }
+  async listMaps(folder) { /* List directory */ }
+}
+```
+
+### Config Generation
+Extract complete UI state:
+```javascript
+generateMapConfig() {
+  return {
+    metadata: { name, author, created, description },
+    roomSelection: { method, locations, ranges, exclusions },
+    appearance: { edgeLength, roomShape, sizes, widths },
+    colors: { defaults, tagColors, background },
+    displayOptions: { showIds, showNames, showLabels },
+    fonts: { labels, rooms },
+    groupPositioning: { offsets, names, labelOffsets },
+    crossGroupConnections: [...],
+    customLabels: [...],
+    backgroundSettings: { useBackground, backgroundImage }
+  };
+}
+```
+
+### Config Restoration
+Restore complete UI state:
+```javascript
+restoreMapConfig(config) {
+  this.restoreRoomSelection(config.roomSelection);
+  this.restoreAppearance(config.appearance);
+  this.restoreColors(config.colors);
+  // ... restore all sections
+  this.previewLoadedMap(); // Show result
+}
+```
+
+## New UI Panels Needed
+
+### Map Gallery Panel
+```html
+<section class="panel">
+  <h3>📚 Map Gallery</h3>
+  <div class="auth-section">
+    <button id="github-login">Connect GitHub</button>
+    <span id="github-user" class="hidden">Logged in as: username</span>
+  </div>
+  <div class="form-group">
+    <label>Browse Location:</label>
+    <select id="gallery-location">
+      <option value="">All Locations</option>
+      <!-- Populated dynamically -->
+    </select>
+  </div>
+  <div id="map-list">
+    <!-- Map tiles with load/preview buttons -->
+  </div>
+  <div class="gallery-actions">
+    <button id="load-map" class="btn-secondary">Load Selected</button>
+    <button id="save-map" class="btn-primary">Save Current Map</button>
+  </div>
+</section>
+```
+
+### Save Dialog
+```html
+<div id="save-dialog" class="modal hidden">
+  <div class="modal-content">
+    <h3>Save Map to GitHub</h3>
+    <input id="map-name" placeholder="Map name">
+    <textarea id="map-description" placeholder="Description..."></textarea>
+    <select id="save-location">
+      <option value="auto">Auto-detect location</option>
+      <option value="custom">Custom folder</option>
+    </select>
+    <div class="modal-actions">
+      <button id="confirm-save" class="btn-primary">Save</button>
+      <button id="cancel-save" class="btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div>
+```
+
+## Integration with Existing Code
+
+### Extend MapGenApp Class
+Add new methods:
+- `authenticateGitHub()`
+- `saveMapToGitHub()`
+- `loadMapFromGitHub()`
+- `generateMapConfig()`
+- `restoreMapConfig()`
+- `browseGitHubMaps()`
+
+### Extend Coordinate Storage
+Add GitHub sync:
+- `syncToGitHub()`
+- `loadFromGitHub()`
+- `mergeLocalAndRemote()`
+
+## OAuth Requirements
+Need to register GitHub OAuth app with:
+- **Application name**: "Elanthia Map Generator"
+- **Homepage URL**: Your GitHub Pages URL
+- **Callback URL**: `https://yourusername.github.io/elanthia-map-generator/auth/callback`
+- **Scopes**: `public_repo` (or `repo` for private repos)
+
+## Next Steps for Fresh Chat
+1. **Copy this entire plan** to new conversation
+2. **Reference existing files** (all 6 files are documented above)
+3. **Start with Phase 1**: GitHub authentication and basic save
+4. **Implement incrementally**: Test each phase before moving to next
+
+## Status
+Ready to begin implementation. All existing functionality works and is preserved. New features will be additive and enhance the current workflow.

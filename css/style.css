@@ -217,6 +217,15 @@ header p {
     background: #4c51bf;
 }
 
+.btn-small.btn-primary {
+    background: #5a67d8;
+}
+
+.btn-small.btn-secondary {
+    background: #718096;
+    color: white;
+}
+
 footer {
     text-align: center;
     color: white;
@@ -301,6 +310,227 @@ small {
     color: #5a67d8;
 }
 
+/* GitHub Integration Styles */
+.github-auth-section {
+    margin-bottom: 15px;
+}
+
+#github-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #e6f3ff;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+#github-user-info span {
+    flex: 1;
+    color: #2d3748;
+}
+
+.github-actions {
+    margin-top: 15px;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.2s ease-out;
+}
+
+.modal-content.large-modal {
+    max-width: 800px;
+    width: 95%;
+}
+
+.modal-content h3 {
+    color: #5a67d8;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.save-status, .load-status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Modal Animations */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Map Gallery Styles */
+.map-gallery {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 15px 0;
+    background: #f8f9fa;
+}
+
+.map-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+}
+
+.map-item:hover {
+    border-color: #5a67d8;
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.map-header h4 {
+    color: #2d3748;
+    margin: 0;
+    font-size: 16px;
+}
+
+.map-location {
+    background: #e2e8f0;
+    color: #718096;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.map-files {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.file-badge {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.file-badge.has-file {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.file-badge.missing-file {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.map-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.map-actions input[type="radio"] {
+    margin: 0;
+}
+
+.map-actions label {
+    margin: 0;
+    font-size: 12px;
+    color: #4a5568;
+}
+
+.preview-btn {
+    margin-left: auto;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #718096;
+    font-style: italic;
+}
+
+.error {
+    text-align: center;
+    padding: 20px;
+    color: #e53e3e;
+    background: #fed7d7;
+    border-radius: 5px;
+}
+
+.empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #718096;
+    font-style: italic;
+}
+
 /* Group Positioning Styles */
 #group-positioning {
     max-height: 400px;
@@ -382,6 +612,7 @@ small {
     border-radius: 3px;
     outline: none;
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .offset-control input[type="range"]::-webkit-slider-thumb {
@@ -638,16 +869,6 @@ h5 {
     font-weight: 600;
 }
 
-/* Coordinate persistence info */
-.coordinate-info {
-    background: #e6f3ff;
-    padding: 8px 12px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #0066cc;
-}
-
 /* File input styling */
 input[type="file"] {
     padding: 8px;
@@ -689,5 +910,37 @@ input[type="file"]:hover {
     
     .color-grid {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+        max-height: 90vh;
+    }
+    
+    .modal-content.large-modal {
+        width: 98%;
+    }
+    
+    .map-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .map-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .github-actions > div {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+        gap: 8px;
     }
 }
