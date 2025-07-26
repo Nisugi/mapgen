@@ -11,6 +11,7 @@ class MapGenApp {
         this.crossGroupConnections = []; // Store cross-group connections
         this.customLabels = []; // Store custom labels
         this.coordinateStorage = new CoordinateStorage(); // New coordinate persistence
+        this.github = new GitHubIntegration(); // GitHub integration
         this.init();
     }
 
@@ -53,6 +54,870 @@ class MapGenApp {
             useBackground: true
         };
     }
+
+    async init() {
+        try {
+            this.setupEventListeners();
+            await this.loadMapDB();
+            this.populateLocationDropdown();
+            this.setupGitHubUI();
+            this.checkGitHubAuth();
+            this.showMainInterface();
+        } catch (error) {
+            this.showError('Failed to initialize application: ' + error.message);
+        }
+    }
+
+    // GitHub Integration Methods
+
+    setupGitHubUI() {
+        // Update GitHub status in UI
+        this.updateGitHubStatus();
+        
+        // Add GitHub event listeners
+        const githubLoginBtn = document.getElementById('github-login');
+        if (githubLoginBtn) {
+            githubLoginBtn.addEventListener('click', this.handleGitHubLogin.bind(this));
+        }
+
+        const githubLogoutBtn = document.getElementById('github-logout');
+        if (githubLogoutBtn) {
+            githubLogoutBtn.addEventListener('click', this.handleGitHubLogout.bind(this));
+        }
+
+        const saveToGitHubBtn = document.getElementById('save-to-github');
+        if (saveToGitHubBtn) {
+            saveToGitHubBtn.addEventListener('click', this.showSaveDialog.bind(this));
+        }
+
+        const loadFromGitHubBtn = document.getElementById('load-from-github');
+        if (loadFromGitHubBtn) {
+            loadFromGitHubBtn.addEventListener('click', this.showLoadDialog.bind(this));
+        }
+
+        const refreshMapsBtn = document.getElementById('refresh-maps');
+        if (refreshMapsBtn) {
+            refreshMapsBtn.addEventListener('click', this.refreshMapGallery.bind(this));
+        }
+    }
+
+    async checkGitHubAuth() {
+        // Check if we're returning from OAuth callback
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('code')) {
+            try {
+                await this.github.handleAuthCallback();
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                this.updateGitHubStatus();
+            } catch (error) {
+                console.error('OAuth callback failed:', error);
+                this.showError('GitHub authentication failed: ' + error.message);
+            }
+        } else if (this.github.isAuthenticated()) {
+            // Verify existing token
+            try {
+                await this.github.getCurrentUser();
+                this.updateGitHubStatus();
+            } catch (error) {
+                console.warn('GitHub token verification failed:', error);
+                this.github.clearToken();
+                this.updateGitHubStatus();
+            }
+        }
+    }
+
+    updateGitHubStatus() {
+        const authSection = document.querySelector('.github-auth-section');
+        const loginBtn = document.getElementById('github-login');
+        const userInfo = document.getElementById('github-user-info');
+        const githubActions = document.querySelector('.github-actions');
+        
+        if (!authSection) return; // UI not ready yet
+
+        const status = this.github.getAuthStatus();
+        
+        if (status.authenticated && status.user) {
+            loginBtn.textContent = 'Reconnect GitHub';
+            loginBtn.className = 'btn-small btn-secondary';
+            
+            if (userInfo) {
+                userInfo.innerHTML = `
+                    <span>✅ ${status.user.login}</span>
+                    <button id="github-logout" class="btn-small">Logout</button>
+                `;
+                userInfo.classList.remove('hidden');
+                
+                // Re-add logout listener
+                const logoutBtn = document.getElementById('github-logout');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', this.handleGitHubLogout.bind(this));
+                }
+            }
+            
+            if (githubActions) {
+                githubActions.classList.remove('hidden');
+            }
+        } else {
+            loginBtn.textContent = 'Connect GitHub';
+            loginBtn.className = 'btn-small btn-primary';
+            
+            if (userInfo) {
+                userInfo.classList.add('hidden');
+            }
+            
+            if (githubActions) {
+                githubActions.classList.add('hidden');
+            }
+        }
+    }
+
+    async handleGitHubLogin() {
+        try {
+            this.updateStatus('Connecting to GitHub...');
+            await this.github.authenticate();
+        } catch (error) {
+            this.showError('GitHub login failed: ' + error.message);
+        }
+    }
+
+    handleGitHubLogout() {
+        this.github.clearToken();
+        this.updateGitHubStatus();
+        this.updateStatus('Logged out of GitHub');
+    }
+
+    showSaveDialog() {
+        if (!this.github.isAuthenticated()) {
+            alert('Please connect to GitHub first');
+            return;
+        }
+
+        if (!this.currentGroups || this.currentGroups.length === 0) {
+            alert('Please generate or preview a map first');
+            return;
+        }
+
+        // Create modal dialog
+        const modal = this.createSaveModal();
+        document.body.appendChild(modal);
+        modal.classList.remove('hidden');
+    }
+
+    createSaveModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'save-modal';
+        
+        // Detect location from current rooms
+        let detectedLocation = 'custom';
+        try {
+            const rooms = this.getSelectedRooms();
+            detectedLocation = this.github.detectLocationFromRooms(rooms);
+        } catch (error) {
+            console.warn('Could not detect location:', error);
+        }
+
+        modal.innerHTML = `
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <h3>💾 Save Map to GitHub</h3>
+                <div class="form-group">
+                    <label for="save-map-name">Map Name:</label>
+                    <input type="text" id="save-map-name" value="${document.getElementById('output-name').value}" placeholder="Enter map name">
+                </div>
+                <div class="form-group">
+                    <label for="save-description">Description (optional):</label>
+                    <textarea id="save-description" placeholder="Describe this map..." rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="save-location">Location Folder:</label>
+                    <select id="save-location">
+                        <option value="${detectedLocation}" selected>${detectedLocation} (detected)</option>
+                        <option value="custom">custom</option>
+                        <option value="sailors_grief">sailors_grief</option>
+                        <option value="hinterwildes">hinterwildes</option>
+                        <option value="icemule">icemule</option>
+                        <option value="wehnimers">wehnimers</option>
+                        <option value="solhaven">solhaven</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Files to Save:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="save-svg" checked> SVG Map File</label>
+                        <label><input type="checkbox" id="save-coords" checked> Coordinate Data</label>
+                        <label><input type="checkbox" id="save-config" checked> Configuration</label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="confirm-save" class="btn-primary">💾 Save to GitHub</button>
+                    <button id="cancel-save" class="btn-secondary">Cancel</button>
+                </div>
+                <div id="save-status" class="save-status hidden"></div>
+            </div>
+        `;
+
+        // Add event listeners
+        modal.querySelector('#confirm-save').addEventListener('click', this.handleConfirmSave.bind(this));
+        modal.querySelector('#cancel-save').addEventListener('click', this.closeSaveModal.bind(this));
+        modal.querySelector('.modal-overlay').addEventListener('click', this.closeSaveModal.bind(this));
+
+        return modal;
+    }
+
+    async handleConfirmSave() {
+        const mapName = document.getElementById('save-map-name').value.trim();
+        const description = document.getElementById('save-description').value.trim();
+        const location = document.getElementById('save-location').value;
+        const saveSvg = document.getElementById('save-svg').checked;
+        const saveCoords = document.getElementById('save-coords').checked;
+        const saveConfig = document.getElementById('save-config').checked;
+
+        if (!mapName) {
+            alert('Please enter a map name');
+            return;
+        }
+
+        if (!saveSvg && !saveCoords && !saveConfig) {
+            alert('Please select at least one file type to save');
+            return;
+        }
+
+        const statusDiv = document.getElementById('save-status');
+        statusDiv.classList.remove('hidden');
+        statusDiv.textContent = 'Preparing files...';
+
+        try {
+            // Generate files
+            let svgContent = null;
+            let coordsContent = null;
+            let configContent = null;
+
+            if (saveSvg) {
+                statusDiv.textContent = 'Generating SVG...';
+                svgContent = await this.generateSVGForSave();
+            }
+
+            if (saveCoords) {
+                statusDiv.textContent = 'Generating coordinates...';
+                coordsContent = this.generateCoordsForSave();
+            }
+
+            if (saveConfig) {
+                statusDiv.textContent = 'Generating configuration...';
+                configContent = this.generateConfigForSave(mapName, description);
+            }
+
+            statusDiv.textContent = 'Saving to GitHub...';
+
+            // Save to GitHub
+            const results = await this.github.saveMapSet(
+                mapName, 
+                location, 
+                svgContent, 
+                coordsContent, 
+                configContent
+            );
+
+            statusDiv.textContent = '✅ Saved successfully!';
+            statusDiv.style.color = '#27ae60';
+
+            setTimeout(() => {
+                this.closeSaveModal();
+                this.updateStatus(`Map "${mapName}" saved to GitHub!`);
+            }, 1500);
+
+        } catch (error) {
+            statusDiv.textContent = '❌ Save failed: ' + error.message;
+            statusDiv.style.color = '#e74c3c';
+            console.error('Save failed:', error);
+        }
+    }
+
+    async generateSVGForSave() {
+        // Generate SVG using current settings
+        const rooms = this.getSelectedRooms();
+        const generator = new MapGenerator();
+        
+        const groupsWithNames = this.currentGroups.map((group, index) => ({
+            ...group,
+            name: this.groupNames.get(index) || `Group ${index + 1}`
+        }));
+        
+        const config = {
+            edgeLength: this.config.edgeLength,
+            roomShape: this.config.roomShape,
+            roomSize: this.config.roomSize,
+            strokeWidth: this.config.strokeWidth,
+            connectionWidth: this.config.connectionWidth,
+            colors: {
+                default: this.config.colors.default,
+                background: this.config.colors.background,
+                connections: this.config.colors.connections,
+                verticalConnections: this.config.colors.verticalConnections
+            },
+            tagColors: this.config.tagColors,
+            showRoomIds: document.getElementById('show-room-ids').checked,
+            showRoomNames: document.getElementById('show-room-names').checked,
+            showLabels: document.getElementById('show-labels').checked,
+            showConnections: document.getElementById('show-connections').checked,
+            showGroupLabels: document.getElementById('show-group-labels').checked,
+            groupOffsets: this.groupOffsets,
+            groupLabelOffsets: this.groupLabelOffsets,
+            groups: groupsWithNames,
+            fonts: this.config.fonts,
+            backgroundImage: this.config.backgroundImage,
+            useBackground: this.config.useBackground,
+            crossGroupConnections: this.crossGroupConnections,
+            customLabels: this.customLabels
+        };
+        
+        const result = generator.generateMapWithGroups(rooms, config);
+        return result.svg;
+    }
+
+    generateCoordsForSave() {
+        // Generate coordinate data for external tools
+        try {
+            const rooms = this.getSelectedRooms();
+            const generator = new MapGenerator();
+            
+            const groupsWithNames = this.currentGroups.map((group, index) => ({
+                ...group,
+                name: this.groupNames.get(index) || `Group ${index + 1}`
+            }));
+            
+            const config = {
+                edgeLength: this.config.edgeLength,
+                roomShape: this.config.roomShape,
+                roomSize: this.config.roomSize,
+                groupOffsets: this.groupOffsets,
+                groups: groupsWithNames
+            };
+            
+            const result = generator.generateMapWithGroups(rooms, config);
+            const finalPositions = generator.applyGroupOffsets(result.groups);
+            
+            // Calculate bounds and offsets
+            const coords = Array.from(finalPositions.values());
+            const minX = Math.min(...coords.map(p => p.x));
+            const minY = Math.min(...coords.map(p => p.y));
+            const padding = 2;
+            const offsetX = -minX + padding;
+            const offsetY = -minY + padding;
+            
+            // Generate coordinate data
+            const coordData = [];
+            rooms.forEach(room => {
+                const pos = finalPositions.get(room.id);
+                if (pos) {
+                    const x = (pos.x + offsetX) * config.edgeLength;
+                    const y = (pos.y + offsetY) * config.edgeLength;
+                    const half = config.roomSize;
+                    
+                    // Calculate bounding box based on room shape
+                    let left, top, right, bottom;
+                    if (config.roomShape === 'circle') {
+                        left = x - half;
+                        top = y - half;
+                        right = x + half;
+                        bottom = y + half;
+                    } else if (config.roomShape === 'square') {
+                        left = x - half;
+                        top = y - half;
+                        right = x + half;
+                        bottom = y + half;
+                    } else if (config.roomShape === 'rectangle') {
+                        const width = half * 1.5;
+                        const height = half;
+                        left = x - width;
+                        top = y - height;
+                        right = x + width;
+                        bottom = y + height;
+                    }
+                    
+                    coordData.push({
+                        id: room.id,
+                        image: document.getElementById('output-name').value + '.png',
+                        image_coords: [
+                            Math.round(left),
+                            Math.round(top),
+                            Math.round(right),
+                            Math.round(bottom)
+                        ]
+                    });
+                }
+            });
+            
+            return JSON.stringify(coordData, null, 2);
+            
+        } catch (error) {
+            console.error('Error generating coordinates:', error);
+            return JSON.stringify([], null, 2);
+        }
+    }
+
+    generateConfigForSave(mapName, description = '') {
+        // Generate complete configuration for map recreation
+        const selectionMethod = document.querySelector('input[name="room-selection"]:checked').value;
+        
+        let roomSelection = {
+            method: selectionMethod
+        };
+        
+        if (selectionMethod === 'location') {
+            const locationSelect = document.getElementById('location-select');
+            const selectedOptions = Array.from(locationSelect.selectedOptions);
+            roomSelection.locations = selectedOptions.map(opt => opt.value);
+        } else {
+            roomSelection.ranges = document.getElementById('room-ranges').value.trim();
+            roomSelection.useUID = document.querySelector('input[name="room-id-type"]:checked').value === 'uid';
+        }
+        
+        // Add exclusions if present
+        const excludeText = document.getElementById('exclude-rooms').value.trim();
+        if (excludeText) {
+            roomSelection.exclusions = excludeText;
+            roomSelection.excludeUseUID = document.querySelector('input[name="exclude-id-type"]:checked').value === 'uid';
+        }
+
+        const config = {
+            metadata: {
+                name: mapName,
+                description: description,
+                author: this.github.user ? this.github.user.login : 'unknown',
+                created: new Date().toISOString(),
+                mapdbVersion: this.mapdbVersion,
+                appVersion: '1.0.0'
+            },
+            roomSelection: roomSelection,
+            appearance: {
+                edgeLength: this.config.edgeLength,
+                roomShape: this.config.roomShape,
+                roomSize: this.config.roomSize,
+                strokeWidth: this.config.strokeWidth,
+                connectionWidth: this.config.connectionWidth
+            },
+            colors: {
+                default: this.config.colors.default,
+                background: this.config.colors.background,
+                connections: this.config.colors.connections,
+                verticalConnections: this.config.colors.verticalConnections,
+                tagColors: Array.from(this.config.tagColors.entries())
+            },
+            displayOptions: {
+                showRoomIds: document.getElementById('show-room-ids').checked,
+                showRoomNames: document.getElementById('show-room-names').checked,
+                showLabels: document.getElementById('show-labels').checked,
+                showConnections: document.getElementById('show-connections').checked,
+                showGroupLabels: document.getElementById('show-group-labels').checked
+            },
+            fonts: {
+                labels: { ...this.config.fonts.labels },
+                rooms: { ...this.config.fonts.rooms }
+            },
+            backgroundSettings: {
+                useBackground: this.config.useBackground,
+                backgroundImage: this.config.backgroundImage
+            },
+            groupPositioning: {
+                offsets: Array.from(this.groupOffsets.entries()),
+                names: Array.from(this.groupNames.entries()),
+                labelOffsets: Array.from(this.groupLabelOffsets.entries())
+            },
+            crossGroupConnections: [...this.crossGroupConnections],
+            customLabels: [...this.customLabels]
+        };
+
+        return JSON.stringify(config, null, 2);
+    }
+
+    closeSaveModal() {
+        const modal = document.getElementById('save-modal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    showLoadDialog() {
+        if (!this.github.isAuthenticated()) {
+            alert('Please connect to GitHub first');
+            return;
+        }
+
+        // Create modal dialog
+        const modal = this.createLoadModal();
+        document.body.appendChild(modal);
+        modal.classList.remove('hidden');
+        
+        // Load map gallery
+        this.loadMapGallery();
+    }
+
+    createLoadModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'load-modal';
+        
+        modal.innerHTML = `
+            <div class="modal-overlay"></div>
+            <div class="modal-content large-modal">
+                <h3>📂 Load Map from GitHub</h3>
+                <div class="form-group">
+                    <label for="gallery-location">Filter by Location:</label>
+                    <select id="gallery-location">
+                        <option value="">All Locations</option>
+                        <option value="sailors_grief">Sailor's Grief</option>
+                        <option value="hinterwildes">Hinterwildes</option>
+                        <option value="icemule">Icemule</option>
+                        <option value="wehnimers">Wehnimer's</option>
+                        <option value="solhaven">Solhaven</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <button id="refresh-gallery" class="btn-small">🔄 Refresh</button>
+                </div>
+                <div id="map-gallery" class="map-gallery">
+                    <div class="loading">Loading maps...</div>
+                </div>
+                <div class="modal-actions">
+                    <button id="load-selected" class="btn-primary" disabled>📥 Load Selected</button>
+                    <button id="cancel-load" class="btn-secondary">Cancel</button>
+                </div>
+                <div id="load-status" class="load-status hidden"></div>
+            </div>
+        `;
+
+        // Add event listeners
+        modal.querySelector('#gallery-location').addEventListener('change', this.filterMapGallery.bind(this));
+        modal.querySelector('#refresh-gallery').addEventListener('click', this.loadMapGallery.bind(this));
+        modal.querySelector('#load-selected').addEventListener('click', this.handleLoadSelected.bind(this));
+        modal.querySelector('#cancel-load').addEventListener('click', this.closeLoadModal.bind(this));
+        modal.querySelector('.modal-overlay').addEventListener('click', this.closeLoadModal.bind(this));
+
+        return modal;
+    }
+
+    async loadMapGallery() {
+        const gallery = document.getElementById('map-gallery');
+        const statusDiv = document.getElementById('load-status');
+        
+        gallery.innerHTML = '<div class="loading">Loading maps...</div>';
+        
+        try {
+            const maps = await this.github.listMaps();
+            this.renderMapGallery(maps);
+        } catch (error) {
+            gallery.innerHTML = `<div class="error">Failed to load maps: ${error.message}</div>`;
+            console.error('Failed to load map gallery:', error);
+        }
+    }
+
+    renderMapGallery(maps) {
+        const gallery = document.getElementById('map-gallery');
+        
+        if (maps.length === 0) {
+            gallery.innerHTML = '<div class="empty">No maps found. Create and save some maps to see them here!</div>';
+            return;
+        }
+
+        let html = '';
+        maps.forEach(map => {
+            const hasConfig = !!map.files.config;
+            const hasSvg = !!map.files.svg;
+            const hasCoords = !!map.files.coords;
+            
+            html += `
+                <div class="map-item" data-map-name="${map.name}" data-location="${map.location || 'unknown'}">
+                    <div class="map-header">
+                        <h4>${map.name}</h4>
+                        <span class="map-location">${map.location || 'unknown'}</span>
+                    </div>
+                    <div class="map-files">
+                        <span class="file-badge ${hasSvg ? 'has-file' : 'missing-file'}">SVG</span>
+                        <span class="file-badge ${hasCoords ? 'has-file' : 'missing-file'}">Coords</span>
+                        <span class="file-badge ${hasConfig ? 'has-file' : 'missing-file'}">Config</span>
+                    </div>
+                    <div class="map-actions">
+                        <input type="radio" name="selected-map" value="${map.name}|${map.location}" 
+                               ${hasConfig ? '' : 'disabled'}>
+                        <label>Select</label>
+                        ${hasSvg ? `<button class="btn-small preview-btn" data-map-name="${map.name}" data-location="${map.location}">👁 Preview</button>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        gallery.innerHTML = html;
+        
+        // Add event listeners
+        gallery.querySelectorAll('input[name="selected-map"]').forEach(radio => {
+            radio.addEventListener('change', this.updateLoadButton.bind(this));
+        });
+        
+        gallery.querySelectorAll('.preview-btn').forEach(btn => {
+            btn.addEventListener('click', this.previewGitHubMap.bind(this));
+        });
+    }
+
+    filterMapGallery() {
+        const filterLocation = document.getElementById('gallery-location').value;
+        const mapItems = document.querySelectorAll('.map-item');
+        
+        mapItems.forEach(item => {
+            const itemLocation = item.dataset.location;
+            if (!filterLocation || itemLocation === filterLocation) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    updateLoadButton() {
+        const selectedRadio = document.querySelector('input[name="selected-map"]:checked');
+        const loadBtn = document.getElementById('load-selected');
+        loadBtn.disabled = !selectedRadio;
+    }
+
+    async previewGitHubMap(event) {
+        const mapName = event.target.dataset.mapName;
+        const location = event.target.dataset.location;
+        
+        try {
+            const mapSet = await this.github.loadMapSet(mapName, location);
+            
+            if (mapSet.svg) {
+                this.showPreview(mapSet.svg.content);
+            } else {
+                alert('No SVG file found for this map');
+            }
+        } catch (error) {
+            alert('Failed to preview map: ' + error.message);
+        }
+    }
+
+    async handleLoadSelected() {
+        const selectedRadio = document.querySelector('input[name="selected-map"]:checked');
+        if (!selectedRadio) return;
+        
+        const [mapName, location] = selectedRadio.value.split('|');
+        const statusDiv = document.getElementById('load-status');
+        
+        statusDiv.classList.remove('hidden');
+        statusDiv.textContent = 'Loading map...';
+        
+        try {
+            const mapSet = await this.github.loadMapSet(mapName, location);
+            
+            if (mapSet.config) {
+                statusDiv.textContent = 'Restoring configuration...';
+                await this.restoreMapConfig(JSON.parse(mapSet.config.content));
+                
+                statusDiv.textContent = '✅ Map loaded successfully!';
+                statusDiv.style.color = '#27ae60';
+                
+                setTimeout(() => {
+                    this.closeLoadModal();
+                    this.updateStatus(`Map "${mapName}" loaded from GitHub!`);
+                }, 1500);
+            } else {
+                throw new Error('No configuration file found for this map');
+            }
+            
+        } catch (error) {
+            statusDiv.textContent = '❌ Load failed: ' + error.message;
+            statusDiv.style.color = '#e74c3c';
+            console.error('Load failed:', error);
+        }
+    }
+
+    async restoreMapConfig(config) {
+        // Restore room selection
+        if (config.roomSelection) {
+            const roomSel = config.roomSelection;
+            
+            // Set selection method
+            const methodRadio = document.querySelector(`input[name="room-selection"][value="${roomSel.method}"]`);
+            if (methodRadio) {
+                methodRadio.checked = true;
+                this.handleRoomSelectionChange({ target: methodRadio });
+            }
+            
+            // Restore location or range selection
+            if (roomSel.method === 'location' && roomSel.locations) {
+                const locationSelect = document.getElementById('location-select');
+                Array.from(locationSelect.options).forEach(option => {
+                    option.selected = roomSel.locations.includes(option.value);
+                });
+            } else if (roomSel.method === 'custom') {
+                if (roomSel.ranges) {
+                    document.getElementById('room-ranges').value = roomSel.ranges;
+                }
+                if (roomSel.useUID !== undefined) {
+                    const uidRadio = document.querySelector(`input[name="room-id-type"][value="${roomSel.useUID ? 'uid' : 'id'}"]`);
+                    if (uidRadio) uidRadio.checked = true;
+                }
+            }
+            
+            // Restore exclusions
+            if (roomSel.exclusions) {
+                document.getElementById('exclude-rooms').value = roomSel.exclusions;
+                if (roomSel.excludeUseUID !== undefined) {
+                    const excludeUidRadio = document.querySelector(`input[name="exclude-id-type"][value="${roomSel.excludeUseUID ? 'uid' : 'id'}"]`);
+                    if (excludeUidRadio) excludeUidRadio.checked = true;
+                }
+            }
+        }
+        
+        // Restore appearance
+        if (config.appearance) {
+            const app = config.appearance;
+            if (app.edgeLength) {
+                this.config.edgeLength = app.edgeLength;
+                document.getElementById('edge-length').value = app.edgeLength;
+                document.getElementById('edge-length-value').textContent = app.edgeLength + 'px';
+            }
+            if (app.roomShape) {
+                this.config.roomShape = app.roomShape;
+                document.getElementById('room-shape').value = app.roomShape;
+            }
+            if (app.roomSize) {
+                this.config.roomSize = app.roomSize;
+                document.getElementById('room-size').value = app.roomSize;
+                document.getElementById('room-size-value').textContent = app.roomSize + 'px';
+            }
+            if (app.strokeWidth) {
+                this.config.strokeWidth = app.strokeWidth;
+                document.getElementById('stroke-width').value = app.strokeWidth;
+                document.getElementById('stroke-width-value').textContent = app.strokeWidth + 'px';
+            }
+            if (app.connectionWidth) {
+                this.config.connectionWidth = app.connectionWidth;
+                document.getElementById('connection-width').value = app.connectionWidth;
+                document.getElementById('connection-width-value').textContent = app.connectionWidth + 'px';
+            }
+        }
+        
+        // Restore colors
+        if (config.colors) {
+            const colors = config.colors;
+            if (colors.default) {
+                this.config.colors.default = colors.default;
+                document.getElementById('default-color').value = colors.default;
+            }
+            if (colors.background) {
+                this.config.colors.background = colors.background;
+                document.getElementById('background-color').value = colors.background;
+            }
+            if (colors.connections) {
+                this.config.colors.connections = colors.connections;
+                document.getElementById('connection-color').value = colors.connections;
+            }
+            if (colors.verticalConnections) {
+                this.config.colors.verticalConnections = colors.verticalConnections;
+                document.getElementById('vertical-connection-color').value = colors.verticalConnections;
+            }
+            if (colors.tagColors) {
+                this.config.tagColors = new Map(colors.tagColors);
+                this.renderTagColorsList();
+            }
+        }
+        
+        // Restore display options
+        if (config.displayOptions) {
+            const opts = config.displayOptions;
+            document.getElementById('show-room-ids').checked = opts.showRoomIds !== false;
+            document.getElementById('show-room-names').checked = opts.showRoomNames === true;
+            document.getElementById('show-labels').checked = opts.showLabels !== false;
+            document.getElementById('show-connections').checked = opts.showConnections !== false;
+            document.getElementById('show-group-labels').checked = opts.showGroupLabels === true;
+        }
+        
+        // Restore fonts
+        if (config.fonts) {
+            if (config.fonts.labels) {
+                const labels = config.fonts.labels;
+                this.config.fonts.labels = { ...this.config.fonts.labels, ...labels };
+                if (labels.size) {
+                    document.getElementById('label-font-size').value = labels.size;
+                    document.getElementById('label-font-size-value').textContent = labels.size + 'px';
+                }
+                if (labels.color) document.getElementById('label-font-color').value = labels.color;
+                if (labels.family) document.getElementById('label-font-family').value = labels.family;
+                if (labels.bold !== undefined) document.getElementById('label-font-bold').checked = labels.bold;
+            }
+            if (config.fonts.rooms) {
+                const rooms = config.fonts.rooms;
+                this.config.fonts.rooms = { ...this.config.fonts.rooms, ...rooms };
+                if (rooms.size) {
+                    document.getElementById('room-font-size').value = rooms.size;
+                    document.getElementById('room-font-size-value').textContent = rooms.size + 'px';
+                }
+                if (rooms.color) document.getElementById('room-font-color').value = rooms.color;
+                if (rooms.family) document.getElementById('room-font-family').value = rooms.family;
+                if (rooms.bold !== undefined) document.getElementById('room-font-bold').checked = rooms.bold;
+            }
+        }
+        
+        // Restore background settings
+        if (config.backgroundSettings) {
+            const bg = config.backgroundSettings;
+            if (bg.useBackground !== undefined) {
+                this.config.useBackground = bg.useBackground;
+                document.getElementById('use-background').checked = bg.useBackground;
+            }
+            if (bg.backgroundImage) {
+                this.config.backgroundImage = bg.backgroundImage;
+            }
+        }
+        
+        // Restore group positioning
+        if (config.groupPositioning) {
+            const gp = config.groupPositioning;
+            if (gp.offsets) this.groupOffsets = new Map(gp.offsets);
+            if (gp.names) this.groupNames = new Map(gp.names);
+            if (gp.labelOffsets) this.groupLabelOffsets = new Map(gp.labelOffsets);
+        }
+        
+        // Restore cross-group connections
+        if (config.crossGroupConnections) {
+            this.crossGroupConnections = [...config.crossGroupConnections];
+        }
+        
+        // Restore custom labels
+        if (config.customLabels) {
+            this.customLabels = [...config.customLabels];
+        }
+        
+        // Update output name
+        if (config.metadata && config.metadata.name) {
+            document.getElementById('output-name').value = config.metadata.name;
+        }
+        
+        // Save to coordinate storage
+        this.saveCurrentCoordinates();
+        
+        // Update UI components
+        this.populateTagDropdown();
+        this.updateGroupPositioningPanel();
+        this.updateCrossGroupConnectionsList();
+        this.updateCustomLabelsList();
+    }
+
+    closeLoadModal() {
+        const modal = document.getElementById('load-modal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    async refreshMapGallery() {
+        await this.loadMapGallery();
+    }
+
+    // Rest of the existing MapGenApp methods remain unchanged...
+    // (populateTagDropdown, addTagColor, renderTagColorsList, etc.)
 
     populateTagDropdown() {
         if (!this.mapdb) return;
@@ -227,17 +1092,6 @@ class MapGenApp {
             this.config.tagColors = new Map(theme.tagColors);
             
             this.renderTagColorsList();
-        }
-    }
-
-    async init() {
-        try {
-            this.setupEventListeners();
-            await this.loadMapDB();
-            this.populateLocationDropdown();
-            this.showMainInterface();
-        } catch (error) {
-            this.showError('Failed to initialize application: ' + error.message);
         }
     }
 
@@ -864,6 +1718,10 @@ class MapGenApp {
         this.updateCustomLabelsList();
         this.updateStatus(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
+
+    // Continue with all remaining methods from the original app.js...
+    // (updateGroupPositioningPanel, addCrossGroupConnection, etc.)
+    // [The rest of the methods remain exactly the same as in the original app.js]
 
     updateGroupPositioningPanel() {
         const container = document.getElementById('group-positioning');
