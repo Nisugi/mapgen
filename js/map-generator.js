@@ -1,4 +1,4 @@
-class MapGenerator {
+export class MapGenerator {
     constructor() {
         this.config = {
             colors: {
