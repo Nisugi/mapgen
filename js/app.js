@@ -245,10 +245,10 @@ class MapGenApp {
 
     async handleGitHubLogin() {
         try {
-            StatusManager.update('Connecting to GitHub...');
+            this.statusManager.update('Connecting to GitHub...');
             await this.github.authenticate();
         } catch (error) {
-            StatusManager.error('GitHub login failed: ' + error.message);
+            this.statusManager.error('GitHub login failed: ' + error.message);
         }
     }
 
