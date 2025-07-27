@@ -60,6 +60,7 @@ export class StatusManager {
     showError(message) {
         this.updateStatus('❌ ' + message);
         this.hideProgress();
+        console.log(StatusManager, this.statusManager)
         console.error(message);
     }
 
