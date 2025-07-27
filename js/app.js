@@ -84,7 +84,7 @@ class MapGenApp {
             this.showMainInterface();
             
         } catch (error) {
-            this.statusManager.error('Failed to initialize application: ' + error.message);
+            StatusManager.error('Failed to initialize application: ' + error.message);
         }
     }
 
@@ -92,7 +92,7 @@ class MapGenApp {
         try {
             const result = await this.mapdbLoader.loadMapDB(
                 (percent, loaded, total, message) => {
-                    this.statusManager.progress(percent, message);
+                    StatusManager.progress(percent, message);
                 }
             );
 
@@ -147,7 +147,7 @@ class MapGenApp {
     showMainInterface() {
         this.uiManager.showMainInterface();
         this.statusManager.hideProgress();
-        this.statusManager.update(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
+        StatusManager.update(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
 
     // GitHub Integration Methods (these remain similar but use the modular components)
@@ -183,7 +183,7 @@ class MapGenApp {
                 this.updateGitHubStatus();
             } catch (error) {
                 console.error('OAuth callback failed:', error);
-                this.statusManager.error('GitHub authentication failed: ' + error.message);
+                StatusManager.error('GitHub authentication failed: ' + error.message);
             }
         } else if (this.github.isAuthenticated()) {
             // Verify existing token
@@ -245,17 +245,17 @@ class MapGenApp {
 
     async handleGitHubLogin() {
         try {
-            this.statusManager.update('Connecting to GitHub...');
+            StatusManager.update('Connecting to GitHub...');
             await this.github.authenticate();
         } catch (error) {
-            this.statusManager.error('GitHub login failed: ' + error.message);
+            StatusManager.error('GitHub login failed: ' + error.message);
         }
     }
 
     handleGitHubLogout() {
         this.github.clearToken();
         this.updateGitHubStatus();
-        this.statusManager.update('Logged out of GitHub');
+        StatusManager.update('Logged out of GitHub');
     }
 
     showSaveDialog() {
