@@ -84,7 +84,7 @@ class MapGenApp {
             this.showMainInterface();
             
         } catch (error) {
-            StatusManager.error('Failed to initialize application: ' + error.message);
+            this.statusManager.error('Failed to initialize application: ' + error.message);
         }
     }
 
@@ -92,7 +92,7 @@ class MapGenApp {
         try {
             const result = await this.mapdbLoader.loadMapDB(
                 (percent, loaded, total, message) => {
-                    StatusManager.progress(percent, message);
+                    this.statusManager.progress(percent, message);
                 }
             );
 
@@ -147,7 +147,7 @@ class MapGenApp {
     showMainInterface() {
         this.uiManager.showMainInterface();
         this.statusManager.hideProgress();
-        StatusManager.update(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
+        this.statusManager.update(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
 
     // GitHub Integration Methods (these remain similar but use the modular components)
@@ -183,7 +183,7 @@ class MapGenApp {
                 this.updateGitHubStatus();
             } catch (error) {
                 console.error('OAuth callback failed:', error);
-                StatusManager.error('GitHub authentication failed: ' + error.message);
+                this.statusManager.error('GitHub authentication failed: ' + error.message);
             }
         } else if (this.github.isAuthenticated()) {
             // Verify existing token
@@ -255,7 +255,7 @@ class MapGenApp {
     handleGitHubLogout() {
         this.github.clearToken();
         this.updateGitHubStatus();
-        StatusManager.update('Logged out of GitHub');
+        this.statusManager.update('Logged out of GitHub');
     }
 
     showSaveDialog() {
