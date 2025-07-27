@@ -52,7 +52,7 @@ export class CrossConnectionsPanel {
             color: this.config.colors.connections,
             showFromTerminal: false,
             showToTerminal: true,
-            terminalStyle: 'arrow' // or 'dot', 'square'
+            terminalStyle: 'arrow'
         };
         
         this.connections.push(newConnection);
@@ -102,6 +102,30 @@ export class CrossConnectionsPanel {
                                    value="${conn.color}">
                         </div>
                     </div>
+                    <div class="connection-terminals">
+                        <h5>Terminals</h5>
+                        <div class="terminal-controls">
+                            <div class="control-group">
+                                <label><input type="checkbox" class="show-from-terminal" data-index="${index}" 
+                                        ${conn.showFromTerminal ? 'checked' : ''}> From Terminal</label>
+                            </div>
+                            <div class="control-group">
+                                <label><input type="checkbox" class="show-to-terminal" data-index="${index}" 
+                                        ${conn.showToTerminal ? 'checked' : ''}> To Terminal</label>
+                            </div>
+                            <div class="control-group">
+                                <label>Style:</label>
+                                <select class="terminal-style" data-index="${index}">
+                                    <option value="arrow" ${conn.terminalStyle === 'arrow' ? 'selected' : ''}>Arrow</option>
+                                    <option value="dot" ${conn.terminalStyle === 'dot' ? 'selected' : ''}>Dot</option>
+                                    <option value="square" ${conn.terminalStyle === 'square' ? 'selected' : ''}>Square</option>
+                                    <option value="diamond" ${conn.terminalStyle === 'diamond' ? 'selected' : ''}>Diamond</option>
+                                    <option value="cross" ${conn.terminalStyle === 'cross' ? 'selected' : ''}>Cross</option>
+                                    <option value="circle" ${conn.terminalStyle === 'circle' ? 'selected' : ''}>Circle</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>                    
                 </div>
             `;
         });
@@ -171,6 +195,41 @@ export class CrossConnectionsPanel {
                 });
             });
         });
+
+        // Terminal checkboxes
+        this.container.querySelectorAll('.show-from-terminal').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.connections[index].showFromTerminal = checkbox.checked;
+                eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
+                    connection: this.connections[index],
+                    index
+                });
+            });
+        });
+
+        this.container.querySelectorAll('.show-to-terminal').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.connections[index].showToTerminal = checkbox.checked;
+                eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
+                    connection: this.connections[index],
+                    index
+                });
+            });
+        });
+
+        // Terminal style selects
+        this.container.querySelectorAll('.terminal-style').forEach(select => {
+            select.addEventListener('change', () => {
+                const index = parseInt(select.dataset.index);
+                this.connections[index].terminalStyle = select.value;
+                eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
+                    connection: this.connections[index],
+                    index
+                });
+            });
+        });    
     }
 
     getConnections() {

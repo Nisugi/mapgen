@@ -193,6 +193,14 @@ export class SVGRenderer {
                         svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
                                 stroke="${color}" stroke-width="${connectionWidth}" 
                                 stroke-dasharray="${dashArray}" opacity="0.6"/>`;
+                        
+                        // Draw terminators
+                        if (conn.showFromTerminal) {
+                            svg += this.renderConnectionTerminal(x1, y1, conn.terminalStyle || 'arrow', color, connectionWidth);
+                        }
+                        if (conn.showToTerminal) {
+                            svg += this.renderConnectionTerminal(x2, y2, conn.terminalStyle || 'arrow', color, connectionWidth);
+                        }
                     }
                 });
             }
@@ -253,6 +261,52 @@ export class SVGRenderer {
                 }
             }
         });
+        
+        return svg;
+    }
+
+    renderConnectionTerminal(x, y, style, color, width) {
+        let svg = '';
+        const size = width * 3; // Terminal size based on connection width
+        
+        switch (style) {
+            case 'arrow':
+                // Arrowhead pointing inward
+                svg += `<path d="M ${x-size} ${y-size} L ${x} ${y} L ${x-size} ${y+size}" 
+                        fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                break;
+                
+            case 'dot':
+                // Filled circle
+                svg += `<circle cx="${x}" cy="${y}" r="${size/2}" fill="${color}"/>`;
+                break;
+                
+            case 'square':
+                // Filled square
+                svg += `<rect x="${x-size/2}" y="${y-size/2}" width="${size}" height="${size}" 
+                        fill="${color}"/>`;
+                break;
+                
+            case 'diamond':
+                // Filled diamond
+                svg += `<path d="M ${x} ${y-size} L ${x+size} ${y} L ${x} ${y+size} L ${x-size} ${y} Z" 
+                        fill="${color}"/>`;
+                break;
+                
+            case 'cross':
+                // X mark
+                svg += `<line x1="${x-size/2}" y1="${y-size/2}" x2="${x+size/2}" y2="${y+size/2}" 
+                        stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                svg += `<line x1="${x-size/2}" y1="${y+size/2}" x2="${x+size/2}" y2="${y-size/2}" 
+                        stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                break;
+                
+            case 'circle':
+                // Open circle
+                svg += `<circle cx="${x}" cy="${y}" r="${size/2}" fill="none" 
+                        stroke="${color}" stroke-width="${width}"/>`;
+                break;
+        }
         
         return svg;
     }

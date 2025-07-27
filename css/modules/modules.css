@@ -233,6 +233,41 @@
     background: var(--color-error-dark);
 }
 
+/* Cross-connection terminal controls */
+.connection-terminals {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
+}
+
+.connection-terminals h5 {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.terminal-controls {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.terminal-controls .control-group {
+    min-width: auto;
+}
+
+.terminal-controls .control-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+}
+
+.terminal-controls select {
+    min-width: 80px;
+}
+
 /* Custom Labels */
 .label-list {
     margin-top: var(--spacing-sm);
