@@ -1,4 +1,4 @@
-class MapDBLoader {
+export class MapDBLoader {
     constructor() {
         // Load from your own repository - no external URLs!
         this.LOCAL_MAPDB_URL = './mapdb.json';
