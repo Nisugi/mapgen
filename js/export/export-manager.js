@@ -1,4 +1,7 @@
-// Export Manager - handles all export functionality
+// Export Manager - coordinates all export functionality
+import { SVGExporter } from './svg-exporter.js';
+import { CoordinateExporter } from './coordinate-exporter.js';
+import { ConfigExporter } from './config-exporter.js';
 import { eventBus, EVENTS } from '../utils/event-bus.js';
 import { StatusManager } from '../utils/status-manager.js';
 
@@ -10,10 +13,19 @@ export class ExportManager {
         this.mapGenerator = mapGenerator;
         this.mapdbVersion = mapdbVersion;
         
+        // Initialize exporters
+        this.svgExporter = new SVGExporter();
+        this.coordinateExporter = new CoordinateExporter(mapGenerator);
+        this.configExporter = new ConfigExporter(mapdbVersion);
+        
         // Listen for export events
         eventBus.on(EVENTS.EXPORT_SVG, this.exportSVG.bind(this));
         eventBus.on(EVENTS.EXPORT_COORDS, this.exportCoordinates.bind(this));
         eventBus.on(EVENTS.EXPORT_CONFIG, this.exportConfig.bind(this));
+    }
+
+    exportSVG(svgContent, filename) {
+        this.svgExporter.download(svgContent, filename);
     }
 
     exportCoordinates() {
@@ -26,63 +38,16 @@ export class ExportManager {
 
         try {
             const rooms = this.roomSelector.getSelectedRooms();
+            const outputName = document.getElementById('output-name').value;
             
-            // Get the same config as generate/preview
-            const groupsWithNames = uiState.groupData.groups.map((group, index) => ({
-                ...group,
-                name: uiState.groupData.names.get(index) || `Group ${index + 1}`
-            }));
-            
-            const config = {
-                edgeLength: this.config.edgeLength,
-                roomShape: this.config.roomShape,
-                roomSize: this.config.roomSize,
-                groupOffsets: uiState.groupData.offsets,
-                groups: groupsWithNames
-            };
-            
-            // Generate positions
-            const result = this.mapGenerator.generateMapWithGroups(rooms, config);
-            const positions = this.mapGenerator.calculateRoomPositionsWithGroups(
+            const coordData = this.coordinateExporter.generateCoordinates(
                 rooms, 
-                new Map(rooms.map(r => [r.id, r]))
-            ).positions;
+                uiState, 
+                this.config,
+                outputName
+            );
             
-            // Calculate actual positions with offsets
-            const finalPositions = this.mapGenerator.applyGroupOffsets(result.groups);
-            
-            // Get bounds for offset calculation
-            const coords = Array.from(finalPositions.values());
-            const minX = Math.min(...coords.map(p => p.x));
-            const minY = Math.min(...coords.map(p => p.y));
-            const padding = 2;
-            const offsetX = -minX + padding;
-            const offsetY = -minY + padding;
-            
-            // Generate coordinate data
-            let coordData = [];
-            rooms.forEach(room => {
-                const pos = finalPositions.get(room.id);
-                if (pos) {
-                    const x = (pos.x + offsetX) * config.edgeLength;
-                    const y = (pos.y + offsetY) * config.edgeLength;
-                    const bounds = this.mapGenerator.getRoomBounds(x, y, config.roomShape, config.roomSize);
-                    
-                    coordData.push({
-                        id: room.id,
-                        image: document.getElementById('output-name').value + '.png',
-                        image_coords: [
-                            Math.round(bounds.left),
-                            Math.round(bounds.top),
-                            Math.round(bounds.right),
-                            Math.round(bounds.bottom)
-                        ]
-                    });
-                }
-            });
-            
-            // Create export window
-            this.showCoordinatesExport(coordData);
+            this.coordinateExporter.showExportWindow(coordData, outputName);
             
         } catch (error) {
             alert('Error exporting coordinates: ' + error.message);
@@ -98,8 +63,10 @@ export class ExportManager {
         }
 
         const mapId = this.roomSelector.getCurrentMapIdentifier();
+        const mapName = document.getElementById('output-name').value;
+        
         const coordData = {
-            mapName: document.getElementById('output-name').value,
+            mapName: mapName,
             mapId: mapId,
             version: this.mapdbVersion,
             created: new Date().toISOString(),
@@ -127,16 +94,7 @@ export class ExportManager {
             }
         };
 
-        const blob = new Blob([JSON.stringify(coordData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${mapId}_coordinates.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
+        this.coordinateExporter.downloadJSON(coordData, `${mapId}_coordinates.json`);
         StatusManager.update('Coordinate file exported!');
     }
 
@@ -224,151 +182,29 @@ export class ExportManager {
         }
     }
 
-    showCoordinatesExport(coordData) {
-        const exportWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
+    exportConfig() {
+        const uiState = this.uiManager.getUIState();
+        const mapName = document.getElementById('output-name').value;
         
-        // Format the data for mapdb
-        let mapdbFormat = coordData.map(room => {
-            return `  "${room.id}": {\n` +
-                   `    "image": "${room.image}",\n` +
-                   `    "image_coords": [${room.image_coords.join(', ')}]\n` +
-                   `  }`;
-        }).join(',\n');
+        const config = this.configExporter.generateConfig(
+            mapName,
+            uiState,
+            this.config,
+            window.app?.github?.user?.login || 'unknown'
+        );
         
-        exportWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Room Coordinates Export</title>
-                <style>
-                    body { 
-                        font-family: Arial, sans-serif; 
-                        padding: 20px;
-                        background: #f5f5f5;
-                    }
-                    h2 { color: #333; }
-                    .export-container {
-                        background: white;
-                        border: 1px solid #ddd;
-                        border-radius: 5px;
-                        padding: 20px;
-                        margin-bottom: 20px;
-                    }
-                    textarea {
-                        width: 100%;
-                        height: 400px;
-                        font-family: 'Courier New', monospace;
-                        font-size: 12px;
-                        border: 1px solid #ccc;
-                        padding: 10px;
-                    }
-                    button {
-                        background: #5a67d8;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        margin-right: 10px;
-                    }
-                    button:hover {
-                        background: #4c51bf;
-                    }
-                    .info {
-                        background: #e6f3ff;
-                        padding: 10px;
-                        border-radius: 5px;
-                        margin-bottom: 15px;
-                    }
-                </style>
-            </head>
-            <body>
-                <h2>Room Coordinates Export</h2>
-                <div class="info">
-                    <strong>Image name:</strong> ${document.getElementById('output-name').value}.png<br>
-                    <strong>Total rooms:</strong> ${coordData.length}<br>
-                    <strong>Format:</strong> MapDB image_coords format (left, top, right, bottom)
-                </div>
-                <div class="export-container">
-                    <h3>MapDB Format (for room definitions):</h3>
-                    <textarea id="mapdb-format" readonly>{
-${mapdbFormat}
-}</textarea>
-                    <button onclick="document.getElementById('mapdb-format').select(); document.execCommand('copy'); alert('Copied to clipboard!');">Copy MapDB Format</button>
-                </div>
-                <div class="export-container">
-                    <h3>JSON Format (for reference):</h3>
-                    <textarea id="json-format" readonly>${JSON.stringify(coordData, null, 2)}</textarea>
-                    <button onclick="document.getElementById('json-format').select(); document.execCommand('copy'); alert('Copied to clipboard!');">Copy JSON Format</button>
-                </div>
-            </body>
-            </html>
-        `);
+        return config;
     }
 
     generateConfigForExport(mapName, description = '') {
         const uiState = this.uiManager.getUIState();
-        const roomSelection = uiState.roomSelection;
         
-        let roomSelectionConfig = {
-            method: roomSelection.method
-        };
-        
-        if (roomSelection.method === 'location') {
-            roomSelectionConfig.locations = roomSelection.locations;
-        } else {
-            roomSelectionConfig.ranges = roomSelection.customRanges.ranges;
-            roomSelectionConfig.useUID = roomSelection.customRanges.useUID;
-        }
-        
-        // Add exclusions if present
-        if (roomSelection.exclusions.ranges) {
-            roomSelectionConfig.exclusions = roomSelection.exclusions.ranges;
-            roomSelectionConfig.excludeUseUID = roomSelection.exclusions.useUID;
-        }
-
-        const config = {
-            metadata: {
-                name: mapName,
-                description: description,
-                author: window.app?.github?.user?.login || 'unknown',
-                created: new Date().toISOString(),
-                mapdbVersion: this.mapdbVersion,
-                appVersion: '1.0.0'
-            },
-            roomSelection: roomSelectionConfig,
-            appearance: {
-                edgeLength: this.config.edgeLength,
-                roomShape: this.config.roomShape,
-                roomSize: this.config.roomSize,
-                strokeWidth: this.config.strokeWidth,
-                connectionWidth: this.config.connectionWidth
-            },
-            colors: {
-                default: this.config.colors.default,
-                background: this.config.colors.background,
-                connections: this.config.colors.connections,
-                verticalConnections: this.config.colors.verticalConnections,
-                tagColors: Array.from(this.config.tagColors.entries())
-            },
-            displayOptions: uiState.displayOptions,
-            fonts: {
-                labels: { ...this.config.fonts.labels },
-                rooms: { ...this.config.fonts.rooms }
-            },
-            backgroundSettings: {
-                useBackground: this.config.useBackground,
-                backgroundImage: this.config.backgroundImage
-            },
-            groupPositioning: {
-                offsets: Array.from(uiState.groupData.offsets.entries()),
-                names: Array.from(uiState.groupData.names.entries()),
-                labelOffsets: Array.from(uiState.groupData.labelOffsets.entries())
-            },
-            crossGroupConnections: uiState.crossConnections,
-            customLabels: uiState.customLabels
-        };
-
-        return JSON.stringify(config, null, 2);
+        return this.configExporter.generateConfig(
+            mapName,
+            uiState,
+            this.config,
+            window.app?.github?.user?.login || 'unknown',
+            description
+        );
     }
 }

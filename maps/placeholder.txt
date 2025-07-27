@@ -1,0 +1,9 @@
+This is the root folder for the maps created.
+Will save to folder named for maps location.
+Custom folder for custom locations.
+
+Maps will save with 3 parts:
+- a .svg image file, named as will be used in mapdb, imt-Hinterwilds-v1
+- a _coords.json which will give room, image, image_coords to load into the mapdb
+- a _config.json which holds all the settings mapgen used to generate the mapdb
+
