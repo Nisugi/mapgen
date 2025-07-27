@@ -1,0 +1,159 @@
+/* Forms - Form elements and controls */
+
+/* Form groups */
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-light);
+}
+
+/* Text inputs */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+    transition: border-color var(--transition-normal);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+/* Multi-select styling */
+select[multiple] {
+    height: auto;
+    min-height: 120px;
+    padding: var(--spacing-sm);
+}
+
+select[multiple] option {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    margin: 1px 0;
+    border-radius: var(--radius-sm);
+}
+
+select[multiple] option:checked {
+    background: var(--color-primary);
+    color: white;
+}
+
+select[multiple] option:hover {
+    background: var(--color-border);
+}
+
+select[multiple] option:checked:hover {
+    background: var(--color-primary-dark);
+}
+
+/* Radio and checkbox groups */
+.radio-group,
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.radio-group label,
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: var(--font-weight-normal);
+    cursor: pointer;
+}
+
+/* Range inputs */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+/* Color inputs */
+input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+/* File inputs */
+input[type="file"] {
+    padding: var(--spacing-sm);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    cursor: pointer;
+    width: 100%;
+}
+
+input[type="file"]:hover {
+    border-color: var(--color-primary);
+    background: #f1f5f9;
+}
+
+/* Color grid */
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.color-input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+/* Special input styles */
+#exclude-rooms {
+    border: 2px solid #ffd6cc;
+    background: #fffaf9;
+}
+
+#exclude-rooms:focus {
+    border-color: #f56565;
+    background: white;
+}
+
+#exclude-rooms::placeholder {
+    color: #a0aec0;
+    font-style: italic;
+}

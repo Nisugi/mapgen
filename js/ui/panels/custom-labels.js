@@ -1,0 +1,244 @@
+// Custom Labels Panel UI
+import { eventBus, EVENTS } from '../../utils/event-bus.js';
+
+export class CustomLabelsPanel {
+    constructor(config) {
+        this.config = config;
+        this.labels = [];
+        this.container = null;
+    }
+
+    init() {
+        this.container = document.getElementById('custom-labels-list');
+        
+        // Setup add button
+        const addBtn = document.getElementById('add-custom-label');
+        if (addBtn) {
+            addBtn.addEventListener('click', this.addLabel.bind(this));
+        }
+        
+        this.update();
+    }
+
+    addLabel() {
+        const text = document.getElementById('custom-label-text').value.trim();
+        
+        if (!text) {
+            alert('Please enter label text');
+            return;
+        }
+        
+        // Add label with default settings
+        const newLabel = {
+            text: text,
+            x: 50, // Default position
+            y: 50,
+            fontSize: 12,
+            fontColor: '#000000',
+            fontFamily: 'Arial',
+            bold: false,
+            background: true,
+            backgroundColor: this.config.colors.background,
+            borderColor: this.config.colors.connections,
+            borderWidth: 1
+        };
+        
+        this.labels.push(newLabel);
+        
+        // Clear input
+        document.getElementById('custom-label-text').value = '';
+        
+        // Update UI and emit event
+        this.update();
+        eventBus.emit(EVENTS.CUSTOM_LABEL_ADDED, { label: newLabel });
+    }
+
+    update() {
+        if (!this.container) return;
+        
+        if (this.labels.length === 0) {
+            this.container.innerHTML = '<p class="empty-message">No custom labels defined</p>';
+            return;
+        }
+        
+        let html = '<div class="label-list">';
+        
+        this.labels.forEach((label, index) => {
+            html += `
+                <div class="label-item" data-index="${index}">
+                    <div class="label-header">
+                        <input type="text" class="label-text-input" data-index="${index}" 
+                               value="${label.text}">
+                        <button class="btn-small remove-label" data-index="${index}">Remove</button>
+                    </div>
+                    <div class="label-controls">
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>X:</label>
+                                <input type="number" class="label-x" data-index="${index}" 
+                                       value="${label.x}" min="-1000" max="1000">
+                            </div>
+                            <div class="control-group">
+                                <label>Y:</label>
+                                <input type="number" class="label-y" data-index="${index}" 
+                                       value="${label.y}" min="-1000" max="1000">
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <input type="number" class="label-size" data-index="${index}" 
+                                       value="${label.fontSize}" min="8" max="48">
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label>Font:</label>
+                                <select class="label-font" data-index="${index}">
+                                    <option value="Arial" ${label.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+                                    <option value="Times New Roman" ${label.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
+                                    <option value="Courier New" ${label.fontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
+                                    <option value="Georgia" ${label.fontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
+                                    <option value="Verdana" ${label.fontFamily === 'Verdana' ? 'selected' : ''}>Verdana</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Color:</label>
+                                <input type="color" class="label-color" data-index="${index}" 
+                                       value="${label.fontColor}">
+                            </div>
+                            <div class="control-group">
+                                <label><input type="checkbox" class="label-bold" data-index="${index}" 
+                                        ${label.bold ? 'checked' : ''}> Bold</label>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label><input type="checkbox" class="label-background" data-index="${index}" 
+                                        ${label.background ? 'checked' : ''}> Background</label>
+                            </div>
+                            <div class="control-group ${!label.background ? 'disabled' : ''}">
+                                <label>BG Color:</label>
+                                <input type="color" class="label-bg-color" data-index="${index}" 
+                                       value="${label.backgroundColor}" ${!label.background ? 'disabled' : ''}>
+                            </div>
+                            <div class="control-group ${!label.background ? 'disabled' : ''}">
+                                <label>Border:</label>
+                                <input type="color" class="label-border-color" data-index="${index}" 
+                                       value="${label.borderColor}" ${!label.background ? 'disabled' : ''}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        this.container.innerHTML = html;
+        
+        this.attachEventListeners();
+    }
+
+    attachEventListeners() {
+        // Text inputs
+        this.container.querySelectorAll('.label-text-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.labels[index].text = input.value;
+                this.emitUpdate(index);
+            });
+        });
+
+        // Remove buttons
+        this.container.querySelectorAll('.remove-label').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = parseInt(btn.dataset.index);
+                const removed = this.labels[index];
+                this.labels.splice(index, 1);
+                this.update();
+                eventBus.emit(EVENTS.CUSTOM_LABEL_REMOVED, { label: removed, index });
+            });
+        });
+
+        // Position controls
+        this.setupNumberInputs('.label-x', 'x');
+        this.setupNumberInputs('.label-y', 'y');
+        this.setupNumberInputs('.label-size', 'fontSize');
+
+        // Font controls
+        this.container.querySelectorAll('.label-font').forEach(select => {
+            select.addEventListener('change', () => {
+                const index = parseInt(select.dataset.index);
+                this.labels[index].fontFamily = select.value;
+                this.emitUpdate(index);
+            });
+        });
+
+        this.container.querySelectorAll('.label-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.labels[index].fontColor = input.value;
+                this.emitUpdate(index);
+            });
+        });
+
+        this.container.querySelectorAll('.label-bold').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.labels[index].bold = checkbox.checked;
+                this.emitUpdate(index);
+            });
+        });
+
+        // Background controls
+        this.container.querySelectorAll('.label-background').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.labels[index].background = checkbox.checked;
+                this.update(); // Re-render to enable/disable controls
+                this.emitUpdate(index);
+            });
+        });
+
+        this.container.querySelectorAll('.label-bg-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.labels[index].backgroundColor = input.value;
+                this.emitUpdate(index);
+            });
+        });
+
+        this.container.querySelectorAll('.label-border-color').forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                this.labels[index].borderColor = input.value;
+                this.emitUpdate(index);
+            });
+        });
+    }
+
+    setupNumberInputs(selector, property) {
+        this.container.querySelectorAll(selector).forEach(input => {
+            input.addEventListener('change', () => {
+                const index = parseInt(input.dataset.index);
+                const value = parseInt(input.value) || 0;
+                this.labels[index][property] = value;
+                this.emitUpdate(index);
+            });
+        });
+    }
+
+    emitUpdate(index) {
+        eventBus.emit(EVENTS.CUSTOM_LABEL_UPDATED, {
+            label: this.labels[index],
+            index
+        });
+    }
+
+    getLabels() {
+        return [...this.labels];
+    }
+
+    setLabels(labels) {
+        this.labels = [...labels];
+        this.update();
+    }
+}

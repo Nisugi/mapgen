@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elanthia Map Generator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗺️ Elanthia Map Generator</h1>
+            <p>Generate custom maps from the Elanthia MapDB</p>
+        </header>
+
+        <div class="status-section">
+            <div id="status-text">Initializing application...</div>
+            <div id="progress-container" class="hidden">
+                <div id="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <span id="progress-text">0%</span>
+            </div>
+        </div>
+
+        <main id="app-content" class="hidden">
+            <div class="panel-grid">
+                <!-- Output Settings Panel -->
+                <section class="panel">
+                    <h3>📁 Output Settings</h3>
+                    <div class="form-group">
+                        <label for="output-name">Map Name:</label>
+                        <input type="text" id="output-name" value="elanthia_map" placeholder="Enter map name">
+                    </div>
+                </section>
+
+                <!-- GitHub Integration Panel -->
+                <section class="panel">
+                    <h3>🐙 GitHub Integration</h3>
+                    <div class="github-auth-section">
+                        <div class="form-group">
+                            <button id="github-login" class="btn-small btn-primary">Connect GitHub</button>
+                            <div id="github-user-info" class="hidden"></div>
+                        </div>
+                    </div>
+                    <div class="github-actions hidden">
+                        <div class="form-group">
+                            <div style="display: flex; gap: 10px;">
+                                <button id="save-to-github" class="btn-small">💾 Save to GitHub</button>
+                                <button id="load-from-github" class="btn-small">📂 Load from GitHub</button>
+                                <button id="refresh-maps" class="btn-small">🔄 Refresh</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <small>Save and load maps with full configuration for easy sharing and collaboration</small>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Room Selection Panel -->
+                <section class="panel">
+                    <h3>🏠 Room Selection</h3>
+                    <div class="form-group">
+                        <label>Selection Method:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="room-selection" value="location" checked> By Location</label>
+                            <label><input type="radio" name="room-selection" value="custom"> Custom Room Range</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="location-group">
+                        <label for="location-select">Locations:</label>
+                        <select id="location-select" multiple size="6">
+                            <option value="">Loading locations...</option>
+                        </select>
+                        <small>Hold Ctrl (Cmd on Mac) to select multiple locations</small>
+                    </div>
+                    <div class="form-group hidden" id="custom-group">
+                        <label for="room-ranges">Room Ranges:</label>
+                        <div class="radio-group" style="margin-bottom: 10px;">
+                            <label><input type="radio" name="room-id-type" value="id" checked> Use Room IDs</label>
+                            <label><input type="radio" name="room-id-type" value="uid"> Use Room UIDs</label>
+                        </div>
+                        <input type="text" id="room-ranges" placeholder="e.g. 35593-35601, 35608-35619">
+                        <small>Enter room ID/UID ranges separated by commas</small>
+                    </div>
+                    
+                    <!-- Room Exclusion -->
+                    <div class="form-group">
+                        <label for="exclude-rooms">Exclude Rooms (optional):</label>
+                        <div class="radio-group" style="margin-bottom: 10px;">
+                            <label><input type="radio" name="exclude-id-type" value="id" checked> Use Room IDs</label>
+                            <label><input type="radio" name="exclude-id-type" value="uid"> Use Room UIDs</label>
+                        </div>
+                        <input type="text" id="exclude-rooms" placeholder="e.g. 35595, 35600-35602">
+                        <small>Enter room ID/UID ranges to exclude from the map</small>
+                    </div>
+                </section>
+
+                <!-- Theme & Colors Panel -->
+                <section class="panel">
+                    <h3>🎨 Theme & Colors</h3>
+                    
+                    <!-- Map Appearance -->
+                    <div class="form-group">
+                        <label for="edge-length">Edge Length:</label>
+                        <input type="range" id="edge-length" min="30" max="150" value="80">
+                        <span id="edge-length-value">80px</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="room-shape">Room Shape:</label>
+                        <select id="room-shape">
+                            <option value="square" selected>Square</option>
+                            <option value="circle">Circle</option>
+                            <option value="rectangle">Rectangle</option>
+                        </select>
+                        <small>Note: Room shape affects coordinate calculations</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="room-size">Room Size:</label>
+                        <input type="range" id="room-size" min="8" max="25" value="15">
+                        <span id="room-size-value">15px</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stroke-width">Room Border Width:</label>
+                        <input type="range" id="stroke-width" min="1" max="5" value="1">
+                        <span id="stroke-width-value">1px</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="connection-width">Connection Width:</label>
+                        <input type="range" id="connection-width" min="1" max="5" value="2">
+                        <span id="connection-width-value">2px</span>
+                    </div>
+                    
+                    <!-- Default Colors -->
+                    <div class="form-group">
+                        <label>Default Colors:</label>
+                        <div class="color-grid">
+                            <div class="color-input">
+                                <label for="default-color">Default:</label>
+                                <input type="color" id="default-color" value="#ffffff">
+                            </div>
+                            <div class="color-input">
+                                <label for="background-color">Background:</label>
+                                <input type="color" id="background-color" value="#f8f9fa">
+                            </div>
+                            <div class="color-input">
+                                <label for="connection-color">Connections:</label>
+                                <input type="color" id="connection-color" value="#666666">
+                            </div>
+                            <div class="color-input">
+                                <label for="vertical-connection-color">Vertical Connections:</label>
+                                <input type="color" id="vertical-connection-color" value="#999999">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Background Options -->
+                    <div class="form-group">
+                        <label>Background Options:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="use-background" checked> Use Background</label>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label for="background-image">Background Image (optional):</label>
+                            <input type="file" id="background-image" accept="image/*">
+                            <button type="button" id="clear-background" class="btn-small" style="margin-top: 5px;">Clear Image</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tag-based Colors -->
+                    <div class="form-group">
+                        <label for="tag-select">Add Tag Color:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select id="tag-select" style="flex: 1;">
+                                <option value="">Select a tag...</option>
+                            </select>
+                            <button type="button" id="add-tag-color" class="btn-small">Add</button>
+                        </div>
+                        <small>Tags shown are from currently selected rooms</small>
+                    </div>
+                    
+                    <!-- Tag Color List -->
+                    <div id="tag-colors-list" class="tag-colors">
+                        <!-- Tag color controls will be added here dynamically -->
+                    </div>
+                    
+                    <!-- Theme Presets -->
+                    <div class="form-group">
+                        <label for="theme-preset">Quick Themes:</label>
+                        <select id="theme-preset">
+                            <option value="">Custom</option>
+                            <option value="maritime">Maritime</option>
+                            <option value="dungeon">Dungeon</option>
+                            <option value="forest">Forest</option>
+                            <option value="high-contrast">High Contrast</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Options Panel -->
+                <section class="panel">
+                    <h3>⚙️ Display Options</h3>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="show-room-ids" checked> Show Room IDs</label>
+                        <label><input type="checkbox" id="show-room-names"> Show Room Names</label>
+                        <label><input type="checkbox" id="show-labels" checked> Show Connection Labels</label>
+                        <label><input type="checkbox" id="show-connections" checked> Show Connections</label>
+                        <label><input type="checkbox" id="show-group-labels"> Show Group Labels</label>
+                    </div>
+                </section>
+
+                <!-- Font Settings Panel -->
+                <section class="panel">
+                    <h3>🔤 Font Settings</h3>
+                    
+                    <!-- Label Fonts -->
+                    <h4>Connection Labels</h4>
+                    <div class="form-group">
+                        <label for="label-font-size">Size:</label>
+                        <input type="range" id="label-font-size" min="6" max="16" value="8">
+                        <span id="label-font-size-value">8px</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="label-font-color">Color:</label>
+                        <input type="color" id="label-font-color" value="#444444">
+                    </div>
+                    <div class="form-group">
+                        <label for="label-font-family">Font:</label>
+                        <select id="label-font-family">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="label-font-bold"> Bold</label>
+                    </div>
+                    
+                    <!-- Room Fonts -->
+                    <h4>Room Text</h4>
+                    <div class="form-group">
+                        <label for="room-font-size">Size:</label>
+                        <input type="range" id="room-font-size" min="8" max="20" value="10">
+                        <span id="room-font-size-value">10px</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="room-font-color">Color:</label>
+                        <input type="color" id="room-font-color" value="#000000">
+                    </div>
+                    <div class="form-group">
+                        <label for="room-font-family">Font:</label>
+                        <select id="room-font-family">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="room-font-bold"> Bold</label>
+                    </div>
+                </section>
+
+                <!-- Group Positioning Panel -->
+                <section class="panel">
+                    <h3>📍 Group Positioning</h3>
+                    <div class="form-group">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button type="button" class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">📤 Export Settings</button>
+                            <button type="button" class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">📥 Import Settings</button>
+                        </div>
+                        <small>Export/import all positioning, colors, and connection data for reuse</small>
+                    </div>
+                    <div id="group-positioning">
+                        <p class="empty-message">Generate or preview a map to see groups</p>
+                    </div>
+                </section>
+
+                <!-- Cross-Group Connections Panel -->
+                <section class="panel">
+                    <h3>🔗 Cross-Group Connections</h3>
+                    <div class="form-group">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="cross-from-room" placeholder="From Room ID" style="flex: 1;">
+                            <span>→</span>
+                            <input type="number" id="cross-to-room" placeholder="To Room ID" style="flex: 1;">
+                            <button type="button" id="add-cross-group" class="btn-small">Add</button>
+                        </div>
+                        <small>Add dashed connections between rooms in different groups</small>
+                    </div>
+                    <div id="cross-group-list">
+                        <p class="empty-message">No cross-group connections defined</p>
+                    </div>
+                </section>
+
+                <!-- Custom Labels Panel -->
+                <section class="panel">
+                    <h3>🏷️ Custom Labels</h3>
+                    <div class="form-group">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" id="custom-label-text" placeholder="Enter label text" style="flex: 1;">
+                            <button type="button" id="add-custom-label" class="btn-small">Add Label</button>
+                        </div>
+                        <small>Coordinates are in grid units (multiply by edge length for pixels)</small>
+                    </div>
+                    <div id="custom-labels-list">
+                        <p class="empty-message">No custom labels defined</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="action-section">
+                <button id="generate-btn" class="btn-primary" disabled>Generate Map</button>
+                <button id="preview-btn" class="btn-secondary" disabled>Preview</button>
+                <button id="export-coords-btn" class="btn-secondary">Export Coordinates</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Data from <a href="https://github.com/elanthia-online/mapdb" target="_blank">Elanthia MapDB</a> | 
+               <span style="opacity: 0.7;">Coordinates auto-saved locally</span></p>
+        </footer>
+    </div>
+
+    <!-- Scripts - Note the mix of module and non-module scripts -->
+    
+    <!-- Non-module scripts (original files that aren't modularized yet) -->
+    <script src="js/mapdb-loader.js"></script>
+    <script src="js/map-generator.js"></script>
+    
+    <!-- Main app module - this will import all other modules -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

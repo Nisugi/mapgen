@@ -1,0 +1,85 @@
+/* CSS Variables - Design tokens for consistent theming */
+:root {
+    /* Colors */
+    --color-primary: #5a67d8;
+    --color-primary-dark: #4c51bf;
+    --color-primary-light: #667eea;
+    
+    --color-secondary: #764ba2;
+    --color-secondary-light: #9f7aea;
+    
+    --color-success: #27ae60;
+    --color-warning: #eab308;
+    --color-error: #e53e3e;
+    --color-error-dark: #c53030;
+    
+    --color-text: #333;
+    --color-text-light: #666;
+    --color-text-muted: #718096;
+    
+    --color-bg: #ffffff;
+    --color-bg-secondary: #f8f9fa;
+    --color-bg-tertiary: #e2e8f0;
+    
+    --color-border: #e2e8f0;
+    --color-border-dark: #cbd5e0;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-secondary) 100%);
+    --gradient-success: linear-gradient(90deg, #4CAF50, #45a049);
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    
+    /* Typography */
+    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-mono: 'Courier New', monospace;
+    
+    --font-size-xs: 11px;
+    --font-size-sm: 12px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 32px;
+    
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Border radius */
+    --radius-sm: 3px;
+    --radius-md: 5px;
+    --radius-lg: 10px;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.3);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+    
+    /* Z-index layers */
+    --z-base: 0;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-modal: 1000;
+    --z-tooltip: 1100;
+}
+
+/* Dark mode variables (future enhancement) */
+/* @media (prefers-color-scheme: dark) {
+    :root {
+        /* Dark mode overrides would go here */
+/*    }
+/*}
