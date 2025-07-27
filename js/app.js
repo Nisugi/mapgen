@@ -84,6 +84,7 @@ class MapGenApp {
             this.showMainInterface();
             
         } catch (error) {
+            console.error('[INIT FAIL]', error, error.stack);
             this.statusManager.error('Failed to initialize application: ' + error.message);
         }
     }
