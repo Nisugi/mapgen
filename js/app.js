@@ -19,6 +19,11 @@ class MapGenApp {
         this.config = createConfig();
         this.currentGroups = [];
         
+        // Ensure tagColors is always a Map
+        if (!this.config.tagColors || !(this.config.tagColors instanceof Map)) {
+            this.config.tagColors = new Map();
+        }
+        
         // Initialize services
         this.coordinateStorage = new CoordinateStorage();
         this.github = new GitHubIntegration();
@@ -111,7 +116,10 @@ class MapGenApp {
         // Listen for config changes
         eventBus.on(EVENTS.CONFIG_CHANGED, (data) => {
             console.log('Config changed:', data);
-            // Config is already updated by the panels
+            // Ensure tagColors remains a Map
+            if (this.config.tagColors && !(this.config.tagColors instanceof Map)) {
+                this.config.tagColors = new Map(this.config.tagColors);
+            }
         });
 
         // Listen for map generation success

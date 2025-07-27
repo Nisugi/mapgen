@@ -17,7 +17,8 @@ export const DEFAULT_CONFIG = {
         showRoomIds: true,
         showRoomNames: false,
         showLabels: true,
-        showConnections: true
+        showConnections: true,
+        showGroupLabels: false
     },
     fonts: {
         labels: {
@@ -38,5 +39,11 @@ export const DEFAULT_CONFIG = {
 };
 
 export function createConfig() {
-    return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    // Deep clone the config but preserve Map instances
+    const config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    
+    // Restore Map instances that were lost in JSON serialization
+    config.tagColors = new Map(DEFAULT_CONFIG.tagColors);
+    
+    return config;
 }

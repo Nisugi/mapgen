@@ -9,6 +9,11 @@ export class ThemeColorsPanel {
         this.mapdb = mapdb;
         this.tagSelect = null;
         this.tagColorsList = null;
+        
+        // Ensure tagColors is always a Map
+        if (!this.config.tagColors || !(this.config.tagColors instanceof Map)) {
+            this.config.tagColors = new Map();
+        }
     }
 
     init() {
@@ -203,6 +208,11 @@ export class ThemeColorsPanel {
             return;
         }
 
+        // Ensure tagColors is a Map
+        if (!this.config.tagColors || !(this.config.tagColors instanceof Map)) {
+            this.config.tagColors = new Map();
+        }
+
         if (this.config.tagColors.has(selectedTag)) {
             alert('This tag already has a color assigned');
             return;
@@ -222,6 +232,11 @@ export class ThemeColorsPanel {
 
     renderTagColorsList() {
         if (!this.tagColorsList) return;
+        
+        // Ensure tagColors is a Map
+        if (!this.config.tagColors || !(this.config.tagColors instanceof Map)) {
+            this.config.tagColors = new Map();
+        }
         
         if (this.config.tagColors.size === 0) {
             this.tagColorsList.innerHTML = '<div class="empty-tag-list">No tag colors defined. Select a tag above to add one.</div>';
@@ -269,8 +284,20 @@ export class ThemeColorsPanel {
             document.getElementById('connection-color').value = theme.connections;
             document.getElementById('vertical-connection-color').value = theme.verticalConnections;
             
-            this.config.colors = { ...theme };
-            this.config.tagColors = new Map(theme.tagColors);
+            // Apply colors to config
+            this.config.colors = { 
+                default: theme.default,
+                background: theme.background,
+                connections: theme.connections,
+                verticalConnections: theme.verticalConnections
+            };
+            
+            // Ensure theme.tagColors is a Map
+            if (theme.tagColors instanceof Map) {
+                this.config.tagColors = new Map(theme.tagColors);
+            } else {
+                this.config.tagColors = new Map();
+            }
             
             this.renderTagColorsList();
             this.emitConfigChange();

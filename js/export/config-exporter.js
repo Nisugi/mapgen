@@ -24,6 +24,14 @@ export class ConfigExporter {
             roomSelectionConfig.excludeUseUID = roomSelection.exclusions.useUID;
         }
 
+        // Ensure tagColors is converted to array format for JSON
+        let tagColorsArray = [];
+        if (config.tagColors instanceof Map) {
+            tagColorsArray = Array.from(config.tagColors.entries());
+        } else if (Array.isArray(config.tagColors)) {
+            tagColorsArray = config.tagColors;
+        }
+
         const exportConfig = {
             metadata: {
                 name: mapName,
@@ -46,7 +54,7 @@ export class ConfigExporter {
                 background: config.colors.background,
                 connections: config.colors.connections,
                 verticalConnections: config.colors.verticalConnections,
-                tagColors: Array.from(config.tagColors.entries())
+                tagColors: tagColorsArray
             },
             displayOptions: uiState.displayOptions,
             fonts: {
