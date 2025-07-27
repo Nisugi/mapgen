@@ -5,7 +5,7 @@ export class GitHubAPIClient {
         this.apiBase = 'https://api.github.com';
         this.headers = {
             'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'Elanthia-Map-Generator'
+            'User-Agent': 'mapgen'
         };
         
         if (token) {

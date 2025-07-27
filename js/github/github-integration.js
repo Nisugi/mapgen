@@ -11,7 +11,7 @@ export class GitHubIntegration {
         this.mapRepository = null;
         
         // Repository configuration
-        this.repoName = 'elanthia-map-generator';
+        this.repoName = 'mapgen';
         this.repoOwner = this.detectRepoOwner();
         
         // Initialize map repository if authenticated
