@@ -1,6 +1,6 @@
 // Map Generation Manager - handles map generation logic
-import { eventBus, EVENTS } from '../utils/event-bus.js';
-import { StatusManager } from '../utils/status-manager.js';
+import { eventBus, EVENTS } from './utils/event-bus.js';
+import { StatusManager } from './utils/status-manager.js';
 
 export class MapGeneratorManager {
     constructor(config, roomSelector, uiManager, coordinateStorage) {
