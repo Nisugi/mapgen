@@ -1,5 +1,4 @@
-// MapDB Loader Module - handles loading and parsing MapDB data
-export class MapDBLoader {
+class MapDBLoader {
     constructor() {
         // Load from your own repository - no external URLs!
         this.LOCAL_MAPDB_URL = './mapdb.json';
