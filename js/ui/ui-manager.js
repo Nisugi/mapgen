@@ -7,6 +7,7 @@ import { FontSettingsPanel } from './panels/font-settings.js';
 import { GroupPositioningPanel } from './panels/group-positioning.js';
 import { CrossConnectionsPanel } from './panels/cross-connections.js';
 import { CustomLabelsPanel } from './panels/custom-labels.js';
+import { CustomTextBoxesPanel } from './panels/custom-textboxes.js';
 
 export class UIManager {
     constructor(config, mapdbLoader, mapdb) {
@@ -22,7 +23,8 @@ export class UIManager {
             fontSettings: new FontSettingsPanel(config),
             groupPositioning: new GroupPositioningPanel(),
             crossConnections: new CrossConnectionsPanel(config),
-            customLabels: new CustomLabelsPanel(config)
+            customLabels: new CustomLabelsPanel(config),
+            customTextBoxes: new CustomTextBoxesPanel(config)
         };
     }
 
@@ -85,7 +87,8 @@ export class UIManager {
             displayOptions: this.panels.displayOptions.getOptions(),
             groupData: this.panels.groupPositioning.getGroupData(),
             crossConnections: this.panels.crossConnections.getConnections(),
-            customLabels: this.panels.customLabels.getLabels()
+            customLabels: this.panels.customLabels.getLabels(),
+            customTextBoxes: this.panels.customTextBoxes.getTextBoxes()
         };
     }
 

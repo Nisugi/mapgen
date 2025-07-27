@@ -8,6 +8,7 @@ export class GroupPositioningPanel {
         this.groupOffsets = new Map();
         this.groupNames = new Map();
         this.groupLabelOffsets = new Map();
+        this.groupLabelBold = new Map();
     }
 
     init() {
@@ -77,6 +78,10 @@ export class GroupPositioningPanel {
                             <input type="number" class="offset-number label-y-offset-number" data-group="${index}"
                                    min="-50" max="50" value="${labelOffset.y}">
                         </div>
+                        <div class="offset-control">
+                            <label><input type="checkbox" class="label-bold" data-group="${index}" 
+                                    ${this.groupLabelBold.get(index) ? 'checked' : ''}> Bold Label</label>
+                        </div>
                     </div>
                 </div>
             `;
@@ -101,6 +106,18 @@ export class GroupPositioningPanel {
                 eventBus.emit(EVENTS.GROUP_NAME_CHANGED, { 
                     groupIndex, 
                     name: input.value 
+                });
+            });
+        });
+
+        // Bold checkboxes
+        this.container.querySelectorAll('.label-bold').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const groupIndex = parseInt(checkbox.dataset.group);
+                this.groupLabelBold.set(groupIndex, checkbox.checked);
+                eventBus.emit(EVENTS.GROUP_LABEL_BOLD_CHANGED, {
+                    groupIndex,
+                    bold: checkbox.checked
                 });
             });
         });
@@ -207,7 +224,8 @@ export class GroupPositioningPanel {
             groups: this.currentGroups,
             offsets: this.groupOffsets,
             names: this.groupNames,
-            labelOffsets: this.groupLabelOffsets
+            labelOffsets: this.groupLabelOffsets,
+            labelBold: this.groupLabelBold
         };
     }
 

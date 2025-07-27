@@ -37,6 +37,7 @@ export class CustomLabelsPanel {
             fontColor: '#000000',
             fontFamily: 'Arial',
             bold: false,
+            rotation: 0,
             background: true,
             backgroundColor: this.config.colors.background,
             borderColor: this.config.colors.connections,

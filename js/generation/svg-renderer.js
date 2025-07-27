@@ -129,7 +129,7 @@ export class SVGRenderer {
                 // Draw label text
                 svg += `<text x="${labelX}" y="${labelY}" text-anchor="middle" 
                         font-size="12" fill="${config.colors.connections}" 
-                        font-family="Arial" font-weight="bold">${label}</text>`;
+                        font-family="Arial" font-weight="${config.groupLabelBold?.get(group.index) ? 'bold' : 'normal'}">${label}</text>`;
             }
         });
         
@@ -327,7 +327,8 @@ export class SVGRenderer {
             svg += `<text x="${x}" y="${y}" text-anchor="middle" 
                     font-size="${label.fontSize}" fill="${label.fontColor}" 
                     font-family="${label.fontFamily}" font-weight="${fontWeight}"
-                    dominant-baseline="middle">${label.text}</text>`;
+                    dominant-baseline="middle"
+                    transform="rotate(${label.rotation || 0} ${x} ${y})">${label.text}</text>`;
         });
         
         return svg;
@@ -453,6 +454,136 @@ export class SVGRenderer {
         }
         
         return { left, top, right, bottom, width, height };
+    }
+
+    renderCustomTextBoxes(textBoxes, offsetX, offsetY, edgeLength, config) {
+        let svg = '<g id="custom-textboxes">';
+        
+        textBoxes.forEach(textBox => {
+            const x = (textBox.x / config.edgeLength + offsetX) * edgeLength;
+            const y = (textBox.y / config.edgeLength + offsetY) * edgeLength;
+            const width = textBox.width;
+            const height = textBox.height;
+            const padding = textBox.padding || 10;
+            
+            // Create group for the text box with rotation
+            svg += `<g transform="rotate(${textBox.rotation || 0} ${x + width/2} ${y + height/2})" opacity="${textBox.opacity || 1}">`;
+            
+            // Draw background rectangle
+            const strokeDasharray = {
+                'solid': '',
+                'dashed': 'stroke-dasharray="5,5"',
+                'dotted': 'stroke-dasharray="2,3"',
+                'double': ''
+            };
+            
+            if (textBox.borderStyle === 'double' && textBox.borderWidth > 0) {
+                // Draw double border
+                const outerBorderWidth = textBox.borderWidth;
+                const innerBorderWidth = Math.max(1, textBox.borderWidth - 2);
+                const gap = 2;
+                
+                // Outer border
+                svg += `<rect x="${x}" y="${y}" width="${width}" height="${height}" 
+                        fill="none" 
+                        stroke="${textBox.borderColor}" 
+                        stroke-width="${outerBorderWidth}"
+                        rx="${textBox.borderRadius || 0}" ry="${textBox.borderRadius || 0}"/>`;
+                
+                // Inner border
+                svg += `<rect x="${x + gap + outerBorderWidth/2}" y="${y + gap + outerBorderWidth/2}" 
+                        width="${width - 2*gap - outerBorderWidth}" height="${height - 2*gap - outerBorderWidth}" 
+                        fill="${textBox.backgroundColor}" 
+                        stroke="${textBox.borderColor}" 
+                        stroke-width="${innerBorderWidth}"
+                        rx="${Math.max(0, (textBox.borderRadius || 0) - gap)}" 
+                        ry="${Math.max(0, (textBox.borderRadius || 0) - gap)}"/>`;
+            } else {
+                // Single border
+                svg += `<rect x="${x}" y="${y}" width="${width}" height="${height}" 
+                        fill="${textBox.backgroundColor}" 
+                        stroke="${textBox.borderColor}" 
+                        stroke-width="${textBox.borderWidth}"
+                        ${strokeDasharray[textBox.borderStyle] || ''}
+                        rx="${textBox.borderRadius || 0}" ry="${textBox.borderRadius || 0}"/>`;
+            }
+            
+            // Create text content
+            svg += `<text text-anchor="${this.getTextAnchor(textBox.textAlign)}">`;
+            
+            let currentY = y + padding;
+            const lineHeight = 1.2; // Line height multiplier
+            
+            // Calculate total text height for vertical alignment
+            let totalTextHeight = 0;
+            textBox.content.forEach(segment => {
+                totalTextHeight += segment.fontSize * lineHeight;
+                if (segment.lineBreak) {
+                    totalTextHeight += segment.fontSize * 0.5; // Extra space for line breaks
+                }
+            });
+            
+            // Adjust starting Y based on vertical alignment
+            if (textBox.verticalAlign === 'middle') {
+                currentY = y + (height - totalTextHeight) / 2 + padding;
+            } else if (textBox.verticalAlign === 'bottom') {
+                currentY = y + height - totalTextHeight - padding;
+            }
+            
+            // Render each text segment
+            textBox.content.forEach((segment, index) => {
+                const fontWeight = segment.bold ? 'bold' : 'normal';
+                const fontStyle = segment.italic ? 'italic' : 'normal';
+                const fontSize = segment.fontSize || 12;
+                
+                // Calculate X position based on alignment
+                let textX = x + padding;
+                if (textBox.textAlign === 'center') {
+                    textX = x + width / 2;
+                } else if (textBox.textAlign === 'right') {
+                    textX = x + width - padding;
+                }
+                
+                currentY += fontSize; // Move to baseline position
+                
+                svg += `<tspan x="${textX}" y="${currentY}" 
+                        font-size="${fontSize}" 
+                        font-family="${segment.fontFamily}" 
+                        font-weight="${fontWeight}"
+                        font-style="${fontStyle}"
+                        fill="${segment.fontColor}">${this.escapeXml(segment.text)}</tspan>`;
+                
+                // Add line break if specified
+                if (segment.lineBreak && index < textBox.content.length - 1) {
+                    currentY += fontSize * 0.5; // Extra space for line break
+                }
+            });
+            
+            svg += '</text>';
+            svg += '</g>'; // Close transform group
+        });
+        
+        svg += '</g>'; // Close textboxes group
+        return svg;
+    }
+    
+    getTextAnchor(align) {
+        switch (align) {
+            case 'center': return 'middle';
+            case 'right': return 'end';
+            case 'justify':
+            case 'left':
+            default: return 'start';
+        }
+    }
+    
+    escapeXml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
     }
 
     wrapText(text, maxWidth, fontSize) {

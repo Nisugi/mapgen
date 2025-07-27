@@ -144,7 +144,8 @@ export class MapGeneratorManager {
             backgroundImage: this.config.backgroundImage,
             useBackground: this.config.useBackground,
             crossGroupConnections: uiState.crossConnections,
-            customLabels: uiState.customLabels
+            customLabels: uiState.customLabels,
+            customTextBoxes: uiState.customTextBoxes
         };
     }
 
@@ -163,6 +164,7 @@ export class MapGeneratorManager {
             
             this.uiManager.panels.crossConnections.setConnections(savedCoords.crossGroupConnections || []);
             this.uiManager.panels.customLabels.setLabels(savedCoords.customLabels || []);
+            this.uiManager.panels.customTextBoxes.setTextBoxes(savedCoords.customTextBoxes || []);
             
             return true;
         }
@@ -181,6 +183,7 @@ export class MapGeneratorManager {
             groupLabelOffsets: Array.from(uiState.groupData.labelOffsets.entries()),
             crossGroupConnections: uiState.crossConnections,
             customLabels: uiState.customLabels,
+            customTextBoxes: uiState.customTextBoxes,
             created: new Date().toISOString()
         };
         

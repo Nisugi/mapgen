@@ -33,7 +33,7 @@ export class GitHubIntegration {
         }
         
         // Fallback to main repository
-        return 'yourusername'; // Replace with your GitHub username
+        return 'Nisugi'; // Replace with your GitHub username
     }
 
     // Authenticate with personal access token
@@ -86,6 +86,11 @@ export class GitHubIntegration {
             
             // Emit success event
             eventBus.emit(EVENTS.GITHUB_AUTH_SUCCESS, { user });
+
+            // Force UI update
+            if (window.app) {
+                window.app.updateGitHubStatus();
+            }
             
             return true;
             
@@ -95,6 +100,11 @@ export class GitHubIntegration {
             
             // Emit failure event
             eventBus.emit(EVENTS.GITHUB_AUTH_FAILURE, { error: error.message });
+
+            // Force UI update
+            if (window.app) {
+                window.app.updateGitHubStatus();
+            }
             
             throw error;
         }

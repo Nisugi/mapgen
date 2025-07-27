@@ -49,7 +49,10 @@ export class CrossConnectionsPanel {
             toId: toId,
             style: 'dashed',
             dashSpacing: '5,5',
-            color: this.config.colors.connections
+            color: this.config.colors.connections,
+            showFromTerminal: false,
+            showToTerminal: true,
+            terminalStyle: 'arrow' // or 'dot', 'square'
         };
         
         this.connections.push(newConnection);

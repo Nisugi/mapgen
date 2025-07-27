@@ -320,6 +320,129 @@
     border-color: var(--color-primary);
 }
 
+/* Custom Text Boxes */
+.textbox-list {
+    margin-top: var(--spacing-sm);
+}
+
+.textbox-item {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.textbox-header {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.textbox-preview {
+    flex: 1;
+    font-style: italic;
+    color: var(--color-text-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edit-textbox {
+    background: var(--color-primary);
+    color: white;
+}
+
+.edit-textbox:hover {
+    background: var(--color-primary-dark);
+}
+
+.textbox-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+/* Text Editor Modal */
+.text-editor {
+    max-height: 500px;
+    overflow-y: auto;
+    margin-bottom: var(--spacing-lg);
+}
+
+.text-content-list {
+    margin-bottom: var(--spacing-md);
+}
+
+.text-segment {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.segment-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.segment-text {
+    width: 100%;
+    min-height: 60px;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    resize: vertical;
+}
+
+.segment-formatting {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.segment-formatting .control-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.segment-formatting input[type="number"] {
+    width: 60px;
+}
+
+.segment-formatting select {
+    min-width: 100px;
+}
+
+.remove-segment {
+    background: var(--color-error);
+    color: white;
+    margin-left: auto;
+}
+
+.remove-segment:hover {
+    background: var(--color-error-dark);
+}
+
+/* Responsive adjustments for text boxes */
+@media (max-width: 768px) {
+    .segment-formatting {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .segment-formatting .control-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 /* Map Gallery */
 .map-gallery {
     max-height: 400px;

@@ -143,7 +143,10 @@ class MapGenApp {
             EVENTS.CROSS_CONNECTION_UPDATED,
             EVENTS.CUSTOM_LABEL_ADDED,
             EVENTS.CUSTOM_LABEL_REMOVED,
-            EVENTS.CUSTOM_LABEL_UPDATED
+            EVENTS.CUSTOM_LABEL_UPDATED,
+            EVENTS.CUSTOM_TEXTBOX_ADDED,
+            EVENTS.CUSTOM_TEXTBOX_REMOVED,
+            EVENTS.CUSTOM_TEXTBOX_UPDATED
         ];
 
         saveEvents.forEach(event => {
