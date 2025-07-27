@@ -159,17 +159,17 @@ class MapGenApp {
         // Add GitHub event listeners
         const githubLoginBtn = document.getElementById('github-login');
         if (githubLoginBtn) {
-            githubLoginBtn.addEventListener('click', this.handleGitHubLogin.bind(this));
+            githubLoginBtn?.addEventListener('click', e => this.handleGitHubLogin(e));
         }
 
         const saveToGitHubBtn = document.getElementById('save-to-github');
         if (saveToGitHubBtn) {
-            saveToGitHubBtn.addEventListener('click', this.showSaveDialog.bind(this));
+            saveToGitHubBtn?.addEventListener('click', e => this.showSaveDialog(e));
         }
 
         const loadFromGitHubBtn = document.getElementById('load-from-github');
         if (loadFromGitHubBtn) {
-            loadFromGitHubBtn.addEventListener('click', this.showLoadDialog.bind(this));
+            loadFromGitHubBtn?.addEventListener('click', e => this.showLoadDialog(e));
         }
     }
 
@@ -223,7 +223,7 @@ class MapGenApp {
                 // Re-add logout listener
                 const logoutBtn = document.getElementById('github-logout');
                 if (logoutBtn) {
-                    logoutBtn.addEventListener('click', this.handleGitHubLogout.bind(this));
+                    logoutBtn?.addEventListener('click', e => this.handleGitHubLogout(e));
                 }
             }
             
