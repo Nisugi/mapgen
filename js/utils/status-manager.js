@@ -9,9 +9,9 @@ export class StatusManager {
         this.progressText = null;
         
         // Listen for status events
-        eventBus.on(EVENTS.STATUS_UPDATE,  msg   => this.updateStatus(msg));
-        eventBus.on(EVENTS.PROGRESS_UPDATE, data => this.updateProgress(data));
-        eventBus.on(EVENTS.ERROR,           msg  => this.showError(msg));
+        eventBus.on(EVENTS.STATUS_UPDATE, this.updateStatus.bind(this));
+        eventBus.on(EVENTS.PROGRESS_UPDATE, this.updateProgress.bind(this));
+        eventBus.on(EVENTS.ERROR, this.showError.bind(this));
     }
 
     init() {
@@ -64,7 +64,15 @@ export class StatusManager {
     }
 
     // Convenience methods that emit events
-    update(message) { this.updateStatus(message); }
-    progress(percent, message = null) { this.updateProgress({ percent, message }); }
-    error(message) { this.showError(message); }
+    static update(message) {
+        eventBus.emit(EVENTS.STATUS_UPDATE, message);
+    }
+
+    static progress(percent, message = null) {
+        eventBus.emit(EVENTS.PROGRESS_UPDATE, { percent, message });
+    }
+
+    static error(message) {
+        eventBus.emit(EVENTS.ERROR, message);
+    }
 }

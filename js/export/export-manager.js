@@ -11,9 +11,9 @@ export class ExportManager {
         this.mapdbVersion = mapdbVersion;
         
         // Listen for export events
-        eventBus.on(EVENTS.EXPORT_SVG,    data => this.exportSVG(data));
-        eventBus.on(EVENTS.EXPORT_COORDS, data => this.exportCoordinates(data));
-        eventBus.on(EVENTS.EXPORT_CONFIG, data => this.exportConfig(data));
+        eventBus.on(EVENTS.EXPORT_SVG, this.exportSVG.bind(this));
+        eventBus.on(EVENTS.EXPORT_COORDS, this.exportCoordinates.bind(this));
+        eventBus.on(EVENTS.EXPORT_CONFIG, this.exportConfig.bind(this));
     }
 
     exportCoordinates() {

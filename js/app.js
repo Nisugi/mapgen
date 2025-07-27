@@ -85,7 +85,7 @@ class MapGenApp {
             
         } catch (error) {
             console.error('[INIT FAIL]', error, error.stack);
-            this.statusManager.error('Failed to initialize application: ' + error.message);
+            StatusManager.error('Failed to initialize application: ' + error.message);
         }
     }
 
@@ -93,7 +93,7 @@ class MapGenApp {
         try {
             const result = await this.mapdbLoader.loadMapDB(
                 (percent, loaded, total, message) => {
-                    this.statusManager.progress(percent, message);
+                    StatusManager.progress(percent, message);
                 }
             );
 
@@ -148,7 +148,7 @@ class MapGenApp {
     showMainInterface() {
         this.uiManager.showMainInterface();
         this.statusManager.hideProgress();
-        this.statusManager.update(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
+        StatusManager.update(`Ready! MapDB v${this.mapdbVersion} loaded with ${this.mapdb.length} rooms.`);
     }
 
     // GitHub Integration Methods (these remain similar but use the modular components)
@@ -159,17 +159,17 @@ class MapGenApp {
         // Add GitHub event listeners
         const githubLoginBtn = document.getElementById('github-login');
         if (githubLoginBtn) {
-            githubLoginBtn?.addEventListener('click', e => this.handleGitHubLogin(e));
+            githubLoginBtn.addEventListener('click', this.handleGitHubLogin.bind(this));
         }
 
         const saveToGitHubBtn = document.getElementById('save-to-github');
         if (saveToGitHubBtn) {
-            saveToGitHubBtn?.addEventListener('click', e => this.showSaveDialog(e));
+            saveToGitHubBtn.addEventListener('click', this.showSaveDialog.bind(this));
         }
 
         const loadFromGitHubBtn = document.getElementById('load-from-github');
         if (loadFromGitHubBtn) {
-            loadFromGitHubBtn?.addEventListener('click', e => this.showLoadDialog(e));
+            loadFromGitHubBtn.addEventListener('click', this.showLoadDialog.bind(this));
         }
     }
 
@@ -184,7 +184,7 @@ class MapGenApp {
                 this.updateGitHubStatus();
             } catch (error) {
                 console.error('OAuth callback failed:', error);
-                this.statusManager.error('GitHub authentication failed: ' + error.message);
+                StatusManager.error('GitHub authentication failed: ' + error.message);
             }
         } else if (this.github.isAuthenticated()) {
             // Verify existing token
@@ -223,7 +223,7 @@ class MapGenApp {
                 // Re-add logout listener
                 const logoutBtn = document.getElementById('github-logout');
                 if (logoutBtn) {
-                    logoutBtn?.addEventListener('click', e => this.handleGitHubLogout(e));
+                    logoutBtn.addEventListener('click', this.handleGitHubLogout.bind(this));
                 }
             }
             
@@ -246,17 +246,17 @@ class MapGenApp {
 
     async handleGitHubLogin() {
         try {
-            this.statusManager.update('Connecting to GitHub...');
+            StatusManager.update('Connecting to GitHub...');
             await this.github.authenticate();
         } catch (error) {
-            this.statusManager.error('GitHub login failed: ' + error.message);
+            StatusManager.error('GitHub login failed: ' + error.message);
         }
     }
 
     handleGitHubLogout() {
         this.github.clearToken();
         this.updateGitHubStatus();
-        this.statusManager.update('Logged out of GitHub');
+        StatusManager.update('Logged out of GitHub');
     }
 
     showSaveDialog() {
