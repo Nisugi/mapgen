@@ -1,7 +1,7 @@
 // Main Application - coordinates all modules
 import { MapDBLoader } from './mapdb-loader.js';
 import { MapGenerator } from './map-generator.js';
-import { GitHubIntegration } from './github-integration.js';
+import { GitHubIntegration } from './github/github-integration.js';
 import { CoordinateStorage } from './data/coordinate-storage.js';
 import { RoomSelector } from './data/room-selector.js';
 import { UIManager } from './ui/ui-manager.js';
