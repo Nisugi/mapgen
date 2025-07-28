@@ -265,7 +265,7 @@ export class SVGRenderer {
                             edgePoints.x1, edgePoints.y1, 
                             conn.terminalStyle || 'arrow', 
                             color, connectionWidth,
-                            angle + Math.PI // Reverse angle for "from" terminal
+                            angle // Arrow points in direction of travel (away from source)
                         );
                     }
                     if (conn.showToTerminal) {
@@ -273,7 +273,7 @@ export class SVGRenderer {
                             edgePoints.x2, edgePoints.y2, 
                             conn.terminalStyle || 'arrow', 
                             color, connectionWidth,
-                            angle // Normal angle for "to" terminal
+                            angle + Math.PI // Reverse angle - arrow points back toward source (into destination)
                         );
                     }
                 }
@@ -339,7 +339,6 @@ export class SVGRenderer {
         return { x1: edge1X, y1: edge1Y, x2: edge2X, y2: edge2Y };
     }
 
-    // Calculate where a ray from center intersects a box edge
     getBoxEdgeIntersection(centerX, centerY, angle, halfSize, roomShape) {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
@@ -388,8 +387,9 @@ export class SVGRenderer {
             case 'arrow':
                 // Arrowhead pointing in the direction of travel
                 svg += `<g transform="rotate(${angleDegrees} ${x} ${y})">`;
-                svg += `<path d="M ${x-size} ${y-size/2} L ${x} ${y} L ${x-size} ${y+size/2}" 
-                        fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                // Arrow points forward (to the right in local coordinates)
+                svg += `<path d="M ${x} ${y} L ${x-size} ${y-size/2} L ${x-size} ${y+size/2} Z" 
+                        fill="${color}"/>`;
                 svg += `</g>`;
                 break;
                 
