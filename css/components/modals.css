@@ -103,3 +103,133 @@
         gap: var(--spacing-sm);
     }
 }
+
+/* GitHub Save/Load Modals */
+.location-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.location-section h4 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.map-gallery {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    background: var(--color-bg-secondary);
+}
+
+.map-item {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    transition: border-color var(--transition-normal);
+}
+
+.map-item:hover {
+    border-color: var(--color-primary);
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.map-header h4 {
+    color: var(--color-text);
+    margin: 0;
+    font-size: var(--font-size-lg);
+}
+
+.map-location {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-muted);
+    padding: 2px var(--spacing-sm);
+    border-radius: 12px;
+    font-size: var(--font-size-sm);
+}
+
+.map-files {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.file-badge {
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.file-badge.has-file {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.file-badge.missing-file {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.map-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.map-actions input[type="radio"] {
+    margin: 0;
+}
+
+.map-actions label {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.preview-btn {
+    margin-left: auto;
+}
+
+/* Status messages in modals */
+.save-status,
+.load-status {
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    min-height: 50px;
+}
+
+.save-status p,
+.load-status p {
+    margin: var(--spacing-xs) 0;
+}
+
+/* Loading and empty states */
+.loading,
+.empty {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.error {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-error);
+}

@@ -297,7 +297,33 @@ Note: The token will only be stored in your browser's local storage.`;
             }
         }
         
+        // Map common location names to folder names
+        const locationMap = {
+            "Sailor's Grief": 'sailors_grief',
+            "Hinterwildes": 'hinterwildes',
+            "Icemule Trace": 'icemule',
+            "Wehnimer's Landing": 'wehnimers',
+            "Solhaven": 'solhaven',
+            "River's Rest": 'rivers_rest',
+            "Ta'Vaalor": 'ta_vaalor',
+            "Ta'Illistim": 'ta_illistim',
+            "Kharam Dzu": 'kharam_dzu',
+            "Zul Logoth": 'zul_logoth',
+            "Cysaegir": 'cysaegir',
+            "Kraken's Fall": 'krakens_fall',
+            "Mist Harbor": 'mist_harbor',
+            "Four Winds Isle": 'four_winds',
+            "Teras Isle": 'teras',
+            "unknown": 'custom'
+        };
+        
         // Convert to filename-safe format
-        return primaryLocation.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        const folderName = locationMap[primaryLocation] || 
+                          primaryLocation.toLowerCase()
+                                       .replace(/[^a-z0-9]/g, '_')
+                                       .replace(/_+/g, '_')
+                                       .replace(/^_|_$/g, '');
+        
+        return folderName || 'custom';
     }
 }

@@ -316,13 +316,379 @@ class MapGenApp {
     }
 
     showSaveDialog() {
-        // TODO: Implement save dialog using a modal manager
-        alert('Save dialog would appear here - implementation pending');
+        if (!this.github.isAuthenticated()) {
+            StatusManager.error('Please connect to GitHub first');
+            return;
+        }
+
+        // Create save modal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+            <div class="modal-content">
+                <h3>💾 Save Map to GitHub</h3>
+                <div class="form-group">
+                    <label for="save-map-name">Map Name:</label>
+                    <input type="text" id="save-map-name" value="${document.getElementById('output-name').value}" 
+                           placeholder="Enter map name">
+                </div>
+                <div class="form-group">
+                    <label for="save-description">Description (optional):</label>
+                    <textarea id="save-description" placeholder="Describe your map..." rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Files to save:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="save-svg" checked> SVG Map</label>
+                        <label><input type="checkbox" id="save-coords" checked> Coordinates</label>
+                        <label><input type="checkbox" id="save-config" checked> Configuration</label>
+                    </div>
+                </div>
+                <div class="save-status"></div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                    <button class="btn-primary" onclick="window.app.saveToGitHub(this)">Save to GitHub</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
     }
 
-    showLoadDialog() {
-        // TODO: Implement load dialog using a modal manager
-        alert('Load dialog would appear here - implementation pending');
+    async saveToGitHub(button) {
+        const modal = button.closest('.modal');
+        const mapName = modal.querySelector('#save-map-name').value.trim();
+        const description = modal.querySelector('#save-description').value.trim();
+        const saveSVG = modal.querySelector('#save-svg').checked;
+        const saveCoords = modal.querySelector('#save-coords').checked;
+        const saveConfig = modal.querySelector('#save-config').checked;
+        const statusDiv = modal.querySelector('.save-status');
+        
+        if (!mapName) {
+            statusDiv.innerHTML = '<p style="color: red;">Please enter a map name</p>';
+            return;
+        }
+
+        // Disable buttons during save
+        button.disabled = true;
+        button.textContent = 'Saving...';
+        
+        try {
+            statusDiv.innerHTML = '<p>Preparing files...</p>';
+            
+            // Get current map data
+            const uiState = this.uiManager.getUIState();
+            const rooms = this.roomSelector.getSelectedRooms();
+            
+            // Detect location from rooms
+            const location = this.github.detectLocationFromRooms(rooms);
+            
+            let svgContent = null;
+            let coordsContent = null;
+            let configContent = null;
+            
+            // Generate SVG if needed
+            if (saveSVG) {
+                statusDiv.innerHTML = '<p>Generating map...</p>';
+                
+                // Use the same logic as preview/generate
+                const groupsWithNames = this.currentGroups.map((group, index) => ({
+                    ...group,
+                    name: uiState.groupData.names.get(index) || `Group ${index + 1}`
+                }));
+                
+                const mapConfig = this.mapGeneratorManager.buildMapConfig(uiState, groupsWithNames);
+                const result = this.mapGeneratorManager.mapGenerator.generateMapWithGroups(rooms, mapConfig);
+                svgContent = result.svg;
+            }
+            
+            // Generate coordinates if needed
+            if (saveCoords) {
+                const coordData = this.exportManager.coordinateExporter.generateCoordinates(
+                    rooms,
+                    uiState,
+                    this.config,
+                    mapName
+                );
+                coordsContent = JSON.stringify(coordData, null, 2);
+            }
+            
+            // Generate config if needed
+            if (saveConfig) {
+                configContent = this.exportManager.generateConfigForExport(mapName, description);
+            }
+            
+            statusDiv.innerHTML = '<p>Saving to GitHub...</p>';
+            
+            // Save to GitHub
+            const results = await this.github.saveMapSet(
+                mapName,
+                location,
+                svgContent,
+                coordsContent,
+                configContent
+            );
+            
+            // Show results
+            let successCount = 0;
+            let messages = [];
+            
+            if (results.svg) successCount++;
+            if (results.coords) successCount++;
+            if (results.config) successCount++;
+            
+            if (results.errors && results.errors.length > 0) {
+                messages.push(`<p style="color: red;">Errors: ${results.errors.map(e => e.error).join(', ')}</p>`);
+            }
+            
+            if (successCount > 0) {
+                messages.push(`<p style="color: green;">✓ Saved ${successCount} file(s) to GitHub!</p>`);
+                messages.push(`<p>Location: maps/${location}/</p>`);
+            }
+            
+            statusDiv.innerHTML = messages.join('');
+            
+            // Update button
+            button.textContent = 'Close';
+            button.onclick = () => modal.remove();
+            
+        } catch (error) {
+            console.error('Save failed:', error);
+            statusDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            button.disabled = false;
+            button.textContent = 'Save to GitHub';
+        }
+    }
+
+    async showLoadDialog() {
+        if (!this.github.isAuthenticated()) {
+            StatusManager.error('Please connect to GitHub first');
+            return;
+        }
+
+        // Create load modal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+            <div class="modal-content large-modal">
+                <h3>📂 Load Map from GitHub</h3>
+                <div class="map-gallery">
+                    <p class="loading">Loading maps from GitHub...</p>
+                </div>
+                <div class="load-status"></div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                    <button class="btn-primary" id="load-selected-map" disabled onclick="window.app.loadFromGitHub(this)">
+                        Load Selected Map
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Load available maps
+        this.refreshMapList(modal);
+    }
+
+    async refreshMapList(modal = null) {
+        const container = modal ? modal.querySelector('.map-gallery') : null;
+        
+        try {
+            StatusManager.update('Loading maps from GitHub...');
+            const maps = await this.github.listMaps();
+            
+            if (maps.length === 0) {
+                if (container) {
+                    container.innerHTML = '<p class="empty">No maps found in GitHub repository</p>';
+                }
+                StatusManager.update('No maps found');
+                return;
+            }
+            
+            // Group maps by location
+            const mapsByLocation = {};
+            maps.forEach(map => {
+                if (!mapsByLocation[map.location]) {
+                    mapsByLocation[map.location] = [];
+                }
+                mapsByLocation[map.location].push(map);
+            });
+            
+            let html = '';
+            
+            // Sort locations and create sections
+            Object.keys(mapsByLocation).sort().forEach(location => {
+                html += `<div class="location-section">`;
+                html += `<h4>${location}</h4>`;
+                
+                mapsByLocation[location].forEach(map => {
+                    const hasConfig = map.files.config ? 'has-file' : 'missing-file';
+                    const hasSVG = map.files.svg ? 'has-file' : 'missing-file';
+                    const hasCoords = map.files.coords ? 'has-file' : 'missing-file';
+                    
+                    html += `
+                        <div class="map-item" data-map='${JSON.stringify(map)}'>
+                            <div class="map-header">
+                                <h4>${map.name}</h4>
+                                <span class="map-location">${location}</span>
+                            </div>
+                            <div class="map-files">
+                                <span class="file-badge ${hasSVG}">SVG</span>
+                                <span class="file-badge ${hasCoords}">COORDS</span>
+                                <span class="file-badge ${hasConfig}">CONFIG</span>
+                            </div>
+                            <div class="map-actions">
+                                <input type="radio" name="selected-map" value="${map.name}" 
+                                       data-location="${location}" id="map-${map.name}">
+                                <label for="map-${map.name}">Select</label>
+                                ${map.files.svg ? `<button class="btn-small preview-btn" onclick="window.app.previewGitHubMap('${location}', '${map.name}')">Preview</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            if (container) {
+                container.innerHTML = html;
+                
+                // Enable load button when a map is selected
+                container.addEventListener('change', (e) => {
+                    if (e.target.name === 'selected-map') {
+                        document.getElementById('load-selected-map').disabled = false;
+                    }
+                });
+            }
+            
+            StatusManager.update(`Found ${maps.length} maps in ${Object.keys(mapsByLocation).length} locations`);
+            
+        } catch (error) {
+            console.error('Failed to list maps:', error);
+            if (container) {
+                container.innerHTML = '<p class="error">Failed to load maps: ' + error.message + '</p>';
+            }
+            StatusManager.error('Failed to load map list: ' + error.message);
+        }
+    }
+
+    async loadFromGitHub(button) {
+        const modal = button.closest('.modal');
+        const selectedRadio = modal.querySelector('input[name="selected-map"]:checked');
+        const statusDiv = modal.querySelector('.load-status');
+        
+        if (!selectedRadio) {
+            statusDiv.innerHTML = '<p style="color: red;">Please select a map to load</p>';
+            return;
+        }
+        
+        const mapName = selectedRadio.value;
+        const location = selectedRadio.dataset.location;
+        
+        button.disabled = true;
+        button.textContent = 'Loading...';
+        
+        try {
+            statusDiv.innerHTML = '<p>Loading map files...</p>';
+            
+            const results = await this.github.loadMapSet(mapName, location);
+            
+            let loadedCount = 0;
+            let messages = [];
+            
+            // Load configuration if available
+            if (results.config && results.config.content) {
+                try {
+                    const configData = JSON.parse(results.config.content);
+                    this.exportManager.configExporter.applyConfig(configData, this.uiManager, this.config);
+                    loadedCount++;
+                    messages.push('<p style="color: green;">✓ Configuration loaded</p>');
+                    
+                    // Update output name
+                    if (configData.metadata?.name) {
+                        document.getElementById('output-name').value = configData.metadata.name;
+                    }
+                } catch (error) {
+                    messages.push('<p style="color: red;">✗ Failed to parse configuration</p>');
+                }
+            } else {
+                messages.push('<p style="color: orange;">⚠ No configuration file found</p>');
+            }
+            
+            // We don't directly load SVG or coordinates - they're generated from config
+            if (results.svg) {
+                messages.push('<p style="color: blue;">ℹ SVG file available (use configuration to regenerate)</p>');
+            }
+            
+            if (results.coords) {
+                messages.push('<p style="color: blue;">ℹ Coordinates file available</p>');
+            }
+            
+            statusDiv.innerHTML = messages.join('');
+            
+            if (loadedCount > 0) {
+                messages.push('<p style="color: green; font-weight: bold;">Map loaded! Click "Preview" or "Generate Map" to see it.</p>');
+                statusDiv.innerHTML = messages.join('');
+            }
+            
+            // Update button
+            button.textContent = 'Close';
+            button.onclick = () => modal.remove();
+            
+        } catch (error) {
+            console.error('Load failed:', error);
+            statusDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            button.disabled = false;
+            button.textContent = 'Load Selected Map';
+        }
+    }
+
+    async previewGitHubMap(location, mapName) {
+        try {
+            StatusManager.update('Loading map preview...');
+            const results = await this.github.loadMapSet(mapName, location);
+            
+            if (results.svg && results.svg.content) {
+                const previewWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes');
+                previewWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${mapName} - Preview</title>
+                        <style>
+                            body { 
+                                margin: 0; 
+                                padding: 20px; 
+                                background: #f0f0f0; 
+                                font-family: Arial, sans-serif;
+                            }
+                            .map-container {
+                                background: white;
+                                border: 1px solid #ccc;
+                                border-radius: 5px;
+                                padding: 10px;
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                                overflow: auto;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h3>${mapName} - ${location}</h3>
+                        <div class="map-container">
+                            ${results.svg.content}
+                        </div>
+                    </body>
+                    </html>
+                `);
+            } else {
+                StatusManager.error('No SVG file found for this map');
+            }
+        } catch (error) {
+            StatusManager.error('Failed to load preview: ' + error.message);
+        }
     }
 }
 
