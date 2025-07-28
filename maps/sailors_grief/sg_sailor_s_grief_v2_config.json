@@ -1,9 +1,9 @@
 {
   "metadata": {
     "name": "sg_sailor's_grief_v2",
-    "description": "test version of Sailor's Grief showing off mapgen features",
+    "description": "",
     "author": "Nisugi",
-    "created": "2025-07-28T21:16:54.911Z",
+    "created": "2025-07-28T21:22:06.867Z",
     "mapdbVersion": "v0.2.1",
     "appVersion": "1.0.0"
   },
@@ -247,8 +247,8 @@
   "customLabels": [
     {
       "text": "hatch",
-      "x": 640,
-      "y": 1060,
+      "x": 700,
+      "y": 970,
       "fontSize": 10,
       "fontColor": "#000000",
       "fontFamily": "Verdana",
@@ -261,8 +261,8 @@
     },
     {
       "text": "mast",
-      "x": 640,
-      "y": 975,
+      "x": 700,
+      "y": 885,
       "fontSize": 10,
       "fontColor": "#000000",
       "fontFamily": "Verdana",
@@ -324,6 +324,34 @@
       "borderColor": "#000000",
       "borderWidth": 3,
       "borderStyle": "double",
+      "borderRadius": 0,
+      "opacity": 1,
+      "rotation": 0,
+      "textAlign": "center",
+      "verticalAlign": "top"
+    },
+    {
+      "id": 1753737623227,
+      "x": 2000,
+      "y": 100,
+      "width": 300,
+      "height": 300,
+      "padding": 10,
+      "content": [
+        {
+          "text": "Map Key",
+          "fontSize": 48,
+          "fontFamily": "Arial",
+          "fontColor": "#000000",
+          "bold": false,
+          "italic": false,
+          "lineBreak": true
+        }
+      ],
+      "backgroundColor": "#ffffff",
+      "borderColor": "#000000",
+      "borderWidth": 1,
+      "borderStyle": "solid",
       "borderRadius": 0,
       "opacity": 1,
       "rotation": 0,
