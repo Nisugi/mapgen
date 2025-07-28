@@ -39,9 +39,9 @@ export class SVGRenderer {
             svg += this.renderGroupLabels(config.groups, offsetX, offsetY, edgeLength, positions, config);
         }
         
-        // Draw regular connections (but NOT cross-group connections yet)
+        // Draw ALL connections
         if (config.showConnections) {
-            svg += this.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
+            svg += this.renderConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         }
         
         // Draw custom text boxes if provided
@@ -56,11 +56,6 @@ export class SVGRenderer {
         
         // Draw rooms
         svg += this.renderRooms(rooms, positions, offsetX, offsetY, edgeLength, roomSize, roomShape, strokeWidth, config);
-        
-        // Draw cross-group connections LAST (on top of rooms)
-        if (config.showConnections) {
-            svg += this.renderCrossGroupConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
-        }
         
         svg += '</svg>';
         return svg;
@@ -239,42 +234,19 @@ export class SVGRenderer {
                     const x2 = (toPos.x + offsetX) * edgeLength;
                     const y2 = (toPos.y + offsetY) * edgeLength;
                     
-                    // Calculate the edge points where the line intersects the room shapes
-                    const roomSize = config.roomSize || 15;
-                    const roomShape = config.roomShape || 'square';
-                    
-                    const edgePoints = this.calculateEdgeIntersections(
-                        x1, y1, x2, y2, roomSize, roomShape
-                    );
-                    
                     const dashArray = conn.dashSpacing || '5,5';
                     const color = conn.color || config.colors.connections;
                     
-                    // Draw the main connection line
-                    svg += `<line x1="${edgePoints.x1}" y1="${edgePoints.y1}" 
-                            x2="${edgePoints.x2}" y2="${edgePoints.y2}" 
+                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
                             stroke="${color}" stroke-width="${connectionWidth}" 
                             stroke-dasharray="${dashArray}" opacity="0.6"/>`;
                     
-                    // Calculate angle for arrow direction
-                    const angle = Math.atan2(y2 - y1, x2 - x1);
-                    
-                    // Draw terminators at the edge points
+                    // Draw terminators
                     if (conn.showFromTerminal) {
-                        svg += this.renderConnectionTerminal(
-                            edgePoints.x1, edgePoints.y1, 
-                            conn.terminalStyle || 'arrow', 
-                            color, connectionWidth,
-                            angle // Arrow points in direction of travel (away from source)
-                        );
+                        svg += this.renderConnectionTerminal(x1, y1, conn.terminalStyle || 'arrow', color, connectionWidth);
                     }
                     if (conn.showToTerminal) {
-                        svg += this.renderConnectionTerminal(
-                            edgePoints.x2, edgePoints.y2, 
-                            conn.terminalStyle || 'arrow', 
-                            color, connectionWidth,
-                            angle + Math.PI // Reverse angle - arrow points back toward source (into destination)
-                        );
+                        svg += this.renderConnectionTerminal(x2, y2, conn.terminalStyle || 'arrow', color, connectionWidth);
                     }
                 }
             });
@@ -287,15 +259,7 @@ export class SVGRenderer {
             const x2 = (to.pos.x + offsetX) * edgeLength;
             const y2 = (to.pos.y + offsetY) * edgeLength;
             
-            const roomSize = config.roomSize || 15;
-            const roomShape = config.roomShape || 'square';
-            
-            const edgePoints = this.calculateEdgeIntersections(
-                x1, y1, x2, y2, roomSize, roomShape
-            );
-            
-            svg += `<line x1="${edgePoints.x1}" y1="${edgePoints.y1}" 
-                    x2="${edgePoints.x2}" y2="${edgePoints.y2}" 
+            svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
                     stroke="${config.colors.connections}" stroke-width="${connectionWidth}" 
                     stroke-dasharray="5,5" opacity="0.6"/>`;
         });
@@ -435,7 +399,7 @@ export class SVGRenderer {
     renderConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
         let svg = '';
         svg += this.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
-        // Note: Cross-group connections are now rendered separately in createSVG
+        svg += this.renderCrossGroupConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         return svg;
     }
 
@@ -498,19 +462,8 @@ export class SVGRenderer {
             const midY = (y1 + y2) / 2;
             
             // Calculate angle for text rotation
-            let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-            
-            // Determine if we need to flip the text for readability
-            // Text should always read left-to-right in the direction of travel
-            let flipText = false;
-            let textAnchor = 'middle';
-            let dominantBaseline = 'auto';
-            
-            // If angle is between 90 and 270 degrees, the text would be upside down
-            if (angle > 90 || angle < -90) {
-                // Don't flip the angle, but we need to position text differently
-                flipText = true;
-            }
+            const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            const adjustedAngle = (angle > 90 || angle < -90) ? angle + 180 : angle;
             
             // Font settings
             const fontWeight = config.fonts.labels.bold ? 'bold' : 'normal';
@@ -519,49 +472,21 @@ export class SVGRenderer {
             const fontFamily = config.fonts.labels.family;
             
             if (label1 && label2 && label1 !== label2) {
-                // Two different labels
-                if (flipText) {
-                    // When flipped, label2 goes on top (as it's the reverse direction)
-                    svg += `<text x="${midX}" y="${midY - 3}" text-anchor="${textAnchor}" font-size="${fontSize}" 
-                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                            transform="rotate(${angle} ${midX} ${midY})"
-                            text-rendering="optimizeLegibility">${label2}</text>`;
-                    svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="${textAnchor}" font-size="${fontSize}" 
-                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                            transform="rotate(${angle} ${midX} ${midY})"
-                            text-rendering="optimizeLegibility">${label1}</text>`;
-                } else {
-                    // Normal orientation - label1 on top
-                    svg += `<text x="${midX}" y="${midY - 3}" text-anchor="${textAnchor}" font-size="${fontSize}" 
-                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                            transform="rotate(${angle} ${midX} ${midY})"
-                            text-rendering="optimizeLegibility">${label1}</text>`;
-                    svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="${textAnchor}" font-size="${fontSize}" 
-                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                            transform="rotate(${angle} ${midX} ${midY})"
-                            text-rendering="optimizeLegibility">${label2}</text>`;
-                }
-            } else if (label1 || label2) {
-                // Single label - determine which one to show based on direction
-                let label;
-                
-                if (flipText && label2) {
-                    // Connection goes right-to-left, prefer label2 (reverse direction)
-                    label = label2;
-                } else if (!flipText && label1) {
-                    // Connection goes left-to-right, prefer label1 (forward direction)
-                    label = label1;
-                } else {
-                    // Use whichever label is available
-                    label = label1 || label2;
-                }
-                
-                // Adjust y position based on whether text is above or below line
-                const yOffset = flipText ? fontSize + 2 : -3;
-                
-                svg += `<text x="${midX}" y="${midY + yOffset}" text-anchor="${textAnchor}" font-size="${fontSize}" 
+                // Two different labels - one above, one below
+                svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
                         fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                        transform="rotate(${angle} ${midX} ${midY})"
+                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
+                        text-rendering="optimizeLegibility">${label1}</text>`;
+                svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="middle" font-size="${fontSize}" 
+                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
+                        text-rendering="optimizeLegibility">${label2}</text>`;
+            } else if (label1 || label2) {
+                // Single label
+                const label = label1 || label2;
+                svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
+                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
                         text-rendering="optimizeLegibility">${label}</text>`;
             }
         }
