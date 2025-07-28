@@ -239,19 +239,42 @@ export class SVGRenderer {
                     const x2 = (toPos.x + offsetX) * edgeLength;
                     const y2 = (toPos.y + offsetY) * edgeLength;
                     
+                    // Calculate the edge points where the line intersects the room shapes
+                    const roomSize = config.roomSize || 15;
+                    const roomShape = config.roomShape || 'square';
+                    
+                    const edgePoints = this.calculateEdgeIntersections(
+                        x1, y1, x2, y2, roomSize, roomShape
+                    );
+                    
                     const dashArray = conn.dashSpacing || '5,5';
                     const color = conn.color || config.colors.connections;
                     
-                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                    // Draw the main connection line
+                    svg += `<line x1="${edgePoints.x1}" y1="${edgePoints.y1}" 
+                            x2="${edgePoints.x2}" y2="${edgePoints.y2}" 
                             stroke="${color}" stroke-width="${connectionWidth}" 
                             stroke-dasharray="${dashArray}" opacity="0.6"/>`;
                     
-                    // Draw terminators
+                    // Calculate angle for arrow direction
+                    const angle = Math.atan2(y2 - y1, x2 - x1);
+                    
+                    // Draw terminators at the edge points
                     if (conn.showFromTerminal) {
-                        svg += this.renderConnectionTerminal(x1, y1, conn.terminalStyle || 'arrow', color, connectionWidth);
+                        svg += this.renderConnectionTerminal(
+                            edgePoints.x1, edgePoints.y1, 
+                            conn.terminalStyle || 'arrow', 
+                            color, connectionWidth,
+                            angle + Math.PI // Reverse angle for "from" terminal
+                        );
                     }
                     if (conn.showToTerminal) {
-                        svg += this.renderConnectionTerminal(x2, y2, conn.terminalStyle || 'arrow', color, connectionWidth);
+                        svg += this.renderConnectionTerminal(
+                            edgePoints.x2, edgePoints.y2, 
+                            conn.terminalStyle || 'arrow', 
+                            color, connectionWidth,
+                            angle // Normal angle for "to" terminal
+                        );
                     }
                 }
             });
@@ -264,12 +287,148 @@ export class SVGRenderer {
             const x2 = (to.pos.x + offsetX) * edgeLength;
             const y2 = (to.pos.y + offsetY) * edgeLength;
             
-            svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+            const roomSize = config.roomSize || 15;
+            const roomShape = config.roomShape || 'square';
+            
+            const edgePoints = this.calculateEdgeIntersections(
+                x1, y1, x2, y2, roomSize, roomShape
+            );
+            
+            svg += `<line x1="${edgePoints.x1}" y1="${edgePoints.y1}" 
+                    x2="${edgePoints.x2}" y2="${edgePoints.y2}" 
                     stroke="${config.colors.connections}" stroke-width="${connectionWidth}" 
                     stroke-dasharray="5,5" opacity="0.6"/>`;
         });
         
         svg += '</g>';
+        return svg;
+    }
+
+    calculateEdgeIntersections(x1, y1, x2, y2, roomSize, roomShape) {
+        // Calculate the angle and distance
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const angle = Math.atan2(dy, dx);
+        
+        let edge1X = x1;
+        let edge1Y = y1;
+        let edge2X = x2;
+        let edge2Y = y2;
+        
+        if (roomShape === 'circle') {
+            // For circles, move along the radius
+            edge1X = x1 + Math.cos(angle) * roomSize;
+            edge1Y = y1 + Math.sin(angle) * roomSize;
+            edge2X = x2 - Math.cos(angle) * roomSize;
+            edge2Y = y2 - Math.sin(angle) * roomSize;
+        } else {
+            // For squares and rectangles, calculate intersection with box edges
+            const halfSize = roomSize;
+            
+            // Calculate intersection for start point
+            const edge1 = this.getBoxEdgeIntersection(x1, y1, angle, halfSize, roomShape);
+            edge1X = edge1.x;
+            edge1Y = edge1.y;
+            
+            // Calculate intersection for end point (reverse angle)
+            const edge2 = this.getBoxEdgeIntersection(x2, y2, angle + Math.PI, halfSize, roomShape);
+            edge2X = edge2.x;
+            edge2Y = edge2.y;
+        }
+        
+        return { x1: edge1X, y1: edge1Y, x2: edge2X, y2: edge2Y };
+    }
+
+    // Calculate where a ray from center intersects a box edge
+    getBoxEdgeIntersection(centerX, centerY, angle, halfSize, roomShape) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        
+        let width = halfSize;
+        let height = halfSize;
+        
+        if (roomShape === 'rectangle') {
+            width = halfSize * 1.5;
+        }
+        
+        // Check intersection with each edge
+        let t = Infinity;
+        
+        // Right edge
+        if (cos > 0) {
+            t = Math.min(t, width / cos);
+        }
+        // Left edge
+        if (cos < 0) {
+            t = Math.min(t, -width / cos);
+        }
+        // Bottom edge
+        if (sin > 0) {
+            t = Math.min(t, height / sin);
+        }
+        // Top edge
+        if (sin < 0) {
+            t = Math.min(t, -height / sin);
+        }
+        
+        return {
+            x: centerX + cos * t,
+            y: centerY + sin * t
+        };
+    }
+
+    renderConnectionTerminal(x, y, style, color, width, angle = 0) {
+        let svg = '';
+        const size = width * 3; // Terminal size based on connection width
+        
+        // Convert angle to degrees for SVG rotation
+        const angleDegrees = angle * 180 / Math.PI;
+        
+        switch (style) {
+            case 'arrow':
+                // Arrowhead pointing in the direction of travel
+                svg += `<g transform="rotate(${angleDegrees} ${x} ${y})">`;
+                svg += `<path d="M ${x-size} ${y-size/2} L ${x} ${y} L ${x-size} ${y+size/2}" 
+                        fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                svg += `</g>`;
+                break;
+                
+            case 'dot':
+                // Filled circle (no rotation needed)
+                svg += `<circle cx="${x}" cy="${y}" r="${size/2}" fill="${color}"/>`;
+                break;
+                
+            case 'square':
+                // Filled square (no rotation needed)
+                svg += `<rect x="${x-size/2}" y="${y-size/2}" width="${size}" height="${size}" 
+                        fill="${color}"/>`;
+                break;
+                
+            case 'diamond':
+                // Filled diamond
+                svg += `<g transform="rotate(${angleDegrees} ${x} ${y})">`;
+                svg += `<path d="M ${x} ${y-size} L ${x+size} ${y} L ${x} ${y+size} L ${x-size} ${y} Z" 
+                        fill="${color}"/>`;
+                svg += `</g>`;
+                break;
+                
+            case 'cross':
+                // X mark
+                svg += `<g transform="rotate(${angleDegrees} ${x} ${y})">`;
+                svg += `<line x1="${x-size/2}" y1="${y-size/2}" x2="${x+size/2}" y2="${y+size/2}" 
+                        stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                svg += `<line x1="${x-size/2}" y1="${y+size/2}" x2="${x+size/2}" y2="${y-size/2}" 
+                        stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
+                svg += `</g>`;
+                break;
+                
+            case 'circle':
+                // Open circle (no rotation needed)
+                svg += `<circle cx="${x}" cy="${y}" r="${size/2}" fill="none" 
+                        stroke="${color}" stroke-width="${width}"/>`;
+                break;
+        }
+        
         return svg;
     }
 
