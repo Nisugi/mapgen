@@ -146,91 +146,13 @@ export class SVGRenderer {
         return svg;
     }
 
-    renderConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
-        let svg = '';
+    renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
+        let svg = '<g id="regular-connections">';
         
         // Create a set to track drawn connections (to avoid duplicates)
         const drawnConnections = new Set();
-        const crossGroupConnections = [];
         
-        // Initialize connection analyzer if not set
-        if (!this.connectionAnalyzer) {
-            // Import it here to avoid circular dependency
-            import('../generation/connection-analyzer.js').then(module => {
-                this.connectionAnalyzer = new module.ConnectionAnalyzer();
-            });
-            return svg; // Skip connections for now
-        }
-        
-        // First pass: collect cross-group connections
-        rooms.forEach(room => {
-            const pos = positions.get(room.id);
-            if (!pos || !room.wayto) return;
-            
-            for (const targetId of Object.keys(room.wayto)) {
-                const targetIdNum = parseInt(targetId);
-                const targetRoom = roomLookup.get(targetIdNum);
-                const targetPos = positions.get(targetIdNum);
-                if (!targetPos || !targetRoom) continue;
-                
-                if (this.connectionAnalyzer.isCrossGroupConnection(room, targetId)) {
-                    crossGroupConnections.push({
-                        from: { room, pos },
-                        to: { room: targetRoom, pos: targetPos }
-                    });
-                }
-            }
-        });
-        
-        // Draw cross-group connections first (under everything else)
-        if (config.crossGroupConnections || crossGroupConnections.length > 0) {
-            svg += `<g id="cross-group-connections">`;
-            
-            // From UI-specified connections
-            if (config.crossGroupConnections) {
-                config.crossGroupConnections.forEach(conn => {
-                    const fromPos = positions.get(conn.fromId);
-                    const toPos = positions.get(conn.toId);
-                    if (fromPos && toPos) {
-                        const x1 = (fromPos.x + offsetX) * edgeLength;
-                        const y1 = (fromPos.y + offsetY) * edgeLength;
-                        const x2 = (toPos.x + offsetX) * edgeLength;
-                        const y2 = (toPos.y + offsetY) * edgeLength;
-                        
-                        const dashArray = conn.dashSpacing || '5,5';
-                        const color = conn.color || config.colors.connections;
-                        
-                        svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
-                                stroke="${color}" stroke-width="${connectionWidth}" 
-                                stroke-dasharray="${dashArray}" opacity="0.6"/>`;
-                        
-                        // Draw terminators
-                        if (conn.showFromTerminal) {
-                            svg += this.renderConnectionTerminal(x1, y1, conn.terminalStyle || 'arrow', color, connectionWidth);
-                        }
-                        if (conn.showToTerminal) {
-                            svg += this.renderConnectionTerminal(x2, y2, conn.terminalStyle || 'arrow', color, connectionWidth);
-                        }
-                    }
-                });
-            }
-            
-            // From dirto cross-group connections
-            crossGroupConnections.forEach(({ from, to }) => {
-                const x1 = (from.pos.x + offsetX) * edgeLength;
-                const y1 = (from.pos.y + offsetY) * edgeLength;
-                const x2 = (to.pos.x + offsetX) * edgeLength;
-                const y2 = (to.pos.y + offsetY) * edgeLength;
-                
-                svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
-                        stroke="${config.colors.connections}" stroke-width="${connectionWidth}" 
-                        stroke-dasharray="5,5" opacity="0.6"/>`;
-            });
-            
-            svg += `</g>`;
-        }
-        
-        // Draw normal connections
+        // Draw normal connections (NOT cross-group)
         rooms.forEach(room => {
             const pos = positions.get(room.id);
             if (!pos || !room.wayto) return;
@@ -242,14 +164,14 @@ export class SVGRenderer {
                 if (!targetPos || !targetRoom) continue;
                 
                 // Skip cross-group connections here
-                if (this.connectionAnalyzer.isCrossGroupConnection(room, targetId)) continue;
+                if (this.connectionAnalyzer && this.connectionAnalyzer.isCrossGroupConnection(room, targetId)) continue;
                 
                 // Create unique key for this connection
                 const connectionKey = [room.id, targetIdNum].sort().join('-');
                 if (drawnConnections.has(connectionKey)) continue;
                 drawnConnections.add(connectionKey);
                 
-                const direction = this.connectionAnalyzer.getDirectionForConnection(room, targetId);
+                const direction = this.connectionAnalyzer ? this.connectionAnalyzer.getDirectionForConnection(room, targetId) : null;
                 if (!direction) continue;
                 
                 const x1 = (pos.x + offsetX) * edgeLength;
@@ -258,20 +180,103 @@ export class SVGRenderer {
                 const y2 = (targetPos.y + offsetY) * edgeLength;
                 
                 // Determine connection color
-                const isVertical = this.connectionAnalyzer.isVerticalConnection(room, targetId) || 
+                let isVertical = false;
+                if (this.connectionAnalyzer) {
+                    isVertical = this.connectionAnalyzer.isVerticalConnection(room, targetId) || 
                                  this.connectionAnalyzer.isVerticalConnection(targetRoom, room.id.toString());
+                }
                 const connectionColor = isVertical ? 
                     (config.colors.verticalConnections || '#999') : 
                     (config.colors.connections || '#666');
                 
                 svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${connectionColor}" stroke-width="${connectionWidth}"/>`;
                 
-                if (config.showLabels) {
+                if (config.showLabels && this.connectionAnalyzer) {
                     svg += this.renderConnectionLabel(room, targetId, targetRoom, x1, y1, x2, y2, config);
                 }
             }
         });
         
+        svg += '</g>';
+        return svg;
+    }
+
+    renderCrossGroupConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
+        let svg = '<g id="cross-group-connections">';
+        
+        const crossGroupConnections = [];
+        
+        // First collect cross-group connections from dirto
+        if (this.connectionAnalyzer) {
+            rooms.forEach(room => {
+                const pos = positions.get(room.id);
+                if (!pos || !room.wayto) return;
+                
+                for (const targetId of Object.keys(room.wayto)) {
+                    const targetIdNum = parseInt(targetId);
+                    const targetRoom = roomLookup.get(targetIdNum);
+                    const targetPos = positions.get(targetIdNum);
+                    if (!targetPos || !targetRoom) continue;
+                    
+                    if (this.connectionAnalyzer.isCrossGroupConnection(room, targetId)) {
+                        crossGroupConnections.push({
+                            from: { room, pos },
+                            to: { room: targetRoom, pos: targetPos }
+                        });
+                    }
+                }
+            });
+        }
+        
+        // Draw UI-specified cross-group connections
+        if (config.crossGroupConnections) {
+            config.crossGroupConnections.forEach(conn => {
+                const fromPos = positions.get(conn.fromId);
+                const toPos = positions.get(conn.toId);
+                if (fromPos && toPos) {
+                    const x1 = (fromPos.x + offsetX) * edgeLength;
+                    const y1 = (fromPos.y + offsetY) * edgeLength;
+                    const x2 = (toPos.x + offsetX) * edgeLength;
+                    const y2 = (toPos.y + offsetY) * edgeLength;
+                    
+                    const dashArray = conn.dashSpacing || '5,5';
+                    const color = conn.color || config.colors.connections;
+                    
+                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                            stroke="${color}" stroke-width="${connectionWidth}" 
+                            stroke-dasharray="${dashArray}" opacity="0.6"/>`;
+                    
+                    // Draw terminators
+                    if (conn.showFromTerminal) {
+                        svg += this.renderConnectionTerminal(x1, y1, conn.terminalStyle || 'arrow', color, connectionWidth);
+                    }
+                    if (conn.showToTerminal) {
+                        svg += this.renderConnectionTerminal(x2, y2, conn.terminalStyle || 'arrow', color, connectionWidth);
+                    }
+                }
+            });
+        }
+        
+        // Draw dirto cross-group connections
+        crossGroupConnections.forEach(({ from, to }) => {
+            const x1 = (from.pos.x + offsetX) * edgeLength;
+            const y1 = (from.pos.y + offsetY) * edgeLength;
+            const x2 = (to.pos.x + offsetX) * edgeLength;
+            const y2 = (to.pos.y + offsetY) * edgeLength;
+            
+            svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                    stroke="${config.colors.connections}" stroke-width="${connectionWidth}" 
+                    stroke-dasharray="5,5" opacity="0.6"/>`;
+        });
+        
+        svg += '</g>';
+        return svg;
+    }
+
+    renderConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
+        let svg = '';
+        svg += this.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
+        // Note: Cross-group connections are now rendered separately in createSVG
         return svg;
     }
 
