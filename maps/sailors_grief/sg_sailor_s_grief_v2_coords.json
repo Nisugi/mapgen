@@ -1,0 +1,1632 @@
+[
+  {
+    "id": 35585,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1260,
+      1128,
+      1290
+    ]
+  },
+  {
+    "id": 35586,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1345,
+      1128,
+      1375
+    ]
+  },
+  {
+    "id": 35587,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1430,
+      1128,
+      1460
+    ]
+  },
+  {
+    "id": 35588,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1168,
+      1345,
+      1213,
+      1375
+    ]
+  },
+  {
+    "id": 35589,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1253,
+      1345,
+      1298,
+      1375
+    ]
+  },
+  {
+    "id": 35590,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1338,
+      1345,
+      1383,
+      1375
+    ]
+  },
+  {
+    "id": 35591,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1338,
+      1430,
+      1383,
+      1460
+    ]
+  },
+  {
+    "id": 35592,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1253,
+      1430,
+      1298,
+      1460
+    ]
+  },
+  {
+    "id": 35593,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1090,
+      1128,
+      1120
+    ]
+  },
+  {
+    "id": 35594,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1168,
+      1090,
+      1213,
+      1120
+    ]
+  },
+  {
+    "id": 35595,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1168,
+      1005,
+      1213,
+      1035
+    ]
+  },
+  {
+    "id": 35596,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1005,
+      1128,
+      1035
+    ]
+  },
+  {
+    "id": 35597,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1168,
+      1175,
+      1213,
+      1205
+    ]
+  },
+  {
+    "id": 35598,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1175,
+      1128,
+      1205
+    ]
+  },
+  {
+    "id": 35599,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      998,
+      1090,
+      1043,
+      1120
+    ]
+  },
+  {
+    "id": 35600,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1253,
+      1005,
+      1298,
+      1035
+    ]
+  },
+  {
+    "id": 35601,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1253,
+      1090,
+      1298,
+      1120
+    ]
+  },
+  {
+    "id": 35602,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1253,
+      1260,
+      1298,
+      1290
+    ]
+  },
+  {
+    "id": 35603,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      920,
+      1128,
+      950
+    ]
+  },
+  {
+    "id": 35604,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1933,
+      920,
+      1978,
+      950
+    ]
+  },
+  {
+    "id": 35605,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      998,
+      1515,
+      1043,
+      1545
+    ]
+  },
+  {
+    "id": 35606,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      1515,
+      1128,
+      1545
+    ]
+  },
+  {
+    "id": 35607,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1168,
+      1515,
+      1213,
+      1545
+    ]
+  },
+  {
+    "id": 35608,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2103,
+      1345,
+      2148,
+      1375
+    ]
+  },
+  {
+    "id": 35609,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2103,
+      1430,
+      2148,
+      1460
+    ]
+  },
+  {
+    "id": 35610,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2188,
+      1515,
+      2233,
+      1545
+    ]
+  },
+  {
+    "id": 35611,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2188,
+      1345,
+      2233,
+      1375
+    ]
+  },
+  {
+    "id": 35612,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2273,
+      1430,
+      2318,
+      1460
+    ]
+  },
+  {
+    "id": 35613,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2018,
+      1430,
+      2063,
+      1460
+    ]
+  },
+  {
+    "id": 35614,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2018,
+      1515,
+      2063,
+      1545
+    ]
+  },
+  {
+    "id": 35615,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2103,
+      1600,
+      2148,
+      1630
+    ]
+  },
+  {
+    "id": 35616,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2188,
+      1685,
+      2233,
+      1715
+    ]
+  },
+  {
+    "id": 35617,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2103,
+      1685,
+      2148,
+      1715
+    ]
+  },
+  {
+    "id": 35618,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1933,
+      1430,
+      1978,
+      1460
+    ]
+  },
+  {
+    "id": 35619,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1848,
+      1430,
+      1893,
+      1460
+    ]
+  },
+  {
+    "id": 35620,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2698,
+      1175,
+      2743,
+      1205
+    ]
+  },
+  {
+    "id": 35621,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2783,
+      1260,
+      2828,
+      1290
+    ]
+  },
+  {
+    "id": 35622,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2613,
+      1090,
+      2658,
+      1120
+    ]
+  },
+  {
+    "id": 35623,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2698,
+      1260,
+      2743,
+      1290
+    ]
+  },
+  {
+    "id": 35624,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2783,
+      1345,
+      2828,
+      1375
+    ]
+  },
+  {
+    "id": 35625,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2783,
+      1430,
+      2828,
+      1460
+    ]
+  },
+  {
+    "id": 35626,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      1515,
+      2913,
+      1545
+    ]
+  },
+  {
+    "id": 35627,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      1600,
+      2913,
+      1630
+    ]
+  },
+  {
+    "id": 35628,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      1685,
+      2998,
+      1715
+    ]
+  },
+  {
+    "id": 35629,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      1600,
+      2998,
+      1630
+    ]
+  },
+  {
+    "id": 35630,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      1515,
+      3083,
+      1545
+    ]
+  },
+  {
+    "id": 35631,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      1430,
+      2998,
+      1460
+    ]
+  },
+  {
+    "id": 35632,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      1260,
+      2913,
+      1290
+    ]
+  },
+  {
+    "id": 35633,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      1175,
+      2998,
+      1205
+    ]
+  },
+  {
+    "id": 35634,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      1090,
+      3083,
+      1120
+    ]
+  },
+  {
+    "id": 35635,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      1005,
+      2998,
+      1035
+    ]
+  },
+  {
+    "id": 35636,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      920,
+      2998,
+      950
+    ]
+  },
+  {
+    "id": 35637,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      835,
+      3083,
+      865
+    ]
+  },
+  {
+    "id": 35638,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      1175,
+      3168,
+      1205
+    ]
+  },
+  {
+    "id": 35639,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      1175,
+      3253,
+      1205
+    ]
+  },
+  {
+    "id": 35640,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      1260,
+      3338,
+      1290
+    ]
+  },
+  {
+    "id": 35641,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      1090,
+      3338,
+      1120
+    ]
+  },
+  {
+    "id": 35642,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      1005,
+      3253,
+      1035
+    ]
+  },
+  {
+    "id": 35643,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      1260,
+      3253,
+      1290
+    ]
+  },
+  {
+    "id": 35644,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      1345,
+      3338,
+      1375
+    ]
+  },
+  {
+    "id": 35645,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3378,
+      1430,
+      3423,
+      1460
+    ]
+  },
+  {
+    "id": 35646,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3463,
+      1345,
+      3508,
+      1375
+    ]
+  },
+  {
+    "id": 35647,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3378,
+      1260,
+      3423,
+      1290
+    ]
+  },
+  {
+    "id": 35648,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      1175,
+      3338,
+      1205
+    ]
+  },
+  {
+    "id": 35649,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3378,
+      1090,
+      3423,
+      1120
+    ]
+  },
+  {
+    "id": 35650,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3463,
+      1090,
+      3508,
+      1120
+    ]
+  },
+  {
+    "id": 35651,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3548,
+      1005,
+      3593,
+      1035
+    ]
+  },
+  {
+    "id": 35652,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3633,
+      1005,
+      3678,
+      1035
+    ]
+  },
+  {
+    "id": 35653,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3718,
+      1005,
+      3763,
+      1035
+    ]
+  },
+  {
+    "id": 35654,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3548,
+      1090,
+      3593,
+      1120
+    ]
+  },
+  {
+    "id": 35655,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3633,
+      1090,
+      3678,
+      1120
+    ]
+  },
+  {
+    "id": 35656,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3548,
+      1175,
+      3593,
+      1205
+    ]
+  },
+  {
+    "id": 35657,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3633,
+      1175,
+      3678,
+      1205
+    ]
+  },
+  {
+    "id": 35658,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3718,
+      1175,
+      3763,
+      1205
+    ]
+  },
+  {
+    "id": 35659,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      920,
+      3253,
+      950
+    ]
+  },
+  {
+    "id": 35660,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1083,
+      325,
+      1128,
+      355
+    ]
+  },
+  {
+    "id": 35661,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      998,
+      325,
+      1043,
+      355
+    ]
+  },
+  {
+    "id": 35662,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      913,
+      410,
+      958,
+      440
+    ]
+  },
+  {
+    "id": 35663,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      828,
+      325,
+      873,
+      355
+    ]
+  },
+  {
+    "id": 35664,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      743,
+      325,
+      788,
+      355
+    ]
+  },
+  {
+    "id": 35665,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      743,
+      410,
+      788,
+      440
+    ]
+  },
+  {
+    "id": 35666,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      828,
+      495,
+      873,
+      525
+    ]
+  },
+  {
+    "id": 35667,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      913,
+      580,
+      958,
+      610
+    ]
+  },
+  {
+    "id": 35668,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      828,
+      665,
+      873,
+      695
+    ]
+  },
+  {
+    "id": 35669,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      998,
+      410,
+      1043,
+      440
+    ]
+  },
+  {
+    "id": 35670,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      913,
+      495,
+      958,
+      525
+    ]
+  },
+  {
+    "id": 35671,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      828,
+      410,
+      873,
+      440
+    ]
+  },
+  {
+    "id": 35672,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      828,
+      750,
+      873,
+      780
+    ]
+  },
+  {
+    "id": 35673,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      743,
+      750,
+      788,
+      780
+    ]
+  },
+  {
+    "id": 35674,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      658,
+      665,
+      703,
+      695
+    ]
+  },
+  {
+    "id": 35675,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      573,
+      580,
+      618,
+      610
+    ]
+  },
+  {
+    "id": 35676,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      488,
+      665,
+      533,
+      695
+    ]
+  },
+  {
+    "id": 35677,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      403,
+      665,
+      448,
+      695
+    ]
+  },
+  {
+    "id": 35678,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      750,
+      363,
+      780
+    ]
+  },
+  {
+    "id": 35679,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      665,
+      363,
+      695
+    ]
+  },
+  {
+    "id": 35680,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      580,
+      363,
+      610
+    ]
+  },
+  {
+    "id": 35681,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      495,
+      363,
+      525
+    ]
+  },
+  {
+    "id": 35682,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      233,
+      410,
+      278,
+      440
+    ]
+  },
+  {
+    "id": 35683,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      148,
+      325,
+      193,
+      355
+    ]
+  },
+  {
+    "id": 35684,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      233,
+      240,
+      278,
+      270
+    ]
+  },
+  {
+    "id": 35685,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      155,
+      363,
+      185
+    ]
+  },
+  {
+    "id": 35686,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      240,
+      363,
+      270
+    ]
+  },
+  {
+    "id": 35687,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      325,
+      363,
+      355
+    ]
+  },
+  {
+    "id": 35688,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      403,
+      410,
+      448,
+      440
+    ]
+  },
+  {
+    "id": 35689,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      488,
+      325,
+      533,
+      355
+    ]
+  },
+  {
+    "id": 35690,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      403,
+      325,
+      448,
+      355
+    ]
+  },
+  {
+    "id": 35691,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      318,
+      410,
+      363,
+      440
+    ]
+  },
+  {
+    "id": 35692,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      233,
+      325,
+      278,
+      355
+    ]
+  },
+  {
+    "id": 35693,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      835,
+      3253,
+      865
+    ]
+  },
+  {
+    "id": 35694,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      1260,
+      3168,
+      1290
+    ]
+  },
+  {
+    "id": 35695,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      1260,
+      3083,
+      1290
+    ]
+  },
+  {
+    "id": 35696,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      1345,
+      2998,
+      1375
+    ]
+  },
+  {
+    "id": 35697,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      1430,
+      3083,
+      1460
+    ]
+  },
+  {
+    "id": 35698,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      1345,
+      3168,
+      1375
+    ]
+  },
+  {
+    "id": 35699,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      750,
+      3083,
+      780
+    ]
+  },
+  {
+    "id": 35700,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      665,
+      3083,
+      695
+    ]
+  },
+  {
+    "id": 35701,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      665,
+      2998,
+      695
+    ]
+  },
+  {
+    "id": 35702,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      580,
+      2913,
+      610
+    ]
+  },
+  {
+    "id": 35703,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      495,
+      2998,
+      525
+    ]
+  },
+  {
+    "id": 35704,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      410,
+      2913,
+      440
+    ]
+  },
+  {
+    "id": 35705,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      325,
+      2913,
+      355
+    ]
+  },
+  {
+    "id": 35706,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2783,
+      495,
+      2828,
+      525
+    ]
+  },
+  {
+    "id": 35707,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      495,
+      2913,
+      525
+    ]
+  },
+  {
+    "id": 35708,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      580,
+      2998,
+      610
+    ]
+  },
+  {
+    "id": 35709,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      495,
+      3083,
+      525
+    ]
+  },
+  {
+    "id": 35710,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      410,
+      3168,
+      440
+    ]
+  },
+  {
+    "id": 35711,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      495,
+      3253,
+      525
+    ]
+  },
+  {
+    "id": 35712,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      410,
+      3338,
+      440
+    ]
+  },
+  {
+    "id": 35713,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      495,
+      3338,
+      525
+    ]
+  },
+  {
+    "id": 35714,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      580,
+      3253,
+      610
+    ]
+  },
+  {
+    "id": 35715,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      665,
+      3253,
+      695
+    ]
+  },
+  {
+    "id": 35716,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      750,
+      3168,
+      780
+    ]
+  },
+  {
+    "id": 35717,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      580,
+      3168,
+      610
+    ]
+  },
+  {
+    "id": 35718,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3123,
+      495,
+      3168,
+      525
+    ]
+  },
+  {
+    "id": 35719,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      410,
+      3083,
+      440
+    ]
+  },
+  {
+    "id": 35720,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      665,
+      2913,
+      695
+    ]
+  },
+  {
+    "id": 35721,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2868,
+      750,
+      2913,
+      780
+    ]
+  },
+  {
+    "id": 35722,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      2953,
+      750,
+      2998,
+      780
+    ]
+  },
+  {
+    "id": 35723,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      410,
+      3253,
+      440
+    ]
+  },
+  {
+    "id": 35724,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3038,
+      580,
+      3083,
+      610
+    ]
+  },
+  {
+    "id": 35725,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3208,
+      750,
+      3253,
+      780
+    ]
+  },
+  {
+    "id": 35726,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      3293,
+      835,
+      3338,
+      865
+    ]
+  },
+  {
+    "id": 35727,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1933,
+      1600,
+      1978,
+      1630
+    ]
+  },
+  {
+    "id": 35728,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1933,
+      1515,
+      1978,
+      1545
+    ]
+  },
+  {
+    "id": 35729,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1848,
+      1515,
+      1893,
+      1545
+    ]
+  },
+  {
+    "id": 35730,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      1515,
+      1808,
+      1545
+    ]
+  },
+  {
+    "id": 35731,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      1600,
+      1808,
+      1630
+    ]
+  },
+  {
+    "id": 35732,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1678,
+      1600,
+      1723,
+      1630
+    ]
+  },
+  {
+    "id": 35733,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1593,
+      1600,
+      1638,
+      1630
+    ]
+  },
+  {
+    "id": 35734,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1508,
+      1685,
+      1553,
+      1715
+    ]
+  },
+  {
+    "id": 35735,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1593,
+      1770,
+      1638,
+      1800
+    ]
+  },
+  {
+    "id": 35736,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1678,
+      1770,
+      1723,
+      1800
+    ]
+  },
+  {
+    "id": 35737,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      1855,
+      1808,
+      1885
+    ]
+  },
+  {
+    "id": 35738,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      1940,
+      1808,
+      1970
+    ]
+  },
+  {
+    "id": 35739,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1678,
+      2025,
+      1723,
+      2055
+    ]
+  },
+  {
+    "id": 35740,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      2025,
+      1808,
+      2055
+    ]
+  },
+  {
+    "id": 35741,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1678,
+      2110,
+      1723,
+      2140
+    ]
+  },
+  {
+    "id": 35742,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1593,
+      2195,
+      1638,
+      2225
+    ]
+  },
+  {
+    "id": 35743,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1678,
+      2195,
+      1723,
+      2225
+    ]
+  },
+  {
+    "id": 35744,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      2195,
+      1808,
+      2225
+    ]
+  },
+  {
+    "id": 35745,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1763,
+      1685,
+      1808,
+      1715
+    ]
+  },
+  {
+    "id": 35746,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1678,
+      1685,
+      1723,
+      1715
+    ]
+  },
+  {
+    "id": 35747,
+    "image": "sg_sailor's_grief_v2.png",
+    "image_coords": [
+      1593,
+      1685,
+      1638,
+      1715
+    ]
+  }
+]
