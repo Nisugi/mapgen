@@ -498,8 +498,19 @@ export class SVGRenderer {
             const midY = (y1 + y2) / 2;
             
             // Calculate angle for text rotation
-            const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-            const adjustedAngle = (angle > 90 || angle < -90) ? angle + 180 : angle;
+            let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            
+            // Determine if we need to flip the text for readability
+            // Text should always read left-to-right in the direction of travel
+            let flipText = false;
+            let textAnchor = 'middle';
+            let dominantBaseline = 'auto';
+            
+            // If angle is between 90 and 270 degrees, the text would be upside down
+            if (angle > 90 || angle < -90) {
+                // Don't flip the angle, but we need to position text differently
+                flipText = true;
+            }
             
             // Font settings
             const fontWeight = config.fonts.labels.bold ? 'bold' : 'normal';
@@ -508,21 +519,49 @@ export class SVGRenderer {
             const fontFamily = config.fonts.labels.family;
             
             if (label1 && label2 && label1 !== label2) {
-                // Two different labels - one above, one below
-                svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
-                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
-                        text-rendering="optimizeLegibility">${label1}</text>`;
-                svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="middle" font-size="${fontSize}" 
-                        fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
-                        text-rendering="optimizeLegibility">${label2}</text>`;
+                // Two different labels
+                if (flipText) {
+                    // When flipped, label2 goes on top (as it's the reverse direction)
+                    svg += `<text x="${midX}" y="${midY - 3}" text-anchor="${textAnchor}" font-size="${fontSize}" 
+                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                            transform="rotate(${angle} ${midX} ${midY})"
+                            text-rendering="optimizeLegibility">${label2}</text>`;
+                    svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="${textAnchor}" font-size="${fontSize}" 
+                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                            transform="rotate(${angle} ${midX} ${midY})"
+                            text-rendering="optimizeLegibility">${label1}</text>`;
+                } else {
+                    // Normal orientation - label1 on top
+                    svg += `<text x="${midX}" y="${midY - 3}" text-anchor="${textAnchor}" font-size="${fontSize}" 
+                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                            transform="rotate(${angle} ${midX} ${midY})"
+                            text-rendering="optimizeLegibility">${label1}</text>`;
+                    svg += `<text x="${midX}" y="${midY + fontSize + 2}" text-anchor="${textAnchor}" font-size="${fontSize}" 
+                            fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
+                            transform="rotate(${angle} ${midX} ${midY})"
+                            text-rendering="optimizeLegibility">${label2}</text>`;
+                }
             } else if (label1 || label2) {
-                // Single label
-                const label = label1 || label2;
-                svg += `<text x="${midX}" y="${midY - 3}" text-anchor="middle" font-size="${fontSize}" 
+                // Single label - determine which one to show based on direction
+                let label;
+                
+                if (flipText && label2) {
+                    // Connection goes right-to-left, prefer label2 (reverse direction)
+                    label = label2;
+                } else if (!flipText && label1) {
+                    // Connection goes left-to-right, prefer label1 (forward direction)
+                    label = label1;
+                } else {
+                    // Use whichever label is available
+                    label = label1 || label2;
+                }
+                
+                // Adjust y position based on whether text is above or below line
+                const yOffset = flipText ? fontSize + 2 : -3;
+                
+                svg += `<text x="${midX}" y="${midY + yOffset}" text-anchor="${textAnchor}" font-size="${fontSize}" 
                         fill="${fontColor}" font-family="${fontFamily}" font-weight="${fontWeight}"
-                        transform="rotate(${adjustedAngle} ${midX} ${midY})"
+                        transform="rotate(${angle} ${midX} ${midY})"
                         text-rendering="optimizeLegibility">${label}</text>`;
             }
         }
