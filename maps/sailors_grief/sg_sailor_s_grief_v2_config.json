@@ -1,0 +1,334 @@
+{
+  "metadata": {
+    "name": "sg_sailor's_grief_v2",
+    "description": "test version of Sailor's Grief showing off mapgen features",
+    "author": "Nisugi",
+    "created": "2025-07-28T21:16:54.911Z",
+    "mapdbVersion": "v0.2.1",
+    "appVersion": "1.0.0"
+  },
+  "roomSelection": {
+    "method": "location",
+    "locations": [
+      "Sailor's Grief"
+    ]
+  },
+  "appearance": {
+    "theme": "custom",
+    "edgeLength": 85,
+    "roomShape": "rectangle",
+    "roomSize": 15,
+    "strokeWidth": 1,
+    "connectionWidth": 2
+  },
+  "colors": {
+    "default": "#ffffff",
+    "background": "#c3eaf0",
+    "connections": "#000000",
+    "verticalConnections": "#fb0909",
+    "tagColors": [
+      [
+        "exit",
+        "#0055ff"
+      ],
+      [
+        "node",
+        "#11ff00"
+      ],
+      [
+        "table",
+        "#ff0000"
+      ]
+    ]
+  },
+  "displayOptions": {
+    "showRoomIds": true,
+    "showRoomNames": false,
+    "showLabels": true,
+    "showConnections": true,
+    "showGroupLabels": false
+  },
+  "fonts": {
+    "labels": {
+      "size": 12,
+      "color": "#444444",
+      "family": "Arial",
+      "bold": false
+    },
+    "rooms": {
+      "size": 12,
+      "color": "#000000",
+      "family": "Arial",
+      "bold": false
+    }
+  },
+  "backgroundSettings": {
+    "useBackground": true,
+    "backgroundImage": null
+  },
+  "groupPositioning": {
+    "offsets": [
+      [
+        0,
+        {
+          "x": 7,
+          "y": 10
+        }
+      ],
+      [
+        1,
+        {
+          "x": 1,
+          "y": 13
+        }
+      ],
+      [
+        2,
+        {
+          "x": 0,
+          "y": 14
+        }
+      ],
+      [
+        3,
+        {
+          "x": 1,
+          "y": 2
+        }
+      ],
+      [
+        4,
+        {
+          "x": -44,
+          "y": 0
+        }
+      ],
+      [
+        5,
+        {
+          "x": -47,
+          "y": 9
+        }
+      ],
+      [
+        6,
+        {
+          "x": -40,
+          "y": 9
+        }
+      ]
+    ],
+    "names": [
+      [
+        0,
+        "The Contempt"
+      ],
+      [
+        1,
+        "Below Deck"
+      ],
+      [
+        2,
+        "Sailor's Grief"
+      ],
+      [
+        3,
+        "Talon Isle"
+      ],
+      [
+        4,
+        "Seat of Storms"
+      ],
+      [
+        5,
+        "Crow's Nest"
+      ],
+      [
+        6,
+        "Spicer's Sea"
+      ]
+    ],
+    "labelOffsets": [
+      [
+        0,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      [
+        1,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      [
+        2,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      [
+        3,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      [
+        4,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      [
+        5,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      [
+        6,
+        {
+          "x": 0,
+          "y": 0
+        }
+      ]
+    ],
+    "labelBold": []
+  },
+  "crossGroupConnections": [
+    {
+      "fromId": 35660,
+      "toId": 35620,
+      "style": "dashed",
+      "dashSpacing": "5,5",
+      "color": "#666666"
+    },
+    {
+      "fromId": 35608,
+      "toId": 35620,
+      "style": "dashed",
+      "dashSpacing": "5,5",
+      "color": "#666666"
+    },
+    {
+      "fromId": 35608,
+      "toId": 35660,
+      "style": "dashed",
+      "dashSpacing": "5,5",
+      "color": "#666666"
+    },
+    {
+      "fromId": 35585,
+      "toId": 35593,
+      "style": "dashed",
+      "dashSpacing": "5,5",
+      "color": "#f90101",
+      "showFromTerminal": true,
+      "showToTerminal": true,
+      "terminalStyle": "dot"
+    },
+    {
+      "fromId": 35603,
+      "toId": 35593,
+      "style": "dashed",
+      "dashSpacing": "5,5",
+      "color": "#fa0000",
+      "showFromTerminal": true,
+      "showToTerminal": true,
+      "terminalStyle": "square"
+    }
+  ],
+  "customLabels": [
+    {
+      "text": "hatch",
+      "x": 640,
+      "y": 1060,
+      "fontSize": 10,
+      "fontColor": "#000000",
+      "fontFamily": "Verdana",
+      "bold": false,
+      "rotation": 0,
+      "background": false,
+      "backgroundColor": "#b7ecf0",
+      "borderColor": "#666666",
+      "borderWidth": 1
+    },
+    {
+      "text": "mast",
+      "x": 640,
+      "y": 975,
+      "fontSize": 10,
+      "fontColor": "#000000",
+      "fontFamily": "Verdana",
+      "bold": false,
+      "rotation": 0,
+      "background": false,
+      "backgroundColor": "#b7ecf0",
+      "borderColor": "#666666",
+      "borderWidth": 1
+    }
+  ],
+  "customTextBoxes": [
+    {
+      "id": 1753736630787,
+      "x": 200,
+      "y": 1300,
+      "width": 400,
+      "height": 200,
+      "padding": 10,
+      "content": [
+        {
+          "text": "Creatures",
+          "fontSize": 24,
+          "fontFamily": "Verdana",
+          "fontColor": "#000000",
+          "bold": true,
+          "italic": false,
+          "lineBreak": true
+        },
+        {
+          "text": "Creature 1",
+          "fontSize": 18,
+          "fontFamily": "Times New Roman",
+          "fontColor": "#875e5e",
+          "bold": false,
+          "italic": false,
+          "lineBreak": true
+        },
+        {
+          "text": "Creature 2",
+          "fontSize": 12,
+          "fontFamily": "Arial",
+          "fontColor": "#b13e3e",
+          "bold": false,
+          "italic": false,
+          "lineBreak": true
+        },
+        {
+          "text": "Creature 3",
+          "fontSize": 36,
+          "fontFamily": "Courier New",
+          "fontColor": "#51d692",
+          "bold": false,
+          "italic": false,
+          "lineBreak": true
+        }
+      ],
+      "backgroundColor": "#86b0ca",
+      "borderColor": "#000000",
+      "borderWidth": 3,
+      "borderStyle": "double",
+      "borderRadius": 0,
+      "opacity": 1,
+      "rotation": 0,
+      "textAlign": "center",
+      "verticalAlign": "top"
+    }
+  ]
+}
