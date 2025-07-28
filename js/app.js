@@ -113,6 +113,51 @@ class MapGenApp {
     }
 
     setupEventListeners() {
+        // Export/Import full configuration
+        const exportConfigBtn = document.getElementById('export-full-config');
+        if (exportConfigBtn) {
+            exportConfigBtn.addEventListener('click', () => {
+                const mapName = document.getElementById('output-name').value || 'elanthia_map';
+                const config = this.exportManager.generateConfigForExport(mapName);
+                this.exportManager.configExporter.downloadConfig(config, `${mapName}_config.json`);
+                StatusManager.update('Configuration exported!');
+            });
+        }
+
+        const importConfigBtn = document.getElementById('import-full-config');
+        if (importConfigBtn) {
+            importConfigBtn.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const parsedConfig = this.exportManager.configExporter.parseConfig(event.target.result);
+                            this.exportManager.configExporter.applyConfig(parsedConfig, this.uiManager, this.config);
+                            
+                            // Update output name if available
+                            if (parsedConfig.metadata?.name) {
+                                document.getElementById('output-name').value = parsedConfig.metadata.name;
+                            }
+                            
+                            StatusManager.update(`Configuration imported from ${file.name}!`);
+                        } catch (error) {
+                            StatusManager.error('Failed to import configuration: ' + error.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            });
+        }
+
         // Listen for config changes
         eventBus.on(EVENTS.CONFIG_CHANGED, (data) => {
             console.log('Config changed:', data);

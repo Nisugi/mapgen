@@ -39,9 +39,14 @@ export class SVGRenderer {
             svg += this.renderGroupLabels(config.groups, offsetX, offsetY, edgeLength, positions, config);
         }
         
-        // Draw connections
+        // Draw regular connections (but NOT cross-group connections yet)
         if (config.showConnections) {
-            svg += this.renderConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
+            svg += this.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
+        }
+        
+        // Draw custom text boxes if provided
+        if (config.customTextBoxes && config.customTextBoxes.length > 0) {
+            svg += this.renderCustomTextBoxes(config.customTextBoxes, offsetX, offsetY, edgeLength, config);
         }
         
         // Draw custom labels if provided
@@ -51,6 +56,11 @@ export class SVGRenderer {
         
         // Draw rooms
         svg += this.renderRooms(rooms, positions, offsetX, offsetY, edgeLength, roomSize, roomShape, strokeWidth, config);
+        
+        // Draw cross-group connections LAST (on top of rooms)
+        if (config.showConnections) {
+            svg += this.renderCrossGroupConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
+        }
         
         svg += '</svg>';
         return svg;
@@ -514,8 +524,9 @@ export class SVGRenderer {
         let svg = '<g id="custom-textboxes">';
         
         textBoxes.forEach(textBox => {
-            const x = (textBox.x / config.edgeLength + offsetX) * edgeLength;
-            const y = (textBox.y / config.edgeLength + offsetY) * edgeLength;
+            // Text boxes use grid coordinates, same as labels
+            const x = textBox.x;
+            const y = textBox.y;
             const width = textBox.width;
             const height = textBox.height;
             const padding = textBox.padding || 10;
