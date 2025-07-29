@@ -174,18 +174,18 @@ export class ConnectionRenderer {
                     const angle = Math.atan2(y2 - y1, x2 - x1);
                     
                     // Draw ONLY terminals
-                    if (conn.showFromTerminal) {
+                    if (conn.fromTerminal?.show) {
                         svg += this.renderConnectionTerminal(
                             edgePoints.x1, edgePoints.y1, 
-                            conn.terminalStyle || 'dot', 
+                            conn.fromTerminal?.style || 'dot',
                             color, connectionWidth,
                             angle // Arrow points in direction of travel (away from source)
                         );
                     }
-                    if (conn.showToTerminal) {
+                    if (conn.toTerminal?.show) {
                         svg += this.renderConnectionTerminal(
                             edgePoints.x2, edgePoints.y2, 
-                            conn.terminalStyle || 'dot', 
+                            conn.toTerminal?.style || 'dot', 
                             color, connectionWidth,
                             angle + Math.PI // Reverse angle - arrow points back toward source (into destination)
                         );
