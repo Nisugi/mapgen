@@ -1,4 +1,5 @@
 // Panel Manager - coordinates all UI panels and state
+import { eventBus, EVENTS } from '../utils/event-bus.js';
 import { RoomSelectionPanel } from './panels/room-selection.js';
 import { ThemePresetsPanel } from './panels/theme-colors.js';
 import { RoomOptionsPanel } from './panels/room-options.js';
@@ -52,6 +53,16 @@ export class PanelManager {
 
         // Initialize tab controller
         this.tabController.init();
+
+        // Set initial edge length for group positioning
+        this.panels.groupPositioning.setEdgeLength(this.config.edgeLength);
+        
+        // Listen for config changes to update edge length
+        eventBus.on(EVENTS.CONFIG_CHANGED, (data) => {
+            if (data.config && data.config.edgeLength) {
+                this.panels.groupPositioning.updateEdgeLength(data.config.edgeLength);
+            }
+        });
     }
 
     // Delegate UI state methods to state manager

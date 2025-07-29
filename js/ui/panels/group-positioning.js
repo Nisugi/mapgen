@@ -5,10 +5,12 @@ export class GroupPositioningPanel {
     constructor() {
         this.container = null;
         this.currentGroups = [];
+        this.edgeLength = 120;
         this.groupOffsets = new Map();
         this.groupNames = new Map();
         this.groupLabelOffsets = new Map();
         this.groupLabelBold = new Map();
+        this.groupPixelMode = new Map();
     }
 
     init() {
@@ -21,6 +23,14 @@ export class GroupPositioningPanel {
                 this.update();
             }
         });
+    }
+
+    setEdgeLength(edgeLength) {
+        this.edgeLength = edgeLength;
+    }
+
+    updateEdgeLength(edgeLength) {
+        this.edgeLength = edgeLength;
     }
 
     update() {
@@ -39,6 +49,7 @@ export class GroupPositioningPanel {
             const labelOffset = this.groupLabelOffsets.get(index) || { x: 0, y: 0 };
             const roomCount = group.rooms.length;
             const groupName = this.groupNames.get(index) || `Group ${index + 1}`;
+            const pixelMode = this.groupPixelMode.get(index) || false;
             
             html += `
                 <div class="group-item" data-group="${index}">
@@ -48,20 +59,27 @@ export class GroupPositioningPanel {
                         <span class="room-count">${roomCount} rooms</span>
                     </div>
                     <div class="offset-controls">
-                        <h5>Group Position</h5>
+                        <div class="group-position-header">
+                            <h5>Group Position</h5>
+                            <label class="pixel-mode-toggle">
+                                <input type="checkbox" class="pixel-mode" data-group="${index}" ${pixelMode ? 'checked' : ''}> Pixel Mode
+                            </label>
+                        </div>
                         <div class="offset-control">
                             <label>X Offset:</label>
                             <input type="range" class="x-offset" data-group="${index}" 
-                                   min="-100" max="100" value="${offset.x}">
+                                   min="${pixelMode ? '-2000' : '-100'}" max="${pixelMode ? '2000' : '100'}" value="${offset.x}">
                             <input type="number" class="offset-number x-offset-number" data-group="${index}"
-                                   min="-100" max="100" value="${offset.x}">
+                                   min="${pixelMode ? '-2000' : '-100'}" max="${pixelMode ? '2000' : '100'}" value="${offset.x}">
+                            <span class="offset-unit">${pixelMode ? 'px' : 'cells'}</span>
                         </div>
                         <div class="offset-control">
                             <label>Y Offset:</label>
                             <input type="range" class="y-offset" data-group="${index}" 
-                                   min="-100" max="100" value="${offset.y}">
+                                   min="${pixelMode ? '-2000' : '-100'}" max="${pixelMode ? '2000' : '100'}" value="${offset.y}">
                             <input type="number" class="offset-number y-offset-number" data-group="${index}"
-                                   min="-100" max="100" value="${offset.y}">
+                                   min="${pixelMode ? '-2000' : '-100'}" max="${pixelMode ? '2000' : '100'}" value="${offset.y}">
+                            <span class="offset-unit">${pixelMode ? 'px' : 'cells'}</span>
                         </div>
                         <div class="label-position-header">
                             <h5>Label Position</h5>
@@ -93,16 +111,6 @@ export class GroupPositioningPanel {
             `;
         });
         
-        // html += '</div>';
-        // html += '<div class="group-controls">';
-        // html += '<div class="group-actions">';
-        // html += '<button class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">📤 Export Settings</button>';
-        // html += '<button class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">📥 Import Settings</button>';
-        // html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.resetAll()">Reset All</button>';
-        // html += '</div>';
-        // html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.applyChanges()">Apply Changes</button>';
-        // html += '</div>';
-        
         this.container.innerHTML = html;
         this.attachEventListeners();
     }
@@ -117,6 +125,22 @@ export class GroupPositioningPanel {
                     groupIndex, 
                     name: input.value 
                 });
+            });
+        });
+
+        // Pixel mode checkboxes
+        this.container.querySelectorAll('.pixel-mode').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const groupIndex = parseInt(checkbox.dataset.group);
+                const wasPixelMode = this.groupPixelMode.get(groupIndex) || false;
+                const isPixelMode = checkbox.checked;
+                
+                if (wasPixelMode !== isPixelMode) {
+                    this.switchPixelMode(groupIndex, isPixelMode);
+                }
+                
+                this.groupPixelMode.set(groupIndex, isPixelMode);
+                this.update(); // Re-render to update input ranges
             });
         });
 
@@ -191,8 +215,8 @@ export class GroupPositioningPanel {
                 const value = parseInt(input.value) || 0;
                 
                 // Clamp value
-                const min = isLabel ? -50 : -100;
-                const max = isLabel ? 50 : 100;
+                const min = isLabel ? -50 : (this.groupPixelMode.get(groupIndex) ? -2000 : -100);
+                const max = isLabel ? 50 : (this.groupPixelMode.get(groupIndex) ? 2000 : 100);
                 const clampedValue = Math.max(min, Math.min(max, value));
                 input.value = clampedValue;
                 
@@ -246,6 +270,7 @@ export class GroupPositioningPanel {
     resetAll() {
         this.groupOffsets.clear();
         this.groupNames.clear();
+        this.groupPixelMode.clear();
         this.groupLabelOffsets.clear();
         if (this.groupLabelBold) this.groupLabelBold.clear();
         if (this.groupLabelItalic) this.groupLabelItalic.clear();
@@ -262,6 +287,7 @@ export class GroupPositioningPanel {
         return {
             groups: this.currentGroups,
             offsets: this.groupOffsets,
+            pixelModes: this.groupPixelMode,
             names: this.groupNames,
             labelOffsets: this.groupLabelOffsets,
             labelBold: this.groupLabelBold,
@@ -273,6 +299,7 @@ export class GroupPositioningPanel {
     setGroupData(data) {
         if (data.groups) this.currentGroups = data.groups;
         if (data.offsets) this.groupOffsets = new Map(data.offsets);
+        if (data.pixelModes) this.groupPixelMode = new Map(data.pixelModes);
         if (data.names) this.groupNames = new Map(data.names);
         if (data.labelOffsets) this.groupLabelOffsets = new Map(data.labelOffsets);
         if (data.labelBold) this.groupLabelBold = new Map(data.labelBold);

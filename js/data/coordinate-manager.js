@@ -21,6 +21,7 @@ export class CoordinateManager {
             // Load data into UI panels
             const groupData = this.panelManager.panels.groupPositioning.getGroupData();
             groupData.offsets = new Map(savedCoords.groupOffsets || []);
+            groupData.pixelModes = new Map(savedCoords.groupPixelModes || []);
             groupData.names = new Map(savedCoords.groupNames || []);
             groupData.labelOffsets = new Map(savedCoords.groupLabelOffsets || []);
             
@@ -39,6 +40,9 @@ export class CoordinateManager {
            
             if (gp.offsets) {
                 groupData.offsets = new Map(gp.offsets);
+            }
+            if (gp.pixelModes) {
+                this.panelManager.panels.groupPositioning.groupPixelMode = new Map(gp.pixelModes);
             }
             if (gp.names) {
                 groupData.names = new Map(gp.names);
@@ -86,6 +90,7 @@ export class CoordinateManager {
             mapId: mapId,
             version: this.mapdbVersion,
             groupOffsets: Array.from(uiState.groupData.offsets.entries()),
+            groupPixelModes: Array.from(uiState.groupData.pixelModes.entries()),
             groupNames: Array.from(uiState.groupData.names.entries()),
             groupLabelOffsets: Array.from(uiState.groupData.labelOffsets.entries()),
             crossGroupConnections: uiState.crossConnections,
@@ -108,6 +113,9 @@ export class CoordinateManager {
             
             if (gp.offsets) {
                 groupData.offsets = new Map(gp.offsets);
+            }
+            if (gp.pixelModes) {
+                groupData.pixelModes = new Map(gp.pixelModes);
             }
             if (gp.names) {
                 groupData.names = new Map(gp.names);

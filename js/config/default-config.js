@@ -1,9 +1,9 @@
 // Default configuration for the map generator
 export const DEFAULT_CONFIG = {
     theme: 'custom',
-    edgeLength: 80,
+    edgeLength: 120,
     roomShape: 'square',
-    roomSize: 15,
+    roomSize: 20,
     strokeWidth: 1,
     connectionWidth: 2,
     colors: {

@@ -26,7 +26,7 @@ export class GroupManager {
         };
     }
 
-    applyGroupOffsets(groups, config) {
+    applyGroupOffsets(groups, config, groupPixelModes = new Map()) {
         const positions = new Map();
         
         // First pass: calculate base positions if not already done
@@ -55,13 +55,21 @@ export class GroupManager {
         // Second pass: apply base + manual offsets
         groups.forEach((group, groupIndex) => {
             // Get manual offset if provided
+            const isPixelMode = groupPixelModes.get(groupIndex) || false;
             let manualOffsetX = 0;
             let manualOffsetY = 0;
             
             if (config.groupOffsets && config.groupOffsets.has(groupIndex)) {
                 const manualOffset = config.groupOffsets.get(groupIndex);
-                manualOffsetX = manualOffset.x || 0;
-                manualOffsetY = manualOffset.y || 0;
+                if (isPixelMode) {
+                    // Pixel mode: use offset directly as pixels, convert to grid units
+                    manualOffsetX = (manualOffset.x || 0) / (config.edgeLength || 60);
+                    manualOffsetY = (manualOffset.y || 0) / (config.edgeLength || 60);
+                } else {
+                    // Grid mode: use offset as grid cells
+                    manualOffsetX = manualOffset.x || 0;
+                    manualOffsetY = manualOffset.y || 0;
+                }
             }
             
             // Apply total offset to all positions in this group

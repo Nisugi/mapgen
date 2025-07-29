@@ -33,7 +33,14 @@ export class CoordinateStorage {
             // Check if version matches and entry is not too old
             const age = Date.now() - entry.savedAt;
             if (entry.version === version && age < this.maxStorageAge) {
-                return entry.data;
+                const data = entry.data;
+                
+                // Ensure backward compatibility - add pixelModes if missing
+                if (data && !data.groupPixelModes) {
+                    data.groupPixelModes = [];
+                }
+                
+                return data;
             }
             
             // Remove outdated entry

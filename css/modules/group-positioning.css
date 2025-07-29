@@ -46,6 +46,17 @@
     font-size: var(--font-size-sm);
 }
 
+.group-position-header {
+   display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.pixel-mode-toggle {
+    font-size: var(--font-size-sm);
+}
+
 .offset-controls {
     display: flex;
     flex-direction: column;

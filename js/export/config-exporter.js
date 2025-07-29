@@ -84,6 +84,7 @@ export class ConfigExporter {
             },
             groupPositioning: {
                 offsets: Array.from(uiState.groupData.offsets.entries()),
+                pixelModes: Array.from(uiState.groupData.pixelModes?.entries() || []),
                 names: Array.from(uiState.groupData.names.entries()),
                 labelOffsets: Array.from(uiState.groupData.labelOffsets.entries()),
                 labelBold: Array.from(uiState.groupData.labelBold?.entries() || [])

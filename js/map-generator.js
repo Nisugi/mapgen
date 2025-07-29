@@ -67,7 +67,8 @@ export class MapGenerator {
         const groups = positionResult.groups;
         
         // Step 3: Apply group offsets
-        const finalPositions = this.groupManager.applyGroupOffsets(groups, this.config);
+        const groupPixelModes = config.groupPixelModes || new Map();
+        const finalPositions = this.groupManager.applyGroupOffsets(groups, this.config, groupPixelModes);
         
         // Step 4: Generate SVG
         const svg = this.svgRenderer.createSVG(rooms, finalPositions, roomLookup, groups, this.config);
@@ -109,8 +110,8 @@ export class MapGenerator {
         return this.roomPositioner.calculateRoomPositionsWithGroups(rooms, roomLookup);
     }
 
-    applyGroupOffsets(groups) {
-        return this.groupManager.applyGroupOffsets(groups, this.config);
+    applyGroupOffsets(groups, groupPixelModes = new Map()) {
+        return this.groupManager.applyGroupOffsets(groups, this.config, groupPixelModes);
     }
 
     isPositionOccupied(positions, x, y) {

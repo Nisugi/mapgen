@@ -140,6 +140,7 @@ export class MapGeneratorManager {
             showConnections: uiState.displayOptions.showConnections,
             showGroupLabels: uiState.displayOptions.showGroupLabels,
             groupOffsets: uiState.groupData.offsets,
+            groupPixelModes: uiState.groupData.pixelModes,
             groupLabelOffsets: uiState.groupData.labelOffsets,
             groups: groupsWithNames,
             fonts: this.config.fonts,
