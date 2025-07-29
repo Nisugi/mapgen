@@ -1,6 +1,6 @@
 // Panel Manager - coordinates all UI panels and state
 import { RoomSelectionPanel } from './panels/room-selection.js';
-import { ThemePresetsPanel } from './panels/theme-presets.js';
+import { ThemePresetsPanel } from './panels/theme-colors.js';
 import { RoomOptionsPanel } from './panels/room-options.js';
 import { EdgeOptionsPanel } from './panels/edge-options.js';
 import { BackgroundOptionsPanel } from './panels/background-options.js';
