@@ -1,0 +1,23 @@
+.github-auth-section {
+    margin-bottom: var(--spacing-md);
+}
+
+#github-user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: #e6f3ff;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+}
+
+#github-user-info span {
+    flex: 1;
+    color: var(--color-text);
+}
+
+.github-actions {
+    margin-top: var(--spacing-md);
+}

@@ -1,0 +1,85 @@
+.label-list {
+    margin-top: var(--spacing-sm);
+}
+
+.label-item {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.label-header {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.label-text-input {
+    flex: 1;
+    padding: 6px var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-md);
+}
+
+.label-text-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.remove-label {
+    background: var(--color-error);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 6px var(--spacing-md);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.remove-label:hover {
+    background: var(--color-error-dark);
+}
+
+.label-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.control-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.control-row .control-group {
+    flex: 1;
+    min-width: 80px;
+}
+
+.control-row .control-group label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    margin-bottom: 2px;
+}
+
+.control-row .control-group input,
+.control-row .control-group select {
+    width: 100%;
+    padding: var(--spacing-xs) 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+}
+
+.control-row .control-group input:focus,
+.control-row .control-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}

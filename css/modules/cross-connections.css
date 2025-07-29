@@ -1,0 +1,106 @@
+.connection-list {
+    margin-top: var(--spacing-sm);
+}
+
+.connection-item {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.connection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.connection-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 80px;
+}
+
+.control-group label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    font-weight: var(--font-weight-normal);
+}
+
+.control-group select,
+.control-group input[type="text"],
+.control-group input[type="color"] {
+    padding: var(--spacing-xs) 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+}
+
+.control-group.disabled {
+    opacity: 0.5;
+}
+
+.control-group.disabled input,
+.control-group.disabled select {
+    pointer-events: none;
+}
+
+.remove-connection {
+    background: var(--color-error);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+}
+
+.remove-connection:hover {
+    background: var(--color-error-dark);
+}
+
+/* Cross-connection terminal controls */
+.connection-terminals {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
+}
+
+.connection-terminals h5 {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.terminal-controls {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.terminal-controls .control-group {
+    min-width: auto;
+}
+
+.terminal-controls .control-group label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+}
+
+.terminal-controls select {
+    min-width: 80px;
+}

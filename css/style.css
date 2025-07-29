@@ -1,5 +1,3 @@
-/* Main CSS file - imports all modules in correct order */
-
 /* Base styles */
 @import url('base/variables.css');
 @import url('base/reset.css');
@@ -14,7 +12,11 @@
 @import url('components/modals.css');
 
 /* Module-specific styles */
-@import url('modules/modules.css');
-
-/* Utilities (if needed) */
-/* @import url('utilities/helpers.css'); */
+@import url('modules/github-integration.css');
+@import url('modules/tag-colors.css');
+@import url('modules/group-positioning.css');
+@import url('modules/cross-connections.css');
+@import url('modules/custom-labels.css');
+@import url('modules/custom-textboxes.css');
+@import url('modules/map-gallery.css');
+@import url('modules/responsive.css');
