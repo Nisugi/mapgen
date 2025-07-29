@@ -50,6 +50,13 @@ export class MapGeneratorManager {
             const svg = result.svg;
             this.currentGroups = result.groups;
             this.applyPendingGroupData();
+
+            if (this.hadPendingData) {
+                // Regenerate with the newly applied positions
+                const result = this.mapGenerator.generateMapWithGroups(rooms, mapConfig);
+                svg = result.svg;
+                this.hadPendingData = false;
+            }
             
             // Save coordinates
             this.saveCurrentCoordinates();
@@ -98,6 +105,13 @@ export class MapGeneratorManager {
             const svg = result.svg;
             this.currentGroups = result.groups;
             this.applyPendingGroupData();
+
+            if (this.hadPendingData) {
+                // Regenerate with the newly applied positions
+                const result = this.mapGenerator.generateMapWithGroups(rooms, mapConfig);
+                svg = result.svg;
+                this.hadPendingData = false;
+            }
             
             // Save coordinates
             this.saveCurrentCoordinates();
@@ -152,7 +166,9 @@ export class MapGeneratorManager {
     }
 
     applyPendingGroupData() {
+        this.hadPendingData = false;
         if (window.app.pendingGroupData) {
+            this.hadPendingData = true;
             const gp = window.app.pendingGroupData;
             const groupPanel = this.uiManager.panels.groupPositioning;
             
