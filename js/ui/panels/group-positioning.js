@@ -37,12 +37,21 @@ export class GroupPositioningPanel {
         if (!this.container) return;
         
         if (this.currentGroups.length === 0) {
-            this.container.innerHTML = '<p class="empty-message">Generate or preview a map to see groups</p>';
+            this.container.innerHTML = `
+                <div class="group-controls">
+                    <!-- Controls would go here if needed -->
+                </div>
+                <div class="group-list">
+                    <p class="empty-message">Generate or preview a map to see groups</p>
+                </div>
+            `;
             return;
         }
-        
-        let html = '<h4>Detected Groups:</h4>';
-        html += '<div class="group-list" style="max-height: 60vh; overflow-y: auto;">';
+       
+        let html = '<div class="group-controls">';
+        html += '<h4>Detected Groups:</h4>';
+        html += '</div>';
+        html += '<div class="group-list">';
         
         this.currentGroups.forEach((group, index) => {
             const offset = this.groupOffsets.get(index) || { x: 0, y: 0 };

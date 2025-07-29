@@ -74,12 +74,17 @@ export class CrossConnectionsPanel {
     update() {
         if (!this.container) return;
         
+        let html = '<div class="cross-connections-header">';
+        // Header content would go here if needed
+        html += '</div>';
+
         if (this.connections.length === 0) {
-            this.container.innerHTML = '<p class="empty-message">No cross-group connections defined</p>';
+            html += '<div class="connection-list"><p class="empty-message">No cross-group connections defined</p></div>';
+            this.container.innerHTML = html;
             return;
         }
         
-        let html = '<div class="connection-list">';
+        html += '<div class="connection-list">';
         
         this.connections.forEach((conn, index) => {
             html += `
