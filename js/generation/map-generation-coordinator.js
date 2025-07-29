@@ -101,7 +101,7 @@ export class MapGenerationCoordinator {
             const result = this.mapGenerator.generateMapWithGroups(rooms, mapConfig);
             const svg = result.svg;
             this.currentGroups = result.groups;
-            this.coordinateManager.applyPendingGroupData(this.currentGroups);
+            this.applyPendingGroupData();
             
             // Save coordinates
             this.coordinateManager.saveCurrentCoordinates();
