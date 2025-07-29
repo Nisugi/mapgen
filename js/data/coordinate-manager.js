@@ -1,9 +1,9 @@
 // Coordinate Manager - handles coordinate saving and loading operations
 export class CoordinateManager {
-    constructor(coordinateStorage, roomSelector, uiManager) {
+    constructor(coordinateStorage, roomSelector, panelManager) {
         this.coordinateStorage = coordinateStorage;
         this.roomSelector = roomSelector;
-        this.uiManager = uiManager;
+        this.panelManager = panelManager;
         this.mapdbVersion = null;
     }
 
@@ -19,14 +19,14 @@ export class CoordinateManager {
             console.log('Loading saved coordinates for', mapId);
             
             // Load data into UI panels
-            const groupData = this.uiManager.panels.groupPositioning.getGroupData();
+            const groupData = this.panelManager.panels.groupPositioning.getGroupData();
             groupData.offsets = new Map(savedCoords.groupOffsets || []);
             groupData.names = new Map(savedCoords.groupNames || []);
             groupData.labelOffsets = new Map(savedCoords.groupLabelOffsets || []);
             
-            this.uiManager.panels.crossConnections.setConnections(savedCoords.crossGroupConnections || []);
-            this.uiManager.panels.customLabels.setLabels(savedCoords.customLabels || []);
-            this.uiManager.panels.customTextBoxes.setTextBoxes(savedCoords.customTextBoxes || []);
+            this.panelManager.panels.crossConnections.setConnections(savedCoords.crossGroupConnections || []);
+            this.panelManager.panels.customLabels.setLabels(savedCoords.customLabels || []);
+            this.panelManager.panels.customTextBoxes.setTextBoxes(savedCoords.customTextBoxes || []);
             
             return true;
         }
@@ -35,7 +35,7 @@ export class CoordinateManager {
         if (window.app.pendingGroupData) {
             console.log('Applying pending group data from config import');
             const gp = window.app.pendingGroupData;
-            const groupData = this.uiManager.panels.groupPositioning.getGroupData();
+            const groupData = this.panelManager.panels.groupPositioning.getGroupData();
            
             if (gp.offsets) {
                 groupData.offsets = new Map(gp.offsets);
@@ -47,18 +47,18 @@ export class CoordinateManager {
                 groupData.labelOffsets = new Map(gp.labelOffsets);
             }
             if (gp.labelBold) {
-                this.uiManager.panels.groupPositioning.groupLabelBold = new Map(gp.labelBold);
+                this.panelManager.panels.groupPositioning.groupLabelBold = new Map(gp.labelBold);
             }
            
             // Apply other pending data
             if (window.app.pendingCrossConnections) {
-                this.uiManager.panels.crossConnections.setConnections(window.app.pendingCrossConnections);
+                this.panelManager.panels.crossConnections.setConnections(window.app.pendingCrossConnections);
             }
             if (window.app.pendingCustomLabels) {
-                this.uiManager.panels.customLabels.setLabels(window.app.pendingCustomLabels);
+                this.panelManager.panels.customLabels.setLabels(window.app.pendingCustomLabels);
             }
             if (window.app.pendingCustomTextBoxes) {
-                this.uiManager.panels.customTextBoxes.setTextBoxes(window.app.pendingCustomTextBoxes);
+                this.panelManager.panels.customTextBoxes.setTextBoxes(window.app.pendingCustomTextBoxes);
             }
            
             // Clear pending data
@@ -68,10 +68,10 @@ export class CoordinateManager {
             delete window.app.pendingCustomTextBoxes;
 
             // Force UI update to show the applied data
-            this.uiManager.panels.groupPositioning.update();
-            this.uiManager.panels.crossConnections.update();
-            this.uiManager.panels.customLabels.update();
-            this.uiManager.panels.customTextBoxes.update();
+            this.panelManager.panels.groupPositioning.update();
+            this.panelManager.panels.crossConnections.update();
+            this.panelManager.panels.customLabels.update();
+            this.panelManager.panels.customTextBoxes.update();
            
             return true;
        }
@@ -101,7 +101,7 @@ export class CoordinateManager {
     applyPendingGroupData(currentGroups) {
         if (window.app.pendingGroupData) {
             const gp = window.app.pendingGroupData;
-            const groupData = this.uiManager.panels.groupPositioning.getGroupData();
+            const groupData = this.panelManager.panels.groupPositioning.getGroupData();
             
             // Set the current groups so the UI knows about them
             groupData.groups = currentGroups;
