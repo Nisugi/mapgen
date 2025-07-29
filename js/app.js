@@ -637,6 +637,7 @@ class MapGenApp {
             // Update button
             button.textContent = 'Close';
             button.onclick = () => modal.remove();
+            button.disabled = false;
             
         } catch (error) {
             console.error('Load failed:', error);

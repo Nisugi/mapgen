@@ -39,13 +39,12 @@ export class SVGRenderer {
             svg += this.renderGroupLabels(config.groups, offsetX, offsetY, edgeLength, positions, config);
         }
         
-        // Draw regular connections
+        // Draw all connection types if enabled
         if (config.showConnections) {
+            // Draw regular connections
             svg += this.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
-        }
-        
-        // Draw cross-group connection LINES ONLY (no terminals)
-        if (config.showConnections) {
+            
+            // Draw cross-group connection LINES ONLY (no terminals)
             svg += this.renderCrossGroupConnectionLines(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         }
         
@@ -62,7 +61,7 @@ export class SVGRenderer {
         // Draw rooms
         svg += this.renderRooms(rooms, positions, offsetX, offsetY, edgeLength, roomSize, roomShape, strokeWidth, config);
         
-        // Draw cross-group connection TERMINALS ONLY (on top of rooms)
+        // Draw cross-group connection TERMINALS ONLY (on top of rooms) if connections enabled
         if (config.showConnections) {
             svg += this.renderCrossGroupConnectionTerminals(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         }
@@ -337,14 +336,6 @@ export class SVGRenderer {
         }
         
         svg += '</g>';
-        return svg;
-    }
-
-    renderConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
-        let svg = '';
-        // Only render regular connections here
-        // Cross-group connections are now handled separately in createSVG
-        svg += this.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         return svg;
     }
 

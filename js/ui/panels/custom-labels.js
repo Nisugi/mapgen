@@ -85,6 +85,11 @@ export class CustomLabelsPanel {
                                        value="${label.y}" min="-1000" max="1000">
                             </div>
                             <div class="control-group">
+                                <label>Rotation:</label>
+                                <input type="number" class="label-rotation" data-index="${index}" 
+                                       value="${label.rotation || 0}" min="-180" max="180">
+                            </div>
+                            <div class="control-group">
                                 <label>Size:</label>
                                 <input type="number" class="label-size" data-index="${index}" 
                                        value="${label.fontSize}" min="8" max="48">
@@ -163,6 +168,7 @@ export class CustomLabelsPanel {
         this.setupNumberInputs('.label-x', 'x');
         this.setupNumberInputs('.label-y', 'y');
         this.setupNumberInputs('.label-size', 'fontSize');
+        this.setupNumberInputs('.label-rotation', 'rotation');
 
         // Font controls
         this.container.querySelectorAll('.label-font').forEach(select => {
