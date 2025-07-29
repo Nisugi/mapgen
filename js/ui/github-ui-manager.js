@@ -361,28 +361,21 @@ export class GitHubUIManager {
                 try {
                     const configData = JSON.parse(results.config.content);
                     this.app.exportManager.configExporter.applyConfig(configData, this.app.panelManager, this.app.config);
-                    // IMPORTANT: Room selection may have changed, so save positioning data 
-                    // under the NEW map identifier
+                    
+                    // Store ALL UI data as pending for later application
                     if (configData.groupPositioning) {
-                        // Wait for room selection to be processed, then save coordinates
-                        setTimeout(() => {
-                            const mapId = this.app.roomSelector.getCurrentMapIdentifier();
-                            const coordData = {
-                                mapId: mapId,
-                                version: this.app.mapdbVersion,
-                                groupOffsets: configData.groupPositioning.offsets || [],
-                                groupNames: configData.groupPositioning.names || [],
-                                groupLabelOffsets: configData.groupPositioning.labelOffsets || [],
-                                crossGroupConnections: configData.crossGroupConnections || [],
-                                customLabels: configData.customLabels || [],
-                                customTextBoxes: configData.customTextBoxes || [],
-                                created: new Date().toISOString()
-                            };
-                            
-                            this.app.coordinateStorage.saveCoordinates(mapId, this.app.mapdbVersion, coordData);
-                            console.log('Saved GitHub positioning data for new map ID:', mapId);
-                        }, 100);
+                        window.app.pendingGroupData = configData.groupPositioning;
                     }
+                    if (configData.crossGroupConnections) {
+                        window.app.pendingCrossConnections = configData.crossGroupConnections;
+                    }
+                    if (configData.customLabels) {
+                        window.app.pendingCustomLabels = configData.customLabels;
+                    }
+                    if (configData.customTextBoxes) {
+                        window.app.pendingCustomTextBoxes = configData.customTextBoxes;
+                    }
+                    
                     loadedCount++;
                     messages.push('<p style="color: green;">✓ Configuration loaded</p>');
                     

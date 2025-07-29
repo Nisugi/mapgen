@@ -53,7 +53,7 @@ export class MapGenerationCoordinator {
             const result = this.mapGenerator.generateMapWithGroups(rooms, mapConfig);
             const svg = result.svg;
             this.currentGroups = result.groups;
-            this.coordinateManager.applyPendingGroupData(this.currentGroups);
+            this.applyPendingGroupData();
             
             // Save coordinates
             this.coordinateManager.saveCurrentCoordinates();
@@ -153,6 +153,51 @@ export class MapGenerationCoordinator {
             customLabels: uiState.customLabels,
             customTextBoxes: uiState.customTextBoxes
         };
+    }
+
+    applyPendingGroupData() {
+        if (window.app.pendingGroupData) {
+            const gp = window.app.pendingGroupData;
+            const groupPanel = this.panelManager.panels.groupPositioning;
+            
+            // Set the current groups so the UI knows about them
+            groupPanel.currentGroups = this.currentGroups;
+            
+            if (gp.offsets) {
+                groupPanel.groupOffsets = new Map(gp.offsets);
+            }
+            if (gp.names) {
+                groupPanel.groupNames = new Map(gp.names);
+            }
+            if (gp.labelOffsets) {
+                groupPanel.groupLabelOffsets = new Map(gp.labelOffsets);
+            }
+            if (gp.labelBold) {
+                groupPanel.groupLabelBold = new Map(gp.labelBold);
+            }
+            
+            // Force UI update
+            groupPanel.update();
+            
+            console.log('Applied pending group data after group creation');
+        }
+        
+        // Apply other pending data
+        if (window.app.pendingCrossConnections) {
+            this.panelManager.panels.crossConnections.setConnections(window.app.pendingCrossConnections);
+            delete window.app.pendingCrossConnections;
+        }
+        if (window.app.pendingCustomLabels) {
+            this.panelManager.panels.customLabels.setLabels(window.app.pendingCustomLabels);
+            delete window.app.pendingCustomLabels;
+        }
+        if (window.app.pendingCustomTextBoxes) {
+            this.panelManager.panels.customTextBoxes.setTextBoxes(window.app.pendingCustomTextBoxes);
+            delete window.app.pendingCustomTextBoxes;
+        }
+        
+        // Clear main pending data
+        delete window.app.pendingGroupData;
     }
 
     // Expose coordinate manager methods for backward compatibility
