@@ -154,26 +154,46 @@ export class MapGeneratorManager {
     applyPendingGroupData() {
         if (window.app.pendingGroupData) {
             const gp = window.app.pendingGroupData;
-            const groupData = this.uiManager.panels.groupPositioning.getGroupData();
+            const groupPanel = this.uiManager.panels.groupPositioning;
             
             // Set the current groups so the UI knows about them
-            groupData.groups = this.currentGroups;
+            groupPanel.currentGroups = this.currentGroups;
             
             if (gp.offsets) {
-                groupData.offsets = new Map(gp.offsets);
+                groupPanel.groupOffsets = new Map(gp.offsets);
             }
             if (gp.names) {
-                groupData.names = new Map(gp.names);
+                groupPanel.groupNames = new Map(gp.names);
             }
             if (gp.labelOffsets) {
-                groupData.labelOffsets = new Map(gp.labelOffsets);
+                groupPanel.groupLabelOffsets = new Map(gp.labelOffsets);
             }
-           
-            // Clear pending data
-            delete window.app.pendingGroupData;
-           
+            if (gp.labelBold) {
+                groupPanel.groupLabelBold = new Map(gp.labelBold);
+            }
+            
+            // Force UI update
+            groupPanel.update();
+            
             console.log('Applied pending group data after group creation');
         }
+        
+        // Apply other pending data
+        if (window.app.pendingCrossConnections) {
+            this.uiManager.panels.crossConnections.setConnections(window.app.pendingCrossConnections);
+            delete window.app.pendingCrossConnections;
+        }
+        if (window.app.pendingCustomLabels) {
+            this.uiManager.panels.customLabels.setLabels(window.app.pendingCustomLabels);
+            delete window.app.pendingCustomLabels;
+        }
+        if (window.app.pendingCustomTextBoxes) {
+            this.uiManager.panels.customTextBoxes.setTextBoxes(window.app.pendingCustomTextBoxes);
+            delete window.app.pendingCustomTextBoxes;
+        }
+        
+        // Clear main pending data
+        delete window.app.pendingGroupData;
     }
 
     loadSavedCoordinates() {
@@ -196,50 +216,6 @@ export class MapGeneratorManager {
             return true;
         }
 
-        // Check for pending group data from config import
-        if (window.app.pendingGroupData) {
-            console.log('Applying pending group data from config import');
-            const gp = window.app.pendingGroupData;
-            const groupData = this.uiManager.panels.groupPositioning.getGroupData();
-           
-            if (gp.offsets) {
-                groupData.offsets = new Map(gp.offsets);
-            }
-            if (gp.names) {
-                groupData.names = new Map(gp.names);
-            }
-            if (gp.labelOffsets) {
-                groupData.labelOffsets = new Map(gp.labelOffsets);
-            }
-            if (gp.labelBold) {
-                this.uiManager.panels.groupPositioning.groupLabelBold = new Map(gp.labelBold);
-            }
-           
-            // Apply other pending data
-            if (window.app.pendingCrossConnections) {
-                this.uiManager.panels.crossConnections.setConnections(window.app.pendingCrossConnections);
-            }
-            if (window.app.pendingCustomLabels) {
-                this.uiManager.panels.customLabels.setLabels(window.app.pendingCustomLabels);
-            }
-            if (window.app.pendingCustomTextBoxes) {
-                this.uiManager.panels.customTextBoxes.setTextBoxes(window.app.pendingCustomTextBoxes);
-            }
-           
-            // Clear pending data
-            delete window.app.pendingGroupData;
-            delete window.app.pendingCrossConnections;
-            delete window.app.pendingCustomLabels;
-            delete window.app.pendingCustomTextBoxes;
-
-            // Force UI update to show the applied data
-            this.uiManager.panels.groupPositioning.update();
-            this.uiManager.panels.crossConnections.update();
-            this.uiManager.panels.customLabels.update();
-            this.uiManager.panels.customTextBoxes.update();
-           
-            return true;
-       }
         return false;
     }
 
