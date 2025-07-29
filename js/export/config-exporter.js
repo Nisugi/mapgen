@@ -275,23 +275,22 @@ export class ConfigExporter {
             if (checkbox) checkbox.checked = appConfig.useBackground;
         }
         
-        // Apply group positioning
+        // Store group positioning data for later application (after map generation)
         if (parsedConfig.groupPositioning) {
-            const gp = parsedConfig.groupPositioning;
-            const groupData = uiManager.panels.groupPositioning.getGroupData();
-            
-            if (gp.offsets) {
-                groupData.offsets = new Map(gp.offsets);
-            }
-            if (gp.names) {
-                groupData.names = new Map(gp.names);
-            }
-            if (gp.labelOffsets) {
-                groupData.labelOffsets = new Map(gp.labelOffsets);
-            }
-            if (gp.labelBold) {
-                uiManager.panels.groupPositioning.groupLabelBold = new Map(gp.labelBold);
-            }
+            window.app.pendingGroupData = parsedConfig.groupPositioning;
+        }
+
+        // Store other UI data for later application
+        if (parsedConfig.crossGroupConnections) {
+            window.app.pendingCrossConnections = parsedConfig.crossGroupConnections;
+        }
+        
+        if (parsedConfig.customLabels) {
+            window.app.pendingCustomLabels = parsedConfig.customLabels;
+        }
+        
+        if (parsedConfig.customTextBoxes) {
+            window.app.pendingCustomTextBoxes = parsedConfig.customTextBoxes;
         }
         
         // Apply cross-group connections

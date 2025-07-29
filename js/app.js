@@ -636,7 +636,8 @@ class MapGenApp {
             
             // Update button
             button.textContent = 'Close';
-            button.onclick = () => modal.remove();
+            button.removeAttribute('onclick');
+            button.addEventListener('click', () => modal.remove());
             button.disabled = false;
             
         } catch (error) {

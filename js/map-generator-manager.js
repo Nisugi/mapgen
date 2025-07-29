@@ -168,6 +168,45 @@ export class MapGeneratorManager {
             
             return true;
         }
+
+        // Check for pending group data from config import
+        if (window.app.pendingGroupData) {
+            console.log('Applying pending group data from config import');
+            const gp = window.app.pendingGroupData;
+            const groupData = this.uiManager.panels.groupPositioning.getGroupData();
+           
+            if (gp.offsets) {
+                groupData.offsets = new Map(gp.offsets);
+            }
+            if (gp.names) {
+                groupData.names = new Map(gp.names);
+            }
+            if (gp.labelOffsets) {
+                groupData.labelOffsets = new Map(gp.labelOffsets);
+            }
+            if (gp.labelBold) {
+                this.uiManager.panels.groupPositioning.groupLabelBold = new Map(gp.labelBold);
+            }
+           
+            // Apply other pending data
+            if (window.app.pendingCrossConnections) {
+                this.uiManager.panels.crossConnections.setConnections(window.app.pendingCrossConnections);
+            }
+            if (window.app.pendingCustomLabels) {
+                this.uiManager.panels.customLabels.setLabels(window.app.pendingCustomLabels);
+            }
+            if (window.app.pendingCustomTextBoxes) {
+                this.uiManager.panels.customTextBoxes.setTextBoxes(window.app.pendingCustomTextBoxes);
+            }
+           
+            // Clear pending data
+            delete window.app.pendingGroupData;
+            delete window.app.pendingCrossConnections;
+            delete window.app.pendingCustomLabels;
+            delete window.app.pendingCustomTextBoxes;
+           
+            return true;
+       }
         return false;
     }
 
