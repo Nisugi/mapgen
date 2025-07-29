@@ -120,6 +120,26 @@
                             </div>
                         </section>
 
+                        <!-- Tag Colors Panel -->
+                        <section class="panel">
+                            <h3>🏷️ Tag Colors</h3>
+                            <div class="form-group">
+                                <label for="tag-select">Add Tag Color:</label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <select id="tag-select" style="flex: 1;">
+                                        <option value="">Select a tag...</option>
+                                    </select>
+                                    <button type="button" id="add-tag-color" class="btn-small">Add</button>
+                                </div>
+                                <small>Tags shown are from currently selected rooms</small>
+                            </div>
+                            
+                            <!-- Tag Color List -->
+                            <div id="tag-colors-list" class="tag-colors">
+                                <!-- Tag color controls will be added here dynamically -->
+                            </div>
+                        </section>
+
                         <!-- Room Options Panel -->
                         <section class="panel">
                             <h3>🏠 Room Options</h3>
@@ -130,6 +150,7 @@
                                         <option value="circle">Circle</option>
                                         <option value="rectangle">Rectangle</option>
                                     </select>
+                                    <input type="color" id="room-default-color" value="#ffffff" style="width: 30px; height: 25px;">
                                 </div>
                                 <div class="compact-row">
                                     Size: <input type="range" id="room-size" min="8" max="25" value="15" style="width: 120px;">
@@ -139,32 +160,13 @@
                                     Border Width: <input type="range" id="room-border-width" min="1" max="5" value="1" style="width: 100px;">
                                     <span id="room-border-width-value">1px</span>
                                 </div>
-                                <div class="compact-row">
+                                <!-- <div class="compact-row">
                                     Default: <input type="color" id="room-default-color" value="#ffffff" style="width: 30px; height: 25px;">
-                                </div>
+                                </div> -->
                             </div>
                         </section>
 
-                        <!-- Edge Options Panel -->
-                        <section class="panel">
-                            <h3>🔗 Edge Options</h3>
-                            <div class="form-group">
-                                <div class="compact-row">
-                                    Length: <input type="range" id="edge-length" min="30" max="150" value="80" style="width: 120px;">
-                                    <span id="edge-length-value">80px</span>
-                                </div>
-                                <div class="compact-row">
-                                    Width: <input type="range" id="connection-width" min="1" max="5" value="2" style="width: 100px;">
-                                    <span id="connection-width-value">2px</span>
-                                </div>
-                                <div class="compact-row">
-                                    Default: <input type="color" id="connection-default-color" value="#666666" style="width: 30px; height: 25px;">
-                                </div>
-                                <div class="compact-row">
-                                    Vertical: <input type="color" id="connection-vertical-color" value="#999999" style="width: 30px; height: 25px;">
-                                </div>
-                            </div>
-                        </section>
+
 
                         <!-- Background Options Panel -->
                         <section class="panel">
@@ -187,26 +189,6 @@
                             </div>
                         </section>
 
-                        <!-- Tag Colors Panel -->
-                        <section class="panel">
-                            <h3>🏷️ Tag Colors</h3>
-                            <div class="form-group">
-                                <label for="tag-select">Add Tag Color:</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <select id="tag-select" style="flex: 1;">
-                                        <option value="">Select a tag...</option>
-                                    </select>
-                                    <button type="button" id="add-tag-color" class="btn-small">Add</button>
-                                </div>
-                                <small>Tags shown are from currently selected rooms</small>
-                            </div>
-                            
-                            <!-- Tag Color List -->
-                            <div id="tag-colors-list" class="tag-colors">
-                                <!-- Tag color controls will be added here dynamically -->
-                            </div>
-                        </section>
-
                         <!-- Display Options Panel -->
                         <section class="panel">
                             <h3>⚙️ Display & Output Options</h3>
@@ -221,6 +203,28 @@
                                 <label><input type="checkbox" id="show-cardinal-labels"> Show Cardinal Direction Labels</label>
                                 <label><input type="checkbox" id="show-connections" checked> Show Connections</label>
                                 <label><input type="checkbox" id="show-group-labels"> Show Group Labels</label>
+                            </div>
+                        </section>
+
+                        <!-- Edge Options Panel -->
+                        <section class="panel">
+                            <h3>🔗 Edge Options</h3>
+                            <div class="form-group">
+                                <div class="compact-row">
+                                    Length: <input type="range" id="edge-length" min="30" max="150" value="80" style="width: 120px;">
+                                    <span id="edge-length-value">80px</span>
+                                </div>
+                                <div class="compact-row">
+                                    Width: <input type="range" id="connection-width" min="1" max="5" value="2" style="width: 100px;">
+                                    <span id="connection-width-value">2px</span>
+                                </div>
+                                <div class="compact-row">
+                                    Default: <input type="color" id="connection-default-color" value="#666666" style="width: 30px; height: 25px;">
+                                    Vertical: <input type="color" id="connection-vertical-color" value="#999999" style="width: 30px; height: 25px;">
+                                </div>
+                                <!-- <div class="compact-row">
+                                    Vertical: <input type="color" id="connection-vertical-color" value="#999999" style="width: 30px; height: 25px;">
+                                </div> -->
                             </div>
                         </section>
 
