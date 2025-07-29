@@ -2,7 +2,7 @@
 import { TokenManager } from './auth/token-manager.js';
 import { MapRepository } from './storage/map-repository.js';
 import { eventBus, EVENTS } from '../utils/event-bus.js';
-import { updateGitHubStatus } from './ui/github-ui-manager.js';
+import { updateGitHubStatus } from '../ui/github-ui-manager.js';
 
 export class GitHubIntegration {
     constructor() {
