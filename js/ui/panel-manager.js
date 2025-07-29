@@ -9,6 +9,7 @@ import { CustomLabelsPanel } from './panels/custom-labels.js';
 import { CustomTextBoxesPanel } from './panels/custom-textboxes.js';
 import { UIStateManager } from './ui-state-manager.js';
 import { MainUIController } from './main-ui-controller.js';
+import { TabController } from './tab-controller.js';
 
 export class PanelManager {
     constructor(config, mapdbLoader, mapdb) {
@@ -31,6 +32,7 @@ export class PanelManager {
         // Initialize state manager and main UI controller
         this.uiStateManager = new UIStateManager(this.panels);
         this.mainUIController = new MainUIController();
+        this.tabController = new TabController();
     }
 
     init() {
@@ -39,6 +41,9 @@ export class PanelManager {
         
         // Initialize main UI controller
         this.mainUIController.init();
+
+        // Initialize tab controller
+        this.tabController.init();
     }
 
     // Delegate UI state methods to state manager

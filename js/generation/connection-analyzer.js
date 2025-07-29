@@ -128,8 +128,14 @@ export class ConnectionAnalyzer {
             return null; // Don't show labels for most stringprocs
         }
         
-        // Don't show labels for cardinal directions
+        // Check if we should show cardinal direction labels
+        const showCardinalLabels = window.app?.config?.options?.showCardinalLabels || false;
+
+        // Don't show labels for cardinal directions (unless option is enabled)
         if (this.cardinalDirections.has(waytoLower)) {
+            if (showCardinalLabels) {
+                return waytoLower; // Show the cardinal direction
+            }
             // Unless there's a dirto that differs
             if (room.dirto && room.dirto[targetId]) {
                 const dirto = room.dirto[targetId].toLowerCase().trim();

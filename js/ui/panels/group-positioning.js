@@ -89,9 +89,6 @@ export class GroupPositioningPanel {
         
         html += '</div>';
         html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.resetAll()">Reset All</button>';
-        html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.applyChanges()">Apply Changes</button>';
-        html += '<button class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">Export Coords</button>';
-        html += '<button class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">Import Coords</button>';
         
         this.container.innerHTML = html;
         this.attachEventListeners();

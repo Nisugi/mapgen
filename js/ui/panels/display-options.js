@@ -15,6 +15,7 @@ export class DisplayOptionsPanel {
         const checkboxIds = [
             'show-room-ids',
             'show-room-names',
+            'show-cardinal-labels',
             'show-labels',
             'show-connections',
             'show-group-labels'
@@ -43,6 +44,7 @@ export class DisplayOptionsPanel {
         const mapping = {
             'show-room-ids': 'showRoomIds',
             'show-room-names': 'showRoomNames',
+            'show-cardinal-labels': 'showCardinalLabels',
             'show-labels': 'showLabels',
             'show-connections': 'showConnections',
             'show-group-labels': 'showGroupLabels'

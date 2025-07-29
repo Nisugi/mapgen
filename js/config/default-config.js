@@ -16,6 +16,7 @@ export const DEFAULT_CONFIG = {
     options: {
         showRoomIds: true,
         showRoomNames: false,
+        showCardinalLabels: false,
         showLabels: true,
         showConnections: true,
         showGroupLabels: false
