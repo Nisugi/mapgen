@@ -644,6 +644,12 @@ class MapGenApp {
             
             if (loadedCount > 0) {
                 messages.push('<p style="color: green; font-weight: bold;">Map loaded! Click "Preview" or "Generate Map" to see it.</p>');
+                
+                // Check if group positioning data exists
+                if (configData.groupPositioning && configData.groupPositioning.offsets && configData.groupPositioning.offsets.length > 0) {
+                    messages.push('<p style="color: #1a73e8; font-style: italic;">ℹ️ Note: You may need to click Preview twice - first to generate groups, then to apply saved positions.</p>');
+                }
+                
                 statusDiv.innerHTML = messages.join('');
             }
             
