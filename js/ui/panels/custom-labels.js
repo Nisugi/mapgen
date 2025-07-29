@@ -59,12 +59,23 @@ export class CustomLabelsPanel {
     update() {
         if (!this.container) return;
         
+        let html = '<div class="custom-labels-header">';
+        html += `
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="custom-label-text" placeholder="Enter label text" style="flex: 1;">
+                <button type="button" id="add-custom-label" class="btn-small">Add Label</button>
+            </div>
+            <small>Coordinates are in grid units (multiply by edge length for pixels)</small>
+        `;
+        html += '</div>';
+
         if (this.labels.length === 0) {
-            this.container.innerHTML = '<p class="empty-message">No custom labels defined</p>';
+            html += '<div class="label-list"><p class="empty-message">No custom labels defined</p></div>';
+            this.container.innerHTML = html;
             return;
         }
         
-        let html = '<div class="label-list">';
+        html += '<div class="label-list">';
         
         this.labels.forEach((label, index) => {
             html += `

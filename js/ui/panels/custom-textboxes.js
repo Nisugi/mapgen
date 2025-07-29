@@ -65,12 +65,18 @@ export class CustomTextBoxesPanel {
     update() {
         if (!this.container) return;
         
+        let html = '<div class="custom-textboxes-header">';
+        html += '<button type="button" id="add-custom-textbox" class="btn-small">Add Text Box</button>';
+        html += '<small>Create rich text boxes with multiple formatting options</small>';
+        html += '</div>';
+
         if (this.textBoxes.length === 0) {
-            this.container.innerHTML = '<p class="empty-message">No custom text boxes defined</p>';
+            html += '<div class="textbox-list"><p class="empty-message">No custom text boxes defined</p></div>';
+            this.container.innerHTML = html;
             return;
         }
         
-        let html = '<div class="textbox-list">';
+        html += '<div class="textbox-list">';
         
         this.textBoxes.forEach((textBox, index) => {
             const previewText = textBox.content.map(c => c.text).join(' ').substring(0, 30) + '...';

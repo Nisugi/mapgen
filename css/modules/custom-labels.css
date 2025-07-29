@@ -1,5 +1,19 @@
+.custom-labels-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.custom-labels-header {
+    flex-shrink: 0;
+   margin-bottom: var(--spacing-md);
+}
+
 .label-list {
-    margin-top: var(--spacing-sm);
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+    padding-right: var(--spacing-xs); /* Space for scrollbar */
 }
 
 .label-item {
