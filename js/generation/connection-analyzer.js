@@ -5,7 +5,7 @@ export class ConnectionAnalyzer {
         this.cardinalDirections = new Set([
             'north', 'south', 'east', 'west',
             'northeast', 'northwest', 'southeast', 'southwest',
-            'up', 'down', 'out'
+            'up', 'down'
         ]);
     }
 
@@ -21,7 +21,7 @@ export class ConnectionAnalyzer {
                 return dirtoDirection;
             }
         } 
-                
+
         // Then check wayto for cardinal directions or simple commands
         if (room.wayto && room.wayto[targetId]) {
             const waytoCommand = room.wayto[targetId].toLowerCase().trim();
