@@ -32,7 +32,7 @@ export class GroupPositioningPanel {
         }
         
         let html = '<h4>Detected Groups:</h4>';
-        html += '<div class="group-list">';
+        html += '<div class="group-list" style="max-height: 60vh; overflow-y: auto;">';
         
         this.currentGroups.forEach((group, index) => {
             const offset = this.groupOffsets.get(index) || { x: 0, y: 0 };
@@ -63,7 +63,17 @@ export class GroupPositioningPanel {
                             <input type="number" class="offset-number y-offset-number" data-group="${index}"
                                    min="-100" max="100" value="${offset.y}">
                         </div>
-                        <h5>Label Position</h5>
+                        <div class="label-position-header">
+                            <h5>Label Position</h5>
+                            <div class="label-format-controls">
+                                <label><input type="checkbox" class="label-bold" data-group="${index}" 
+                                        ${this.groupLabelBold.get(index) ? 'checked' : ''}> B</label>
+                                <label><input type="checkbox" class="label-italic" data-group="${index}" 
+                                        ${this.groupLabelItalic?.get(index) ? 'checked' : ''}> I</label>
+                                <label><input type="checkbox" class="label-underline" data-group="${index}" 
+                                        ${this.groupLabelUnderline?.get(index) ? 'checked' : ''}> U</label>
+                            </div>
+                        </div>
                         <div class="offset-control">
                             <label>Label X:</label>
                             <input type="range" class="label-x-offset" data-group="${index}" 
@@ -78,17 +88,20 @@ export class GroupPositioningPanel {
                             <input type="number" class="offset-number label-y-offset-number" data-group="${index}"
                                    min="-50" max="50" value="${labelOffset.y}">
                         </div>
-                        <div class="offset-control">
-                            <label><input type="checkbox" class="label-bold" data-group="${index}" 
-                                    ${this.groupLabelBold.get(index) ? 'checked' : ''}> Bold Label</label>
-                        </div>
                     </div>
                 </div>
             `;
         });
         
         html += '</div>';
+        html += '<div class="group-controls">';
+        html += '<div class="group-actions">';
+        html += '<button class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">📤 Export Settings</button>';
+        html += '<button class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">📥 Import Settings</button>';
         html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.resetAll()">Reset All</button>';
+        html += '</div>';
+        html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.applyChanges()">Apply Changes</button>';
+        html += '</div>';
         
         this.container.innerHTML = html;
         this.attachEventListeners();
@@ -115,6 +128,32 @@ export class GroupPositioningPanel {
                 eventBus.emit(EVENTS.GROUP_LABEL_BOLD_CHANGED, {
                     groupIndex,
                     bold: checkbox.checked
+                });
+            });
+        });
+
+        // Italic checkboxes
+        this.container.querySelectorAll('.label-italic').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const groupIndex = parseInt(checkbox.dataset.group);
+                if (!this.groupLabelItalic) this.groupLabelItalic = new Map();
+                this.groupLabelItalic.set(groupIndex, checkbox.checked);
+                eventBus.emit(EVENTS.GROUP_LABEL_ITALIC_CHANGED, {
+                    groupIndex,
+                    italic: checkbox.checked
+                });
+            });
+        });
+
+        // Underline checkboxes
+        this.container.querySelectorAll('.label-underline').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const groupIndex = parseInt(checkbox.dataset.group);
+                if (!this.groupLabelUnderline) this.groupLabelUnderline = new Map();
+                this.groupLabelUnderline.set(groupIndex, checkbox.checked);
+                eventBus.emit(EVENTS.GROUP_LABEL_UNDERLINE_CHANGED, {
+                    groupIndex,
+                    underline: checkbox.checked
                 });
             });
         });
@@ -208,6 +247,9 @@ export class GroupPositioningPanel {
         this.groupOffsets.clear();
         this.groupNames.clear();
         this.groupLabelOffsets.clear();
+        if (this.groupLabelBold) this.groupLabelBold.clear();
+        if (this.groupLabelItalic) this.groupLabelItalic.clear();
+        if (this.groupLabelUnderline) this.groupLabelUnderline.clear();
         this.update();
         eventBus.emit(EVENTS.GROUP_OFFSET_CHANGED, { reset: true });
     }
@@ -222,7 +264,9 @@ export class GroupPositioningPanel {
             offsets: this.groupOffsets,
             names: this.groupNames,
             labelOffsets: this.groupLabelOffsets,
-            labelBold: this.groupLabelBold
+            labelBold: this.groupLabelBold,
+            labelItalic: this.groupLabelItalic,
+            labelUnderline: this.groupLabelUnderline
         };
     }
 
@@ -231,6 +275,9 @@ export class GroupPositioningPanel {
         if (data.offsets) this.groupOffsets = new Map(data.offsets);
         if (data.names) this.groupNames = new Map(data.names);
         if (data.labelOffsets) this.groupLabelOffsets = new Map(data.labelOffsets);
+        if (data.labelBold) this.groupLabelBold = new Map(data.labelBold);
+        if (data.labelItalic) this.groupLabelItalic = new Map(data.labelItalic);
+        if (data.labelUnderline) this.groupLabelUnderline = new Map(data.labelUnderline);
         this.update();
     }
 }

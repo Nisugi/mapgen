@@ -82,97 +82,48 @@ export class CustomTextBoxesPanel {
                         <button class="btn-small edit-textbox" data-index="${index}">Edit</button>
                         <button class="btn-small remove-textbox" data-index="${index}">Remove</button>
                     </div>
-                    <div class="textbox-controls">
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label>X:</label>
-                                <input type="number" class="textbox-x" data-index="${index}" 
-                                       value="${textBox.x}" min="-1000" max="5000">
-                            </div>
-                            <div class="control-group">
-                                <label>Y:</label>
-                                <input type="number" class="textbox-y" data-index="${index}" 
-                                       value="${textBox.y}" min="-1000" max="5000">
-                            </div>
-                            <div class="control-group">
-                                <label>Width:</label>
-                                <input type="number" class="textbox-width" data-index="${index}" 
-                                       value="${textBox.width}" min="50" max="500">
-                            </div>
-                            <div class="control-group">
-                                <label>Height:</label>
-                                <input type="number" class="textbox-height" data-index="${index}" 
-                                       value="${textBox.height}" min="30" max="500">
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label>Background:</label>
-                                <input type="color" class="textbox-bg-color" data-index="${index}" 
-                                       value="${textBox.backgroundColor}">
-                            </div>
-                            <div class="control-group">
-                                <label>Border:</label>
-                                <input type="color" class="textbox-border-color" data-index="${index}" 
-                                       value="${textBox.borderColor}">
-                            </div>
-                            <div class="control-group">
-                                <label>Border Width:</label>
-                                <input type="number" class="textbox-border-width" data-index="${index}" 
-                                       value="${textBox.borderWidth}" min="0" max="10">
-                            </div>
-                            <div class="control-group">
-                                <label>Border Style:</label>
-                                <select class="textbox-border-style" data-index="${index}">
-                                    <option value="solid" ${textBox.borderStyle === 'solid' ? 'selected' : ''}>Solid</option>
-                                    <option value="dashed" ${textBox.borderStyle === 'dashed' ? 'selected' : ''}>Dashed</option>
-                                    <option value="dotted" ${textBox.borderStyle === 'dotted' ? 'selected' : ''}>Dotted</option>
-                                    <option value="double" ${textBox.borderStyle === 'double' ? 'selected' : ''}>Double</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label>Corner Radius:</label>
-                                <input type="number" class="textbox-border-radius" data-index="${index}" 
-                                       value="${textBox.borderRadius}" min="0" max="50">
-                            </div>
-                            <div class="control-group">
-                                <label>Padding:</label>
-                                <input type="number" class="textbox-padding" data-index="${index}" 
-                                       value="${textBox.padding}" min="0" max="50">
-                            </div>
-                            <div class="control-group">
-                                <label>Opacity:</label>
-                                <input type="range" class="textbox-opacity" data-index="${index}" 
-                                       value="${textBox.opacity}" min="0" max="1" step="0.1">
-                                <span>${textBox.opacity}</span>
-                            </div>
-                            <div class="control-group">
-                                <label>Rotation:</label>
-                                <input type="number" class="textbox-rotation" data-index="${index}" 
-                                       value="${textBox.rotation}" min="-180" max="180">
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label>Text Align:</label>
-                                <select class="textbox-text-align" data-index="${index}">
-                                    <option value="left" ${textBox.textAlign === 'left' ? 'selected' : ''}>Left</option>
-                                    <option value="center" ${textBox.textAlign === 'center' ? 'selected' : ''}>Center</option>
-                                    <option value="right" ${textBox.textAlign === 'right' ? 'selected' : ''}>Right</option>
-                                    <option value="justify" ${textBox.textAlign === 'justify' ? 'selected' : ''}>Justify</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label>Vertical Align:</label>
-                                <select class="textbox-vertical-align" data-index="${index}">
-                                    <option value="top" ${textBox.verticalAlign === 'top' ? 'selected' : ''}>Top</option>
-                                    <option value="middle" ${textBox.verticalAlign === 'middle' ? 'selected' : ''}>Middle</option>
-                                    <option value="bottom" ${textBox.verticalAlign === 'bottom' ? 'selected' : ''}>Bottom</option>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="textbox-position">
+                        X: <input type="number" class="textbox-x" data-index="${index}" 
+                                  value="${textBox.x}" min="-1000" max="5000" style="width: 70px;">
+                        Y: <input type="number" class="textbox-y" data-index="${index}" 
+                                  value="${textBox.y}" min="-1000" max="5000" style="width: 70px;">
+                        W: <input type="number" class="textbox-width" data-index="${index}" 
+                                  value="${textBox.width}" min="50" max="500" style="width: 70px;">
+                        H: <input type="number" class="textbox-height" data-index="${index}" 
+                                  value="${textBox.height}" min="30" max="500" style="width: 70px;">
+                        Opacity: <input type="number" class="textbox-opacity" data-index="${index}" 
+                                        value="${textBox.opacity}" min="0" max="1" step="0.1" style="width: 60px;">
+                    </div>
+                    <div class="textbox-style">
+                        Style: <select class="textbox-border-style" data-index="${index}" style="width: 80px;">
+                            <option value="solid" ${textBox.borderStyle === 'solid' ? 'selected' : ''}>Solid</option>
+                            <option value="dashed" ${textBox.borderStyle === 'dashed' ? 'selected' : ''}>Dashed</option>
+                            <option value="dotted" ${textBox.borderStyle === 'dotted' ? 'selected' : ''}>Dotted</option>
+                            <option value="double" ${textBox.borderStyle === 'double' ? 'selected' : ''}>Double</option>
+                        </select>
+                        Width: <input type="number" class="textbox-border-width" data-index="${index}" 
+                                      value="${textBox.borderWidth}" min="0" max="10" style="width: 50px;">
+                        Corner: <input type="number" class="textbox-border-radius" data-index="${index}" 
+                                       value="${textBox.borderRadius}" min="0" max="50" style="width: 50px;">
+                        Padding: <input type="number" class="textbox-padding" data-index="${index}" 
+                                        value="${textBox.padding}" min="0" max="50" style="width: 50px;">
+                    </div>
+                    <div class="textbox-colors">
+                        Background: <input type="color" class="textbox-bg-color" data-index="${index}" 
+                                           value="${textBox.backgroundColor}" style="width: 30px; height: 25px;">
+                        Border: <input type="color" class="textbox-border-color" data-index="${index}" 
+                                       value="${textBox.borderColor}" style="width: 30px; height: 25px;">
+                        Align: <select class="textbox-text-align" data-index="${index}" style="width: 80px;">
+                            <option value="left" ${textBox.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                            <option value="center" ${textBox.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                            <option value="right" ${textBox.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                            <option value="justify" ${textBox.textAlign === 'justify' ? 'selected' : ''}>Justify</option>
+                        </select>
+                        Vert-Align: <select class="textbox-vertical-align" data-index="${index}" style="width: 80px;">
+                            <option value="top" ${textBox.verticalAlign === 'top' ? 'selected' : ''}>Top</option>
+                            <option value="middle" ${textBox.verticalAlign === 'middle' ? 'selected' : ''}>Middle</option>
+                            <option value="bottom" ${textBox.verticalAlign === 'bottom' ? 'selected' : ''}>Bottom</option>
+                        </select>
                     </div>
                 </div>
             `;
@@ -212,7 +163,7 @@ export class CustomTextBoxesPanel {
         this.setupNumberInputs('.textbox-border-width', 'borderWidth');
         this.setupNumberInputs('.textbox-border-radius', 'borderRadius');
         this.setupNumberInputs('.textbox-padding', 'padding');
-        this.setupNumberInputs('.textbox-rotation', 'rotation');
+        this.setupNumberInputs('.textbox-opacity', 'opacity');
 
         // Color controls
         this.container.querySelectorAll('.textbox-bg-color').forEach(input => {
@@ -236,16 +187,6 @@ export class CustomTextBoxesPanel {
             select.addEventListener('change', () => {
                 const index = parseInt(select.dataset.index);
                 this.textBoxes[index].borderStyle = select.value;
-                this.emitUpdate(index);
-            });
-        });
-
-        // Opacity controls
-        this.container.querySelectorAll('.textbox-opacity').forEach(input => {
-            input.addEventListener('input', () => {
-                const index = parseInt(input.dataset.index);
-                this.textBoxes[index].opacity = parseFloat(input.value);
-                input.nextElementSibling.textContent = input.value;
                 this.emitUpdate(index);
             });
         });

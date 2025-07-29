@@ -13,7 +13,7 @@ export class FontSettingsPanel {
 
     setupLabelFonts() {
         // Label font size
-        this.setupFontSlider('label-font-size', 'label-font-size-value', (value) => {
+        this.setupSlider('label-font-size', 'label-font-size-value', 'px', (value) => {
             this.config.fonts.labels.size = parseInt(value);
             this.emitConfigChange();
         });
@@ -35,11 +35,23 @@ export class FontSettingsPanel {
             this.config.fonts.labels.bold = checked;
             this.emitConfigChange();
         });
+
+        // Label font italic
+        this.setupCheckbox('label-font-italic', (checked) => {
+            this.config.fonts.labels.italic = checked;
+            this.emitConfigChange();
+        });
+
+        // Label font underline
+        this.setupCheckbox('label-font-underline', (checked) => {
+            this.config.fonts.labels.underline = checked;
+            this.emitConfigChange();
+        });
     }
 
     setupRoomFonts() {
         // Room font size
-        this.setupFontSlider('room-font-size', 'room-font-size-value', (value) => {
+        this.setupSlider('room-font-size', 'room-font-size-value', 'px', (value) => {
             this.config.fonts.rooms.size = parseInt(value);
             this.emitConfigChange();
         });
@@ -61,15 +73,27 @@ export class FontSettingsPanel {
             this.config.fonts.rooms.bold = checked;
             this.emitConfigChange();
         });
+
+        // Room font italic
+        this.setupCheckbox('room-font-italic', (checked) => {
+            this.config.fonts.rooms.italic = checked;
+            this.emitConfigChange();
+        });
+
+        // Room font underline
+        this.setupCheckbox('room-font-underline', (checked) => {
+            this.config.fonts.rooms.underline = checked;
+            this.emitConfigChange();
+        });
     }
 
-    setupFontSlider(sliderId, valueId, onChange) {
+    setupSlider(sliderId, valueId, unit, onChange) {
         const slider = document.getElementById(sliderId);
         const valueSpan = document.getElementById(valueId);
         
         if (slider && valueSpan) {
             slider.addEventListener('input', (e) => {
-                valueSpan.textContent = e.target.value + 'px';
+                valueSpan.textContent = e.target.value + unit;
                 onChange(e.target.value);
             });
         }
@@ -144,6 +168,16 @@ export class FontSettingsPanel {
             const checkbox = document.getElementById('label-font-bold');
             if (checkbox) checkbox.checked = settings.bold;
         }
+
+        if (settings.italic !== undefined) {
+            const checkbox = document.getElementById('label-font-italic');
+            if (checkbox) checkbox.checked = settings.italic;
+        }
+
+        if (settings.underline !== undefined) {
+            const checkbox = document.getElementById('label-font-underline');
+            if (checkbox) checkbox.checked = settings.underline;
+        }
     }
 
     updateRoomFontUI(settings) {
@@ -167,6 +201,16 @@ export class FontSettingsPanel {
         if (settings.bold !== undefined) {
             const checkbox = document.getElementById('room-font-bold');
             if (checkbox) checkbox.checked = settings.bold;
+        }
+
+        if (settings.italic !== undefined) {
+            const checkbox = document.getElementById('room-font-italic');
+            if (checkbox) checkbox.checked = settings.italic;
+        }
+        
+        if (settings.underline !== undefined) {
+            const checkbox = document.getElementById('room-font-underline');
+            if (checkbox) checkbox.checked = settings.underline;
         }
     }
 }

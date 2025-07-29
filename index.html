@@ -37,14 +37,6 @@
                 <!-- Setup Tab -->
                 <div id="setup-tab" class="tab-panel active">
                     <div class="panel-grid">
-                        <!-- Output Settings Panel -->
-                        <section class="panel">
-                            <h3>📁 Output Settings</h3>
-                            <div class="form-group">
-                                <label for="output-name">Map Name:</label>
-                                <input type="text" id="output-name" value="Enter map name" placeholder="Enter map name">
-                            </div>
-                        </section>
 
                         <!-- GitHub Integration Panel -->
                         <section class="panel">
@@ -115,80 +107,89 @@
                     <div class="panel-grid">
                         <!-- Theme & Colors Panel -->
                         <section class="panel">
-                            <h3>🎨 Theme & Colors</h3>
-                            
-                            <!-- Map Appearance -->
-                            <div class="form-group">
-                                <label for="edge-length">Edge Length:</label>
-                                <input type="range" id="edge-length" min="30" max="150" value="80">
-                                <span id="edge-length-value">80px</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="room-shape">Room Shape:</label>
-                                <select id="room-shape">
-                                    <option value="square" selected>Square</option>
-                                    <option value="circle">Circle</option>
-                                    <option value="rectangle">Rectangle</option>
+                            <h3>🎨 Theme Presets</h3>
+                                <div class="form-group">
+                                    <label for="theme-preset">Quick Themes:</label>
+                                    <select id="theme-preset">
+                                    <option value="">Custom</option>
+                                    <option value="maritime">Maritime</option>
+                                    <option value="dungeon">Dungeon</option>
+                                    <option value="forest">Forest</option>
+                                    <option value="high-contrast">High Contrast</option>
                                 </select>
-                                <small>Note: Room shape affects coordinate calculations</small>
                             </div>
-                            
+                        </section>
+
+                        <!-- Room Options Panel -->
+                        <section class="panel">
+                            <h3>🏠 Room Options</h3>
                             <div class="form-group">
-                                <label for="room-size">Room Size:</label>
-                                <input type="range" id="room-size" min="8" max="25" value="15">
-                                <span id="room-size-value">15px</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="stroke-width">Room Border Width:</label>
-                                <input type="range" id="stroke-width" min="1" max="5" value="1">
-                                <span id="stroke-width-value">1px</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="connection-width">Connection Width:</label>
-                                <input type="range" id="connection-width" min="1" max="5" value="2">
-                                <span id="connection-width-value">2px</span>
-                            </div>
-                            
-                            <!-- Default Colors -->
-                            <div class="form-group">
-                                <label>Default Colors:</label>
-                                <div class="color-grid">
-                                    <div class="color-input">
-                                        <label for="default-color">Default:</label>
-                                        <input type="color" id="default-color" value="#ffffff">
-                                    </div>
-                                    <div class="color-input">
-                                        <label for="background-color">Background:</label>
-                                        <input type="color" id="background-color" value="#f8f9fa">
-                                    </div>
-                                    <div class="color-input">
-                                        <label for="connection-color">Connections:</label>
-                                        <input type="color" id="connection-color" value="#666666">
-                                    </div>
-                                    <div class="color-input">
-                                        <label for="vertical-connection-color">Vertical Connections:</label>
-                                        <input type="color" id="vertical-connection-color" value="#999999">
-                                    </div>
+                                <div class="compact-row">
+                                    Shape: <select id="room-shape" style="width: 100px;">
+                                        <option value="square" selected>Square</option>
+                                        <option value="circle">Circle</option>
+                                        <option value="rectangle">Rectangle</option>
+                                    </select>
+                                </div>
+                                <div class="compact-row">
+                                    Size: <input type="range" id="room-size" min="8" max="25" value="15" style="width: 120px;">
+                                    <span id="room-size-value">15px</span>
+                                </div>
+                                <div class="compact-row">
+                                    Border Width: <input type="range" id="room-border-width" min="1" max="5" value="1" style="width: 100px;">
+                                    <span id="room-border-width-value">1px</span>
+                                </div>
+                                <div class="compact-row">
+                                    Default: <input type="color" id="room-default-color" value="#ffffff" style="width: 30px; height: 25px;">
                                 </div>
                             </div>
-                            
-                            <!-- Background Options -->
+                        </section>
+
+                        <!-- Edge Options Panel -->
+                        <section class="panel">
+                            <h3>🔗 Edge Options</h3>
                             <div class="form-group">
-                                <label>Background Options:</label>
+                                <div class="compact-row">
+                                    Length: <input type="range" id="edge-length" min="30" max="150" value="80" style="width: 120px;">
+                                    <span id="edge-length-value">80px</span>
+                                </div>
+                                <div class="compact-row">
+                                    Width: <input type="range" id="connection-width" min="1" max="5" value="2" style="width: 100px;">
+                                    <span id="connection-width-value">2px</span>
+                                </div>
+                                <div class="compact-row">
+                                    Default: <input type="color" id="connection-default-color" value="#666666" style="width: 30px; height: 25px;">
+                                </div>
+                                <div class="compact-row">
+                                    Vertical: <input type="color" id="connection-vertical-color" value="#999999" style="width: 30px; height: 25px;">
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Background Options Panel -->
+                        <section class="panel">
+                            <h3>🖼️ Background Options</h3>
+                            <div class="form-group">
                                 <div class="checkbox-group">
                                     <label><input type="checkbox" id="use-background" checked> Use Background</label>
                                 </div>
-                                <div style="margin-top: 10px;">
-                                    <label for="background-image">Background Image (optional):</label>
-                                    <input type="file" id="background-image" accept="image/*">
-                                    <button type="button" id="clear-background" class="btn-small" style="margin-top: 5px;">Clear Image</button>
+                                <div class="compact-row">
+                                    Background: <input type="color" id="background-color" value="#f8f9fa" style="width: 30px; height: 25px;">
+                                </div>
+                                <div class="compact-row">
+                                    <label for="background-image">Background Image:</label>
+                                    <input type="file" id="background-image" accept="image/*" style="width: 150px;">
+                                    <button type="button" id="clear-background" class="btn-small">Clear</button>
+                                </div>
+                                <div class="compact-row">
+                                    <small id="background-image-status">No image selected</small>
                                 </div>
                             </div>
-                            
-                            <!-- Tag-based Colors -->
+                        </section>
+
+                        <!-- Tag Colors Panel -->
+                        <section class="panel">
+                            <h3>🏷️ Tag Colors</h3>
                             <div class="form-group">
                                 <label for="tag-select">Add Tag Color:</label>
                                 <div style="display: flex; gap: 10px; align-items: center;">
@@ -204,23 +205,15 @@
                             <div id="tag-colors-list" class="tag-colors">
                                 <!-- Tag color controls will be added here dynamically -->
                             </div>
-                            
-                            <!-- Theme Presets -->
-                            <div class="form-group">
-                                <label for="theme-preset">Quick Themes:</label>
-                                <select id="theme-preset">
-                                    <option value="">Custom</option>
-                                    <option value="maritime">Maritime</option>
-                                    <option value="dungeon">Dungeon</option>
-                                    <option value="forest">Forest</option>
-                                    <option value="high-contrast">High Contrast</option>
-                                </select>
-                            </div>
                         </section>
 
                         <!-- Display Options Panel -->
                         <section class="panel">
-                            <h3>⚙️ Display Options</h3>
+                            <h3>⚙️ Display & Output Options</h3>
+                            <div class="form-group">
+                                <label for="output-name">Map Name:</label>
+                                <input type="text" id="output-name" value="Enter map name" placeholder="Enter map name">
+                            </div>
                             <div class="checkbox-group">
                                 <label><input type="checkbox" id="show-room-ids" checked> Show Room IDs</label>
                                 <label><input type="checkbox" id="show-room-names"> Show Room Names</label>
@@ -237,52 +230,46 @@
                             
                             <!-- Label Fonts -->
                             <h4>Connection Labels</h4>
-                            <div class="form-group">
-                                <label for="label-font-size">Size:</label>
-                                <input type="range" id="label-font-size" min="6" max="16" value="8">
+                            <div class="compact-row">
+                                Size: <input type="range" id="label-font-size" min="6" max="16" value="8" style="width: 100px;">
                                 <span id="label-font-size-value">8px</span>
                             </div>
-                            <div class="form-group">
-                                <label for="label-font-color">Color:</label>
-                                <input type="color" id="label-font-color" value="#444444">
-                            </div>
-                            <div class="form-group">
-                                <label for="label-font-family">Font:</label>
-                                <select id="label-font-family">
+                            <div class="compact-row">
+                                <select id="label-font-family" style="width: 120px;">
                                     <option value="Arial">Arial</option>
                                     <option value="Times New Roman">Times New Roman</option>
                                     <option value="Courier New">Courier New</option>
                                     <option value="Georgia">Georgia</option>
                                     <option value="Verdana">Verdana</option>
                                 </select>
+                                <input type="color" id="label-font-color" value="#444444" style="width: 30px; height: 25px;">
                             </div>
-                            <div class="form-group">
-                                <label><input type="checkbox" id="label-font-bold"> Bold</label>
+                            <div class="compact-row">
+                                <label><input type="checkbox" id="label-font-bold"> B</label>
+                                <label><input type="checkbox" id="label-font-italic"> I</label>
+                                <label><input type="checkbox" id="label-font-underline"> U</label>
                             </div>
                             
                             <!-- Room Fonts -->
                             <h4>Room Text</h4>
-                            <div class="form-group">
-                                <label for="room-font-size">Size:</label>
-                                <input type="range" id="room-font-size" min="8" max="20" value="10">
+                            <div class="compact-row">
+                                Size: <input type="range" id="room-font-size" min="8" max="20" value="10" style="width: 100px;">
                                 <span id="room-font-size-value">10px</span>
                             </div>
-                            <div class="form-group">
-                                <label for="room-font-color">Color:</label>
-                                <input type="color" id="room-font-color" value="#000000">
-                            </div>
-                            <div class="form-group">
-                                <label for="room-font-family">Font:</label>
-                                <select id="room-font-family">
+                            <div class="compact-row">
+                                <select id="room-font-family" style="width: 120px;">
                                     <option value="Arial">Arial</option>
                                     <option value="Times New Roman">Times New Roman</option>
                                     <option value="Courier New">Courier New</option>
                                     <option value="Georgia">Georgia</option>
                                     <option value="Verdana">Verdana</option>
                                 </select>
+                                <input type="color" id="room-font-color" value="#000000" style="width: 30px; height: 25px;">
                             </div>
-                            <div class="form-group">
-                                <label><input type="checkbox" id="room-font-bold"> Bold</label>
+                            <div class="compact-row">
+                                <label><input type="checkbox" id="room-font-bold"> B</label>
+                                <label><input type="checkbox" id="room-font-italic"> I</label>
+                                <label><input type="checkbox" id="room-font-underline"> U</label>
                             </div>
                         </section>
                     </div>

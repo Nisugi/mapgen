@@ -50,9 +50,14 @@ export class CrossConnectionsPanel {
             style: 'dashed',
             dashSpacing: '5,5',
             color: this.config.colors.connections,
-            showFromTerminal: false,
-            showToTerminal: true,
-            terminalStyle: 'arrow'
+            fromTerminal: {
+                show: false,
+                style: 'arrow'
+            },
+            toTerminal: {
+                show: true,
+                style: 'arrow'
+            }
         };
         
         this.connections.push(newConnection);
@@ -83,47 +88,38 @@ export class CrossConnectionsPanel {
                         <span>Room ${conn.fromId} → Room ${conn.toId}</span>
                         <button class="btn-small remove-connection" data-index="${index}">Remove</button>
                     </div>
-                    <div class="connection-controls">
-                        <div class="control-group">
-                            <label>Style:</label>
-                            <select class="conn-style" data-index="${index}">
+                    <div class="connection-terminals">
+                        <div class="terminal-row">
+                            <label><input type="checkbox" class="show-from-terminal" data-index="${index}" 
+                                    ${conn.fromTerminal?.show ? 'checked' : ''}> From</label>
+                            <select class="from-terminal-style" data-index="${index}" style="width: 80px;">
+                                <option value="arrow" ${conn.fromTerminal?.style === 'arrow' ? 'selected' : ''}>Arrow</option>
+                                <option value="dot" ${conn.fromTerminal?.style === 'dot' ? 'selected' : ''}>Dot</option>
+                                <option value="square" ${conn.fromTerminal?.style === 'square' ? 'selected' : ''}>Square</option>
+                                <option value="diamond" ${conn.fromTerminal?.style === 'diamond' ? 'selected' : ''}>Diamond</option>
+                                <option value="cross" ${conn.fromTerminal?.style === 'cross' ? 'selected' : ''}>Cross</option>
+                                <option value="circle" ${conn.fromTerminal?.style === 'circle' ? 'selected' : ''}>Circle</option>
+                            </select>
+                            <label><input type="checkbox" class="show-to-terminal" data-index="${index}" 
+                                    ${conn.toTerminal?.show ? 'checked' : ''}> To</label>
+                            <select class="to-terminal-style" data-index="${index}" style="width: 80px;">
+                                <option value="arrow" ${conn.toTerminal?.style === 'arrow' ? 'selected' : ''}>Arrow</option>
+                                <option value="dot" ${conn.toTerminal?.style === 'dot' ? 'selected' : ''}>Dot</option>
+                                <option value="square" ${conn.toTerminal?.style === 'square' ? 'selected' : ''}>Square</option>
+                                <option value="diamond" ${conn.toTerminal?.style === 'diamond' ? 'selected' : ''}>Diamond</option>
+                                <option value="cross" ${conn.toTerminal?.style === 'cross' ? 'selected' : ''}>Cross</option>
+                                <option value="circle" ${conn.toTerminal?.style === 'circle' ? 'selected' : ''}>Circle</option>
+                            </select>
+                        </div>
+                        <div class="connection-style">
+                            Style: <select class="conn-style" data-index="${index}" style="width: 80px;">
                                 <option value="dashed" ${conn.style === 'dashed' ? 'selected' : ''}>Dashed</option>
                                 <option value="dotted" ${conn.style === 'dotted' ? 'selected' : ''}>Dotted</option>
                             </select>
-                        </div>
-                        <div class="control-group">
-                            <label>Spacing:</label>
-                            <input type="text" class="conn-spacing" data-index="${index}" 
-                                   value="${conn.dashSpacing}" placeholder="5,5">
-                        </div>
-                        <div class="control-group">
-                            <label>Color:</label>
+                            Spacing: <input type="text" class="conn-spacing" data-index="${index}" 
+                                            value="${conn.dashSpacing}" placeholder="5,5" style="width: 60px;">
                             <input type="color" class="conn-color" data-index="${index}" 
-                                   value="${conn.color}">
-                        </div>
-                    </div>
-                    <div class="connection-terminals">
-                        <h5>Terminals</h5>
-                        <div class="terminal-controls">
-                            <div class="control-group">
-                                <label><input type="checkbox" class="show-from-terminal" data-index="${index}" 
-                                        ${conn.showFromTerminal ? 'checked' : ''}> From Terminal</label>
-                            </div>
-                            <div class="control-group">
-                                <label><input type="checkbox" class="show-to-terminal" data-index="${index}" 
-                                        ${conn.showToTerminal ? 'checked' : ''}> To Terminal</label>
-                            </div>
-                            <div class="control-group">
-                                <label>Style:</label>
-                                <select class="terminal-style" data-index="${index}">
-                                    <option value="arrow" ${conn.terminalStyle === 'arrow' ? 'selected' : ''}>Arrow</option>
-                                    <option value="dot" ${conn.terminalStyle === 'dot' ? 'selected' : ''}>Dot</option>
-                                    <option value="square" ${conn.terminalStyle === 'square' ? 'selected' : ''}>Square</option>
-                                    <option value="diamond" ${conn.terminalStyle === 'diamond' ? 'selected' : ''}>Diamond</option>
-                                    <option value="cross" ${conn.terminalStyle === 'cross' ? 'selected' : ''}>Cross</option>
-                                    <option value="circle" ${conn.terminalStyle === 'circle' ? 'selected' : ''}>Circle</option>
-                                </select>
-                            </div>
+                                   value="${conn.color}" style="width: 30px; height: 25px;">
                         </div>
                     </div>                    
                 </div>
@@ -200,7 +196,10 @@ export class CrossConnectionsPanel {
         this.container.querySelectorAll('.show-from-terminal').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 const index = parseInt(checkbox.dataset.index);
-                this.connections[index].showFromTerminal = checkbox.checked;
+                if (!this.connections[index].fromTerminal) {
+                    this.connections[index].fromTerminal = { show: false, style: 'arrow' };
+                }
+                this.connections[index].fromTerminal.show = checkbox.checked;
                 eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
                     connection: this.connections[index],
                     index
@@ -211,7 +210,10 @@ export class CrossConnectionsPanel {
         this.container.querySelectorAll('.show-to-terminal').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 const index = parseInt(checkbox.dataset.index);
-                this.connections[index].showToTerminal = checkbox.checked;
+                if (!this.connections[index].toTerminal) {
+                    this.connections[index].toTerminal = { show: false, style: 'arrow' };
+                }
+                this.connections[index].toTerminal.show = checkbox.checked;
                 eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
                     connection: this.connections[index],
                     index
@@ -219,11 +221,29 @@ export class CrossConnectionsPanel {
             });
         });
 
-        // Terminal style selects
-        this.container.querySelectorAll('.terminal-style').forEach(select => {
+        // From terminal style selects
+        this.container.querySelectorAll('.from-terminal-style').forEach(select => {
             select.addEventListener('change', () => {
                 const index = parseInt(select.dataset.index);
-                this.connections[index].terminalStyle = select.value;
+                if (!this.connections[index].fromTerminal) {
+                    this.connections[index].fromTerminal = { show: false, style: 'arrow' };
+                }
+                this.connections[index].fromTerminal.style = select.value;
+                eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
+                    connection: this.connections[index],
+                    index
+                });
+            });
+        });
+
+        // To terminal style selects
+        this.container.querySelectorAll('.to-terminal-style').forEach(select => {
+            select.addEventListener('change', () => {
+                const index = parseInt(select.dataset.index);
+                if (!this.connections[index].toTerminal) {
+                    this.connections[index].toTerminal = { show: false, style: 'arrow' };
+                }
+                this.connections[index].toTerminal.style = select.value;
                 eventBus.emit(EVENTS.CROSS_CONNECTION_UPDATED, {
                     connection: this.connections[index],
                     index

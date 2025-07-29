@@ -9,6 +9,7 @@ export class DisplayOptionsPanel {
 
     init() {
         this.setupCheckboxes();
+        this.setupOutputSettings();
     }
 
     setupCheckboxes() {
@@ -38,6 +39,16 @@ export class DisplayOptionsPanel {
                 });
             }
         });
+    }
+
+    setupOutputSettings() {
+        const outputName = document.getElementById('output-name');
+        if (outputName) {
+            outputName.addEventListener('blur', () => {
+                // Auto-sanitize filename
+                outputName.value = outputName.value.replace(/[^a-zA-Z0-9_-]/g, '_');
+            });
+        }
     }
 
     getConfigKey(checkboxId) {
@@ -88,5 +99,17 @@ export class DisplayOptionsPanel {
                 this.checkboxes[checkboxId].checked = value;
             }
         });
+    }
+
+    getOutputName() {
+        const outputName = document.getElementById('output-name');
+        return outputName ? outputName.value : 'elanthia_map';
+    }
+
+    setOutputName(name) {
+        const outputName = document.getElementById('output-name');
+        if (outputName) {
+            outputName.value = name;
+        }
     }
 }

@@ -37,6 +37,8 @@ export class CustomLabelsPanel {
             fontColor: '#000000',
             fontFamily: 'Arial',
             bold: false,
+            italic: false,
+            underline: false,
             rotation: 0,
             background: true,
             backgroundColor: this.config.colors.background,
@@ -70,68 +72,44 @@ export class CustomLabelsPanel {
                     <div class="label-header">
                         <input type="text" class="label-text-input" data-index="${index}" 
                                value="${label.text}">
-                        <button class="btn-small remove-label" data-index="${index}">Remove</button>
+                        <button class="btn-small remove-label" data-index="${index}">REMOVE</button>
                     </div>
-                    <div class="label-controls">
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label>X:</label>
-                                <input type="number" class="label-x" data-index="${index}" 
-                                       value="${label.x}" min="-1000" max="1000">
-                            </div>
-                            <div class="control-group">
-                                <label>Y:</label>
-                                <input type="number" class="label-y" data-index="${index}" 
-                                       value="${label.y}" min="-1000" max="1000">
-                            </div>
-                            <div class="control-group">
-                                <label>Rotation:</label>
-                                <input type="number" class="label-rotation" data-index="${index}" 
-                                       value="${label.rotation || 0}" min="-180" max="180">
-                            </div>
-                            <div class="control-group">
-                                <label>Size:</label>
-                                <input type="number" class="label-size" data-index="${index}" 
-                                       value="${label.fontSize}" min="8" max="48">
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label>Font:</label>
-                                <select class="label-font" data-index="${index}">
-                                    <option value="Arial" ${label.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
-                                    <option value="Times New Roman" ${label.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
-                                    <option value="Courier New" ${label.fontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
-                                    <option value="Georgia" ${label.fontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
-                                    <option value="Verdana" ${label.fontFamily === 'Verdana' ? 'selected' : ''}>Verdana</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label>Color:</label>
-                                <input type="color" class="label-color" data-index="${index}" 
-                                       value="${label.fontColor}">
-                            </div>
-                            <div class="control-group">
-                                <label><input type="checkbox" class="label-bold" data-index="${index}" 
-                                        ${label.bold ? 'checked' : ''}> Bold</label>
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label><input type="checkbox" class="label-background" data-index="${index}" 
-                                        ${label.background ? 'checked' : ''}> Background</label>
-                            </div>
-                            <div class="control-group ${!label.background ? 'disabled' : ''}">
-                                <label>BG Color:</label>
-                                <input type="color" class="label-bg-color" data-index="${index}" 
-                                       value="${label.backgroundColor}" ${!label.background ? 'disabled' : ''}>
-                            </div>
-                            <div class="control-group ${!label.background ? 'disabled' : ''}">
-                                <label>Border:</label>
-                                <input type="color" class="label-border-color" data-index="${index}" 
-                                       value="${label.borderColor}" ${!label.background ? 'disabled' : ''}>
-                            </div>
-                        </div>
+                    <div class="label-position">
+                        X: <input type="number" class="label-x" data-index="${index}" 
+                                  value="${label.x}" min="-1000" max="1000" style="width: 70px;">
+                        Y: <input type="number" class="label-y" data-index="${index}" 
+                                  value="${label.y}" min="-1000" max="1000" style="width: 70px;">
+                        Rotation: <input type="number" class="label-rotation" data-index="${index}" 
+                                         value="${label.rotation || 0}" min="-180" max="180" style="width: 60px;">
+                    </div>
+                    <div class="label-format">
+                        Size: <input type="number" class="label-size" data-index="${index}" 
+                                     value="${label.fontSize}" min="8" max="48" style="width: 50px;">
+                        <select class="label-font" data-index="${index}" style="width: 120px;">
+                            <option value="Arial" ${label.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+                            <option value="Times New Roman" ${label.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
+                            <option value="Courier New" ${label.fontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
+                            <option value="Georgia" ${label.fontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
+                            <option value="Verdana" ${label.fontFamily === 'Verdana' ? 'selected' : ''}>Verdana</option>
+                        </select>
+                        <input type="color" class="label-color" data-index="${index}" 
+                               value="${label.fontColor}" style="width: 30px; height: 25px;">
+                        <label><input type="checkbox" class="label-bold" data-index="${index}" 
+                                ${label.bold ? 'checked' : ''}> B</label>
+                        <label><input type="checkbox" class="label-italic" data-index="${index}" 
+                                ${label.italic ? 'checked' : ''}> I</label>
+                        <label><input type="checkbox" class="label-underline" data-index="${index}" 
+                                ${label.underline ? 'checked' : ''}> U</label>
+                    </div>
+                    <div class="label-background">
+                        <label><input type="checkbox" class="label-has-background" data-index="${index}" 
+                                ${label.background ? 'checked' : ''}> Background</label>
+                        Color: <input type="color" class="label-bg-color" data-index="${index}" 
+                                      value="${label.backgroundColor}" style="width: 30px; height: 25px;" 
+                                      ${!label.background ? 'disabled' : ''}>
+                        Border: <input type="color" class="label-border-color" data-index="${index}" 
+                                       value="${label.borderColor}" style="width: 30px; height: 25px;"
+                                       ${!label.background ? 'disabled' : ''}>
                     </div>
                 </div>
             `;
@@ -195,8 +173,24 @@ export class CustomLabelsPanel {
             });
         });
 
+        this.container.querySelectorAll('.label-italic').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.labels[index].italic = checkbox.checked;
+                this.emitUpdate(index);
+            });
+        });
+
+        this.container.querySelectorAll('.label-underline').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const index = parseInt(checkbox.dataset.index);
+                this.labels[index].underline = checkbox.checked;
+                this.emitUpdate(index);
+            });
+        });
+
         // Background controls
-        this.container.querySelectorAll('.label-background').forEach(checkbox => {
+        this.container.querySelectorAll('.label-has-background').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 const index = parseInt(checkbox.dataset.index);
                 this.labels[index].background = checkbox.checked;

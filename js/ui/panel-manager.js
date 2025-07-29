@@ -1,6 +1,10 @@
 // Panel Manager - coordinates all UI panels and state
 import { RoomSelectionPanel } from './panels/room-selection.js';
-import { ThemeColorsPanel } from './panels/theme-colors.js';
+import { ThemePresetsPanel } from './panels/theme-presets.js';
+import { RoomOptionsPanel } from './panels/room-options.js';
+import { EdgeOptionsPanel } from './panels/edge-options.js';
+import { BackgroundOptionsPanel } from './panels/background-options.js';
+import { TagColorsPanel } from './panels/tag-colors.js';
 import { DisplayOptionsPanel } from './panels/display-options.js';
 import { FontSettingsPanel } from './panels/font-settings.js';
 import { GroupPositioningPanel } from './panels/group-positioning.js';
@@ -20,7 +24,11 @@ export class PanelManager {
         // Initialize all panels
         this.panels = {
             roomSelection: new RoomSelectionPanel(mapdbLoader, mapdb),
-            themeColors: new ThemeColorsPanel(config, mapdbLoader, mapdb),
+            themePresets: new ThemePresetsPanel(config, this),
+            roomOptions: new RoomOptionsPanel(config),
+            edgeOptions: new EdgeOptionsPanel(config),
+            backgroundOptions: new BackgroundOptionsPanel(config),
+            tagColors: new TagColorsPanel(config, mapdbLoader, mapdb),
             displayOptions: new DisplayOptionsPanel(config),
             fontSettings: new FontSettingsPanel(config),
             groupPositioning: new GroupPositioningPanel(),
