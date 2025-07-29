@@ -20,14 +20,8 @@ export class ConnectionAnalyzer {
             if (dirtoDirection !== 'none' && dirtoDirection !== 'skip' && this.cardinalDirections.has(dirtoDirection)) {
                 return dirtoDirection;
             }
-        } else if (room.dir && room.dir[targetId]) {
-            // Check legacy "dir" field
-            const dirDirection = room.dir[targetId].toLowerCase().trim();
-            if (dirDirection !== 'none' && dirDirection !== 'skip' && this.cardinalDirections.has(dirDirection)) {
-                return dirDirection;
-            }
-        }
-        
+        } 
+                
         // Then check wayto for cardinal directions or simple commands
         if (room.wayto && room.wayto[targetId]) {
             const waytoCommand = room.wayto[targetId].toLowerCase().trim();
