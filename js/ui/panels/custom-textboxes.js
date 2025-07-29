@@ -91,8 +91,6 @@ export class CustomTextBoxesPanel {
                                   value="${textBox.width}" min="50" max="500" style="width: 70px;">
                         H: <input type="number" class="textbox-height" data-index="${index}" 
                                   value="${textBox.height}" min="30" max="500" style="width: 70px;">
-                        Opacity: <input type="number" class="textbox-opacity" data-index="${index}" 
-                                        value="${textBox.opacity}" min="0" max="1" step="0.1" style="width: 60px;">
                     </div>
                     <div class="textbox-style">
                         Style: <select class="textbox-border-style" data-index="${index}" style="width: 80px;">
@@ -103,16 +101,20 @@ export class CustomTextBoxesPanel {
                         </select>
                         Width: <input type="number" class="textbox-border-width" data-index="${index}" 
                                       value="${textBox.borderWidth}" min="0" max="10" style="width: 50px;">
-                        Corner: <input type="number" class="textbox-border-radius" data-index="${index}" 
+                        Radius: <input type="number" class="textbox-border-radius" data-index="${index}" 
                                        value="${textBox.borderRadius}" min="0" max="50" style="width: 50px;">
+                    </div>
+                    <div class="textbox-style_two">
                         Padding: <input type="number" class="textbox-padding" data-index="${index}" 
                                         value="${textBox.padding}" min="0" max="50" style="width: 50px;">
-                    </div>
-                    <div class="textbox-colors">
-                        Background: <input type="color" class="textbox-bg-color" data-index="${index}" 
-                                           value="${textBox.backgroundColor}" style="width: 30px; height: 25px;">
+                        Opacity: <input type="number" class="textbox-opacity" data-index="${index}" 
+                                        value="${textBox.opacity}" min="0" max="1" step="0.1" style="width: 60px;">
                         Border: <input type="color" class="textbox-border-color" data-index="${index}" 
-                                       value="${textBox.borderColor}" style="width: 30px; height: 25px;">
+                                        value="${textBox.borderColor}" style="width: 30px; height: 25px;">
+                    </div>
+                    <div class="textbox-align">
+                        Background: <input type="color" class="textbox-bg-color" data-index="${index}" 
+                                        value="${textBox.backgroundColor}" style="width: 30px; height: 25px;">
                         Align: <select class="textbox-text-align" data-index="${index}" style="width: 80px;">
                             <option value="left" ${textBox.textAlign === 'left' ? 'selected' : ''}>Left</option>
                             <option value="center" ${textBox.textAlign === 'center' ? 'selected' : ''}>Center</option>
