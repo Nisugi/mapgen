@@ -5,15 +5,15 @@ import { CoordinateManager } from '../data/coordinate-manager.js';
 import { PreviewManager } from '../utils/preview-manager.js';
 
 export class MapGenerationCoordinator {
-    constructor(config, roomSelector, uiManager, coordinateStorage) {
+    constructor(config, roomSelector, panelManager, coordinateStorage) {
         this.config = config;
         this.roomSelector = roomSelector;
-        this.uiManager = uiManager;
+        this.panelManager = panelManager;
         this.mapGenerator = null; // Will be set by main app
         this.currentGroups = [];
         
         // Initialize sub-managers
-        this.coordinateManager = new CoordinateManager(coordinateStorage, roomSelector, uiManager);
+        this.coordinateManager = new CoordinateManager(coordinateStorage, roomSelector, panelManager);
         this.previewManager = new PreviewManager();
         
         // Listen for generation events
@@ -38,7 +38,7 @@ export class MapGenerationCoordinator {
             this.coordinateManager.loadSavedCoordinates();
             
             // Get UI state
-            const uiState = this.uiManager.getUIState();
+            const uiState = this.panelManager.getUIState();;;
             
             // Prepare groups with names
             const groupsWithNames = this.currentGroups.map((group, index) => ({
@@ -85,7 +85,7 @@ export class MapGenerationCoordinator {
             this.coordinateManager.loadSavedCoordinates();
             
             // Get UI state
-            const uiState = this.uiManager.getUIState();
+            const uiState = this.panelManager.getUIState();
             
             // Prepare groups with names
             const groupsWithNames = this.currentGroups.map((group, index) => ({
