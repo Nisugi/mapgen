@@ -604,6 +604,24 @@ class MapGenApp {
                 try {
                     const configData = JSON.parse(results.config.content);
                     this.exportManager.configExporter.applyConfig(configData, this.uiManager, this.config);
+                    // Convert group positioning data to coordinate storage format
+                    if (configData.groupPositioning) {
+                        const mapId = this.roomSelector.getCurrentMapIdentifier();
+                        const coordData = {
+                            mapId: mapId,
+                            version: this.mapdbVersion,
+                            groupOffsets: configData.groupPositioning.offsets || [],
+                            groupNames: configData.groupPositioning.names || [],
+                            groupLabelOffsets: configData.groupPositioning.labelOffsets || [],
+                            crossGroupConnections: configData.crossGroupConnections || [],
+                            customLabels: configData.customLabels || [],
+                            customTextBoxes: configData.customTextBoxes || [],
+                            created: new Date().toISOString()
+                        };
+                        
+                        this.coordinateStorage.saveCoordinates(mapId, this.mapdbVersion, coordData);
+                        console.log('Saved GitHub config data as coordinate storage for', mapId);
+                    }
                     loadedCount++;
                     messages.push('<p style="color: green;">✓ Configuration loaded</p>');
                     
