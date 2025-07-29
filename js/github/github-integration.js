@@ -2,6 +2,7 @@
 import { TokenManager } from './auth/token-manager.js';
 import { MapRepository } from './storage/map-repository.js';
 import { eventBus, EVENTS } from '../utils/event-bus.js';
+import { updateGitHubStatus } from './ui/github-ui-manager.js';
 
 export class GitHubIntegration {
     constructor() {
@@ -88,9 +89,7 @@ export class GitHubIntegration {
             eventBus.emit(EVENTS.GITHUB_AUTH_SUCCESS, { user });
 
             // Force UI update
-            if (window.app) {
-                window.app.updateGitHubStatus();
-            }
+            updateGitHubStatus();
             
             return true;
             
@@ -102,9 +101,7 @@ export class GitHubIntegration {
             eventBus.emit(EVENTS.GITHUB_AUTH_FAILURE, { error: error.message });
 
             // Force UI update
-            if (window.app) {
-                window.app.updateGitHubStatus();
-            }
+            updateGitHubStatus();
             
             throw error;
         }

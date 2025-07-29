@@ -114,7 +114,7 @@ export class GitHubUIManager {
             StatusManager.error('GitHub login failed: ' + error.message);
         }
     }
-
+    
     handleGitHubLogout() {
         this.github.logout();
         this.updateGitHubStatus();
@@ -463,5 +463,12 @@ export class GitHubUIManager {
         } catch (error) {
             StatusManager.error('Failed to load preview: ' + error.message);
         }
+    }
+}
+
+export function updateGitHubStatus() {
+    // Calls the currently installed UI manager (created in main app bootstrap)
+    if (window.app && window.app.githubUI) {
+        window.app.githubUI.updateGitHubStatus();
     }
 }
