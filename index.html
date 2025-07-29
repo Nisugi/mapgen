@@ -105,40 +105,6 @@
                 <!-- Appearance Tab -->
                 <div id="appearance-tab" class="tab-panel">
                     <div class="panel-grid">
-                        <!-- Theme & Colors Panel -->
-                        <section class="panel">
-                            <h3>🎨 Theme Presets</h3>
-                                <div class="form-group">
-                                    <label for="theme-preset">Quick Themes:</label>
-                                    <select id="theme-preset">
-                                    <option value="">Custom</option>
-                                    <option value="maritime">Maritime</option>
-                                    <option value="dungeon">Dungeon</option>
-                                    <option value="forest">Forest</option>
-                                    <option value="high-contrast">High Contrast</option>
-                                </select>
-                            </div>
-                        </section>
-
-                        <!-- Tag Colors Panel -->
-                        <section class="panel">
-                            <h3>🏷️ Tag Colors</h3>
-                            <div class="form-group">
-                                <label for="tag-select">Add Tag Color:</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <select id="tag-select" style="flex: 1;">
-                                        <option value="">Select a tag...</option>
-                                    </select>
-                                    <button type="button" id="add-tag-color" class="btn-small">Add</button>
-                                </div>
-                                <small>Tags shown are from currently selected rooms</small>
-                            </div>
-                            
-                            <!-- Tag Color List -->
-                            <div id="tag-colors-list" class="tag-colors">
-                                <!-- Tag color controls will be added here dynamically -->
-                            </div>
-                        </section>
 
                         <!-- Room Options Panel -->
                         <section class="panel">
@@ -166,7 +132,25 @@
                             </div>
                         </section>
 
-
+                        <!-- Tag Colors Panel -->
+                        <section class="panel">
+                            <h3>🏷️ Tag Colors</h3>
+                            <div class="form-group">
+                                <label for="tag-select">Add Tag Color:</label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <select id="tag-select" style="flex: 1;">
+                                        <option value="">Select a tag...</option>
+                                    </select>
+                                    <button type="button" id="add-tag-color" class="btn-small">Add</button>
+                                </div>
+                                <small>Tags shown are from currently selected rooms</small>
+                            </div>
+                            
+                            <!-- Tag Color List -->
+                            <div id="tag-colors-list" class="tag-colors">
+                                <!-- Tag color controls will be added here dynamically -->
+                            </div>
+                        </section>
 
                         <!-- Background Options Panel -->
                         <section class="panel">
@@ -191,23 +175,6 @@
                             </div>
                         </section>
 
-                        <!-- Display Options Panel -->
-                        <section class="panel">
-                            <h3>⚙️ Display & Output Options</h3>
-                            <div class="form-group">
-                                <label for="output-name">Map Name:</label>
-                                <input type="text" id="output-name" value="Enter map name" placeholder="Enter map name">
-                            </div>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" id="show-room-ids" checked> Show Room IDs</label>
-                                <label><input type="checkbox" id="show-room-names"> Show Room Names</label>
-                                <label><input type="checkbox" id="show-labels" checked> Show Connection Labels</label>
-                                <label><input type="checkbox" id="show-cardinal-labels"> Show Cardinal Direction Labels</label>
-                                <label><input type="checkbox" id="show-connections" checked> Show Connections</label>
-                                <label><input type="checkbox" id="show-group-labels"> Show Group Labels</label>
-                            </div>
-                        </section>
-
                         <!-- Edge Options Panel -->
                         <section class="panel">
                             <h3>🔗 Edge Options</h3>
@@ -227,6 +194,23 @@
                                 <!-- <div class="compact-row">
                                     Vertical: <input type="color" id="connection-vertical-color" value="#999999" style="width: 30px; height: 25px;">
                                 </div> -->
+                            </div>
+                        </section>
+
+                        <!-- Display Options Panel -->
+                        <section class="panel">
+                            <h3>⚙️ Display & Output Options</h3>
+                            <div class="form-group">
+                                <label for="output-name">Map Name:</label>
+                                <input type="text" id="output-name" value="Enter map name" placeholder="Enter map name">
+                            </div>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="show-room-ids" checked> Show Room IDs</label>
+                                <label><input type="checkbox" id="show-room-names"> Show Room Names</label>
+                                <label><input type="checkbox" id="show-labels" checked> Show Connection Labels</label>
+                                <label><input type="checkbox" id="show-cardinal-labels"> Show Cardinal Direction Labels</label>
+                                <label><input type="checkbox" id="show-connections" checked> Show Connections</label>
+                                <label><input type="checkbox" id="show-group-labels"> Show Group Labels</label>
                             </div>
                         </section>
 
@@ -276,6 +260,21 @@
                                 <label><input type="checkbox" id="room-font-bold"> B</label>
                                 <label><input type="checkbox" id="room-font-italic"> I</label>
                                 <label><input type="checkbox" id="room-font-underline"> U</label>
+                            </div>
+                        </section>
+
+                        <!-- Theme & Colors Panel -->
+                        <section class="panel">
+                            <h3>🎨 Theme Presets</h3>
+                                <div class="form-group">
+                                    <label for="theme-preset">Quick Themes:</label>
+                                    <select id="theme-preset">
+                                    <option value="">Custom</option>
+                                    <option value="maritime">Maritime</option>
+                                    <option value="dungeon">Dungeon</option>
+                                    <option value="forest">Forest</option>
+                                    <option value="high-contrast">High Contrast</option>
+                                </select>
                             </div>
                         </section>
                     </div>
