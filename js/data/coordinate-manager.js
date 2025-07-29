@@ -80,7 +80,7 @@ export class CoordinateManager {
 
     saveCurrentCoordinates() {
         const mapId = this.roomSelector.getCurrentMapIdentifier();
-        const uiState = this.uiManager.getUIState();
+        const uiState = this.panelManager.getUIState();
         
         const coordData = {
             mapId: mapId,
