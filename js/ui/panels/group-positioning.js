@@ -93,15 +93,15 @@ export class GroupPositioningPanel {
             `;
         });
         
-        html += '</div>';
-        html += '<div class="group-controls">';
-        html += '<div class="group-actions">';
-        html += '<button class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">📤 Export Settings</button>';
-        html += '<button class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">📥 Import Settings</button>';
-        html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.resetAll()">Reset All</button>';
-        html += '</div>';
-        html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.applyChanges()">Apply Changes</button>';
-        html += '</div>';
+        // html += '</div>';
+        // html += '<div class="group-controls">';
+        // html += '<div class="group-actions">';
+        // html += '<button class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">📤 Export Settings</button>';
+        // html += '<button class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">📥 Import Settings</button>';
+        // html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.resetAll()">Reset All</button>';
+        // html += '</div>';
+        // html += '<button class="btn-small" onclick="window.app.groupPositioningPanel.applyChanges()">Apply Changes</button>';
+        // html += '</div>';
         
         this.container.innerHTML = html;
         this.attachEventListeners();

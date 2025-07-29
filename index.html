@@ -174,17 +174,19 @@
                             <div class="form-group">
                                 <div class="checkbox-group">
                                     <label><input type="checkbox" id="use-background" checked> Use Background</label>
+                                    <input type="color" id="background-color" value="#f8f9fa" style="width: 30px; height: 25px;">
                                 </div>
-                                <div class="compact-row">
+                                <!-- <div class="compact-row">
                                     Background: <input type="color" id="background-color" value="#f8f9fa" style="width: 30px; height: 25px;">
-                                </div>
+                                </div> -->
                                 <div class="compact-row">
                                     <label for="background-image">Background Image:</label>
                                     <input type="file" id="background-image" accept="image/*" style="width: 150px;">
-                                    <button type="button" id="clear-background" class="btn-small">Clear</button>
+                                    <!-- <button type="button" id="clear-background" class="btn-small">Clear</button> -->
                                 </div>
                                 <div class="compact-row">
                                     <small id="background-image-status">No image selected</small>
+                                    <button type="button" id="clear-background" class="btn-small">Clear</button>
                                 </div>
                             </div>
                         </section>
@@ -289,6 +291,7 @@
                                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                                     <button type="button" class="btn-small" onclick="window.app.exportManager.exportCoordinateFile()">📤 Export Positions</button>
                                     <button type="button" class="btn-small" onclick="window.app.exportManager.importCoordinateFile()">📥 Import Positions</button>
+                                    <button class="btn-small" onclick="window.app.groupPositioningPanel.resetAll()">Reset All</button>
                                 </div>
                                 <small>Export/import group positions and connection data</small>
                             </div>
