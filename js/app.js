@@ -604,23 +604,27 @@ class MapGenApp {
                 try {
                     const configData = JSON.parse(results.config.content);
                     this.exportManager.configExporter.applyConfig(configData, this.uiManager, this.config);
-                    // Convert group positioning data to coordinate storage format
+                    // IMPORTANT: Room selection may have changed, so save positioning data 
+                    // under the NEW map identifier
                     if (configData.groupPositioning) {
-                        const mapId = this.roomSelector.getCurrentMapIdentifier();
-                        const coordData = {
-                            mapId: mapId,
-                            version: this.mapdbVersion,
-                            groupOffsets: configData.groupPositioning.offsets || [],
-                            groupNames: configData.groupPositioning.names || [],
-                            groupLabelOffsets: configData.groupPositioning.labelOffsets || [],
-                            crossGroupConnections: configData.crossGroupConnections || [],
-                            customLabels: configData.customLabels || [],
-                            customTextBoxes: configData.customTextBoxes || [],
-                            created: new Date().toISOString()
-                        };
-                        
-                        this.coordinateStorage.saveCoordinates(mapId, this.mapdbVersion, coordData);
-                        console.log('Saved GitHub config data as coordinate storage for', mapId);
+                        // Wait for room selection to be processed, then save coordinates
+                        setTimeout(() => {
+                            const mapId = this.roomSelector.getCurrentMapIdentifier();
+                            const coordData = {
+                                mapId: mapId,
+                                version: this.mapdbVersion,
+                                groupOffsets: configData.groupPositioning.offsets || [],
+                                groupNames: configData.groupPositioning.names || [],
+                                groupLabelOffsets: configData.groupPositioning.labelOffsets || [],
+                                crossGroupConnections: configData.crossGroupConnections || [],
+                                customLabels: configData.customLabels || [],
+                                customTextBoxes: configData.customTextBoxes || [],
+                                created: new Date().toISOString()
+                            };
+                            
+                            this.coordinateStorage.saveCoordinates(mapId, this.mapdbVersion, coordData);
+                            console.log('Saved GitHub positioning data for new map ID:', mapId);
+                        }, 100);
                     }
                     loadedCount++;
                     messages.push('<p style="color: green;">✓ Configuration loaded</p>');
