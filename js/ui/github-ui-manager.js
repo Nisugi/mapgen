@@ -114,7 +114,7 @@ export class GitHubUIManager {
             StatusManager.error('GitHub login failed: ' + error.message);
         }
     }
-    
+
     handleGitHubLogout() {
         this.github.logout();
         this.updateGitHubStatus();
