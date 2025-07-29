@@ -204,6 +204,12 @@ export class MapGeneratorManager {
             delete window.app.pendingCrossConnections;
             delete window.app.pendingCustomLabels;
             delete window.app.pendingCustomTextBoxes;
+
+            // Force UI update to show the applied data
+            this.uiManager.panels.groupPositioning.update();
+            this.uiManager.panels.crossConnections.update();
+            this.uiManager.panels.customLabels.update();
+            this.uiManager.panels.customTextBoxes.update();
            
             return true;
        }
