@@ -59,7 +59,7 @@ export class PanelManager {
         
         // Listen for config changes to update edge length
         eventBus.on(EVENTS.CONFIG_CHANGED, (data) => {
-            if (data.config && data.config.edgeLength) {
+            if (data.config && data.config.edgeLength !== undefined) {
                 this.panels.groupPositioning.updateEdgeLength(data.config.edgeLength);
             }
         });

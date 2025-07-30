@@ -54,6 +54,7 @@ export const EVENTS = {
     // Group events
     GROUP_OFFSET_CHANGED: 'group:offset:changed',
     GROUP_NAME_CHANGED: 'group:name:changed',
+    GROUP_PIXEL_MODE_CHANGED: 'group:pixel:mode:changed',
     GROUP_LABEL_OFFSET_CHANGED: 'group:label:offset:changed',
     
     // Cross-group connection events

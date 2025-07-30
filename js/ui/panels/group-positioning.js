@@ -149,7 +149,13 @@ export class GroupPositioningPanel {
                 }
                 
                 this.groupPixelMode.set(groupIndex, isPixelMode);
-                this.update(); // Re-render to update input ranges
+                // Update the specific group's input ranges without full re-render
+                this.updateGroupInputRanges(groupIndex, isPixelMode);
+                
+                eventBus.emit(EVENTS.GROUP_PIXEL_MODE_CHANGED, {
+                    groupIndex,
+                    pixelMode: isPixelMode
+                });
             });
         });
 
@@ -224,8 +230,9 @@ export class GroupPositioningPanel {
                 const value = parseInt(input.value) || 0;
                 
                 // Clamp value
-                const min = isLabel ? -50 : (this.groupPixelMode.get(groupIndex) ? -2000 : -100);
-                const max = isLabel ? 50 : (this.groupPixelMode.get(groupIndex) ? 2000 : 100);
+                const pixelMode = this.groupPixelMode.get(groupIndex) || false;
+                const min = isLabel ? -50 : (pixelMode ? -2000 : -100);
+                const max = isLabel ? 50 : (pixelMode ? 2000 : 100);
                 const clampedValue = Math.max(min, Math.min(max, value));
                 input.value = clampedValue;
                 
@@ -256,6 +263,33 @@ export class GroupPositioningPanel {
         eventBus.emit(EVENTS.GROUP_OFFSET_CHANGED, {
             groupIndex,
             offset: this.groupOffsets.get(groupIndex)
+        });
+    }
+
+    updateGroupInputRanges(groupIndex, isPixelMode) {
+        const min = isPixelMode ? -2000 : -100;
+        const max = isPixelMode ? 2000 : 100;
+        
+        // Update X offset controls
+        const xSlider = this.container.querySelector(`.x-offset[data-group="${groupIndex}"]`);
+        const xNumber = this.container.querySelector(`.x-offset-number[data-group="${groupIndex}"]`);
+        const xUnit = this.container.querySelector(`.offset-unit[data-group="${groupIndex}"]`);
+        
+        if (xSlider) { xSlider.min = min; xSlider.max = max; }
+        if (xNumber) { xNumber.min = min; xNumber.max = max; }
+        
+        // Update Y offset controls
+        const ySlider = this.container.querySelector(`.y-offset[data-group="${groupIndex}"]`);
+        const yNumber = this.container.querySelector(`.y-offset-number[data-group="${groupIndex}"]`);
+        
+        if (ySlider) { ySlider.min = min; ySlider.max = max; }
+        if (yNumber) { yNumber.min = min; yNumber.max = max; }
+        
+        // Update unit displays
+        this.container.querySelectorAll(`.offset-unit`).forEach(unit => {
+            if (unit.closest(`[data-group="${groupIndex}"]`)) {
+                unit.textContent = isPixelMode ? 'px' : 'cells';
+            }
         });
     }
 
