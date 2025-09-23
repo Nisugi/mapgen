@@ -68,14 +68,16 @@ export class RoomRenderer {
             const maxWidth = roomShape === 'rectangle' ? roomSize * 3 : roomSize * 2;
             const lines = this.wrapText(roomName, maxWidth, fontSize);
             
-            // Draw each line
+            // Draw each line with proper vertical centering
             const lineHeight = fontSize * 1.2;
-            const startY = y - ((lines.length - 1) * lineHeight / 2);
-            
+            const totalHeight = (lines.length - 1) * lineHeight;
+            const startY = y - (totalHeight / 2);
+
             lines.forEach((line, index) => {
-                svg += `<text x="${x}" y="${startY + index * lineHeight}" text-anchor="middle" 
-                        font-size="${fontSize}" fill="${fontColor}" font-family="${fontFamily}" 
-                        font-weight="${fontWeight}" text-rendering="optimizeLegibility">${line}</text>`;
+                svg += `<text x="${x}" y="${startY + index * lineHeight}" text-anchor="middle"
+                        font-size="${fontSize}" fill="${fontColor}" font-family="${fontFamily}"
+                        font-weight="${fontWeight}" text-rendering="optimizeLegibility"
+                        dominant-baseline="middle">${line}</text>`;
             });
             
         } else if (config.showRoomIds) {
