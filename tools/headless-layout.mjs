@@ -165,7 +165,7 @@ for (const g of interiorGroups) {
 }
 
 const packer = new ClusterPacker(analyzer);
-packer.packGroups(outdoorGroups, roomLookup);
+packer.packGroups(outdoorGroups, roomLookup, current.groups);
 packer.packInteriorShelf(interiorGroups);
 
 const legacyGroups = legacyPositions(rooms, roomLookup);

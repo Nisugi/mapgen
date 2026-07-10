@@ -102,7 +102,7 @@ export class MapGenerator {
         // connector adjacency, uid tiebreaks). Sets group.baseOffset, which
         // GroupManager respects instead of its left-to-right strip.
         if (this.config.packClusters !== false) {
-            this.clusterPacker.packGroups(outdoorGroups, roomLookup);
+            this.clusterPacker.packGroups(outdoorGroups, roomLookup, groups);
         }
 
         // Step 4: Apply group offsets and render the outdoor map

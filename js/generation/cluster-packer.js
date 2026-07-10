@@ -21,7 +21,10 @@ export class ClusterPacker {
         this.searchRadius = 30;   // max spiral distance when resolving collisions
     }
 
-    packGroups(groups, roomLookup) {
+    // `allGroups` (optional) is the full component list including interiors:
+    // outdoor areas linked only THROUGH an interior (board ferry, ride,
+    // disembark) get virtual connector edges so they still pack adjacent.
+    packGroups(groups, roomLookup, allGroups = null) {
         if (!groups || groups.length === 0) return;
 
         const componentOf = new Map();
@@ -30,23 +33,54 @@ export class ClusterPacker {
         const groupByIndex = new Map(groups.map(g => [g.index, g]));
 
         const edges = this.collectConnectorEdges(groups, roomLookup, componentOf);
+        if (allGroups && allGroups.length > groups.length) {
+            this.addBridgedEdges(edges, groups, allGroups, componentOf, roomLookup);
+        }
         const anchors = this.collectAnchors(groups);
         const primaryImage = this.findPrimaryImage(groups, anchors);
         const scale = this.estimateScale(groups, anchors, primaryImage);
 
         const occupied = new Set();
         const placed = new Set();
-        // Connector lines already committed to the layout, so later
-        // placements can avoid crossing them.
+        // Lines already committed to the layout (connectors AND directional
+        // edges), so later placements can avoid crossing them, plus each
+        // placed group's bounding box so nothing lands in a courtyard hole.
         const placedSegments = [];
+        const placedBoxes = [];
         const commitSegments = (group) => {
             for (const e of (edges.get(group.index) ?? [])) {
                 if (!placed.has(e.otherGroup)) continue;
+                const otherGroup = groupByIndex.get(e.otherGroup);
+                if (!otherGroup) continue; // bridged edge partner may be unplaced subset member
                 const a = this.finalCell(group, e.roomId);
-                const b = this.finalCell(groupByIndex.get(e.otherGroup), e.otherRoomId);
+                const b = this.finalCell(otherGroup, e.otherRoomId);
                 if (Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) > 30) continue;
                 placedSegments.push({ a, b, ra: e.roomId, rb: e.otherRoomId });
             }
+            // intra-group directional edges are solid lines on the map
+            const seen = new Set();
+            for (const room of group.rooms) {
+                for (const targetId of Object.keys(room.wayto ?? {})) {
+                    const targetIdNum = parseInt(targetId);
+                    if (!group.positions.has(targetIdNum)) continue;
+                    const key = room.id < targetIdNum ? `${room.id}-${targetIdNum}` : `${targetIdNum}-${room.id}`;
+                    if (seen.has(key)) continue;
+                    const direction = this.connectionAnalyzer.getDirectionForConnection(room, String(targetId), roomLookup);
+                    if (!direction) continue;
+                    seen.add(key);
+                    const a = this.finalCell(group, room.id);
+                    const b = this.finalCell(group, targetIdNum);
+                    if (Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) > 8) continue;
+                    placedSegments.push({ a, b, ra: room.id, rb: targetIdNum });
+                }
+            }
+            const bounds = this.groupBounds(group);
+            placedBoxes.push({
+                minX: bounds.minX + group.baseOffset.x,
+                maxX: bounds.maxX + group.baseOffset.x,
+                minY: bounds.minY + group.baseOffset.y,
+                maxY: bounds.maxY + group.baseOffset.y
+            });
         };
 
         // --- Pass 1: image-anchored groups ---
@@ -89,6 +123,7 @@ export class ClusterPacker {
         }
 
         const deferred = new Set();
+        let seedBaseX = null; // all disconnected islands stack under the same left edge
         while (true) {
             let best = null;
             for (const group of groups) {
@@ -112,8 +147,9 @@ export class ClusterPacker {
                 if (!seedGroup) break;
                 const bounds = this.groupBounds(seedGroup);
                 const extent = this.occupiedBounds(occupied);
+                if (seedBaseX === null) seedBaseX = extent.minX;
                 const proposed = {
-                    x: extent.minX - bounds.minX,
+                    x: seedBaseX - bounds.minX,
                     y: extent.maxY + this.groupPadding - bounds.minY
                 };
                 const offset = this.findFreeOffset(seedGroup, proposed, occupied) ?? proposed;
@@ -138,7 +174,7 @@ export class ClusterPacker {
             }));
 
             const proposed = { x: neighborCell.x - internal.x, y: neighborCell.y - internal.y };
-            const offset = this.findBestConnectorOffset(best.group, proposed, occupied, anchors, placedSegments);
+            const offset = this.findBestConnectorOffset(best.group, proposed, occupied, anchors, placedSegments, placedBoxes);
             if (offset) {
                 this.placeGroup(best.group, offset, occupied, placed, {
                     method: 'connector',
@@ -206,6 +242,54 @@ export class ClusterPacker {
             }
         }
         return edges;
+    }
+
+    // Virtual edges between packed groups whose only link runs through an
+    // excluded component (e.g. two shores of a ferry interior).
+    addBridgedEdges(edges, groups, allGroups, componentOf, roomLookup) {
+        const packedIndices = new Set(groups.map(g => g.index));
+        const componentOfAll = new Map();
+        allGroups.forEach(g => g.rooms.forEach(r => componentOfAll.set(r.id, g.index)));
+
+        // excluded component index -> [{group (packed), roomId (packed side)}]
+        const contacts = new Map();
+        const addContact = (excludedIdx, packedIdx, roomId) => {
+            if (!contacts.has(excludedIdx)) contacts.set(excludedIdx, []);
+            const list = contacts.get(excludedIdx);
+            if (!list.some(c => c.group === packedIdx && c.roomId === roomId)) {
+                list.push({ group: packedIdx, roomId });
+            }
+        };
+        for (const group of allGroups) {
+            for (const room of group.rooms) {
+                for (const targetId of Object.keys(room.wayto ?? {})) {
+                    const targetIdNum = parseInt(targetId);
+                    const targetGroup = componentOfAll.get(targetIdNum);
+                    if (targetGroup === undefined || targetGroup === group.index) continue;
+                    const groupPacked = packedIndices.has(group.index);
+                    const targetPacked = packedIndices.has(targetGroup);
+                    if (groupPacked && !targetPacked) addContact(targetGroup, group.index, room.id);
+                    else if (!groupPacked && targetPacked) addContact(group.index, targetGroup, targetIdNum);
+                }
+            }
+        }
+
+        const addEdge = (g, other, roomId, otherRoomId, uidDelta) => {
+            if (!edges.has(g)) edges.set(g, []);
+            edges.get(g).push({ otherGroup: other, roomId, otherRoomId, uidDelta });
+        };
+        for (const list of contacts.values()) {
+            for (let i = 0; i < list.length && i < 10; i++) {
+                for (let j = i + 1; j < list.length && j < 10; j++) {
+                    if (list[i].group === list[j].group) continue;
+                    const roomA = roomLookup.get(list[i].roomId);
+                    const roomB = roomLookup.get(list[j].roomId);
+                    const uidDelta = this.uidDelta(roomA, roomB);
+                    addEdge(list[i].group, list[j].group, list[i].roomId, list[j].roomId, uidDelta);
+                    addEdge(list[j].group, list[i].group, list[j].roomId, list[i].roomId, uidDelta);
+                }
+            }
+        }
     }
 
     uidDelta(a, b) {
@@ -346,11 +430,26 @@ export class ClusterPacker {
     // proposed one, prefer short connector lines that cross as few existing
     // connector lines as possible. Explores two rings past the nearest fit
     // so a clean spot can beat a marginally closer tangled one.
-    findBestConnectorOffset(group, proposed, occupied, anchors, placedSegments) {
+    findBestConnectorOffset(group, proposed, occupied, anchors, placedSegments, placedBoxes = []) {
         let best = null;
         let bestScore = Infinity;
         let firstFitRadius = null;
 
+        // Only segments near this placement window can be crossed
+        const reach = this.searchRadius + 4;
+        let winMinX = proposed.x, winMaxX = proposed.x, winMinY = proposed.y, winMaxY = proposed.y;
+        for (const anchor of anchors) {
+            winMinX = Math.min(winMinX, anchor.target.x); winMaxX = Math.max(winMaxX, anchor.target.x);
+            winMinY = Math.min(winMinY, anchor.target.y); winMaxY = Math.max(winMaxY, anchor.target.y);
+        }
+        const localSegments = placedSegments.filter(seg =>
+            Math.max(seg.a.x, seg.b.x) >= winMinX - reach && Math.min(seg.a.x, seg.b.x) <= winMaxX + reach &&
+            Math.max(seg.a.y, seg.b.y) >= winMinY - reach && Math.min(seg.a.y, seg.b.y) <= winMaxY + reach);
+        const localBoxes = placedBoxes.filter(box =>
+            box.maxX >= winMinX - reach && box.minX <= winMaxX + reach &&
+            box.maxY >= winMinY - reach && box.minY <= winMaxY + reach);
+
+        const groupCells = [...group.positions.values()];
         const consider = (candidate) => {
             if (!this.fits(group, candidate, occupied)) return;
             let score = 0;
@@ -358,11 +457,21 @@ export class ClusterPacker {
                 const x = anchor.internal.x + candidate.x;
                 const y = anchor.internal.y + candidate.y;
                 score += Math.max(Math.abs(x - anchor.target.x), Math.abs(y - anchor.target.y));
-                for (const seg of placedSegments) {
+                for (const seg of localSegments) {
                     if (seg.ra === anchor.roomId || seg.rb === anchor.roomId ||
                         seg.ra === anchor.otherRoomId || seg.rb === anchor.otherRoomId) continue;
                     if (this.segmentsCross({ x, y }, anchor.target, seg.a, seg.b)) {
                         score += 1000;
+                    }
+                }
+            }
+            // discourage landing inside another group's footprint (courtyards)
+            for (const cell of groupCells) {
+                const cx = cell.x + candidate.x, cy = cell.y + candidate.y;
+                for (const box of localBoxes) {
+                    if (cx >= box.minX && cx <= box.maxX && cy >= box.minY && cy <= box.maxY) {
+                        score += 4;
+                        break;
                     }
                 }
             }
