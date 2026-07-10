@@ -54,17 +54,18 @@ export class MapGenerationCoordinator {
             const svg = result.svg;
             this.currentGroups = result.groups;
             this.applyPendingGroupData();
-            
+            this.syncPanelsFromAnchors(this.currentGroups);
+
             // Save coordinates
-            this.coordinateManager.saveCurrentCoordinates();
-            
+            this.coordinateManager.saveCurrentCoordinates(this.currentGroups);
+
             // Emit success event
             eventBus.emit(EVENTS.MAP_GENERATED, {
                 svg,
                 groups: this.currentGroups,
                 roomCount: rooms.length
             });
-            
+
             // Download the SVG file(s)
             const outputName = document.getElementById('output-name').value;
             this.previewManager.downloadSVG(svg, outputName);
@@ -105,10 +106,11 @@ export class MapGenerationCoordinator {
             const svg = result.svg;
             this.currentGroups = result.groups;
             this.applyPendingGroupData();
-            
+            this.syncPanelsFromAnchors(this.currentGroups);
+
             // Save coordinates
-            this.coordinateManager.saveCurrentCoordinates();
-            
+            this.coordinateManager.saveCurrentCoordinates(this.currentGroups);
+
             // Emit success event
             eventBus.emit(EVENTS.MAP_GENERATED, {
                 svg,
@@ -157,8 +159,31 @@ export class MapGenerationCoordinator {
             useBackground: this.config.useBackground,
             crossGroupConnections: uiState.crossConnections,
             customLabels: uiState.customLabels,
-            customTextBoxes: uiState.customTextBoxes
+            customTextBoxes: uiState.customTextBoxes,
+            anchorEdits: this.coordinateManager.savedAnchorEdits ?? null
         };
+    }
+
+    // After generation the groups (and their anchor ids) exist; translate
+    // anchor-keyed saved edits into the index-keyed panel maps so the UI
+    // shows them and the next save round-trips.
+    syncPanelsFromAnchors(groups) {
+        const anchorEdits = this.coordinateManager.savedAnchorEdits;
+        if (!anchorEdits || !groups) return;
+
+        const indexByAnchor = new Map(groups.map(g => [g.anchorId, g.index]));
+        const groupPanel = this.panelManager.panels.groupPositioning;
+        const fill = (map, anchorEntries) => {
+            for (const [anchorId, value] of anchorEntries ?? []) {
+                const index = indexByAnchor.get(anchorId);
+                if (index !== undefined && !map.has(index)) map.set(index, value);
+            }
+        };
+        fill(groupPanel.groupOffsets, anchorEdits.offsets);
+        fill(groupPanel.groupNames, anchorEdits.names);
+        fill(groupPanel.groupLabelOffsets, anchorEdits.labelOffsets);
+        if (groupPanel.groupPixelMode) fill(groupPanel.groupPixelMode, anchorEdits.pixelModes);
+        groupPanel.update();
     }
 
     applyPendingGroupData() {
@@ -208,7 +233,7 @@ export class MapGenerationCoordinator {
 
     // Expose coordinate manager methods for backward compatibility
     saveCurrentCoordinates() {
-        this.coordinateManager.saveCurrentCoordinates();
+        this.coordinateManager.saveCurrentCoordinates(this.currentGroups);
     }
 
     loadSavedCoordinates() {

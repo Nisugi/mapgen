@@ -14,21 +14,31 @@ export class CoordinateManager {
     loadSavedCoordinates() {
         const mapId = this.roomSelector.getCurrentMapIdentifier();
         const savedCoords = this.coordinateStorage.loadCoordinates(mapId, this.mapdbVersion);
-        
+        this.savedAnchorEdits = null;
+
         if (savedCoords) {
             console.log('Loading saved coordinates for', mapId);
-            
+
+            // Anchor-keyed edits survive mapdb/solver changes; the generator
+            // translates them to current group indices after positioning.
+            this.savedAnchorEdits = {
+                offsets: savedCoords.anchorOffsets || [],
+                pixelModes: savedCoords.anchorPixelModes || [],
+                names: savedCoords.anchorNames || [],
+                labelOffsets: savedCoords.anchorLabelOffsets || []
+            };
+
             // Load data into UI panels
             const groupData = this.panelManager.panels.groupPositioning.getGroupData();
             groupData.offsets = new Map(savedCoords.groupOffsets || []);
             groupData.pixelModes = new Map(savedCoords.groupPixelModes || []);
             groupData.names = new Map(savedCoords.groupNames || []);
             groupData.labelOffsets = new Map(savedCoords.groupLabelOffsets || []);
-            
+
             this.panelManager.panels.crossConnections.setConnections(savedCoords.crossGroupConnections || []);
             this.panelManager.panels.customLabels.setLabels(savedCoords.customLabels || []);
             this.panelManager.panels.customTextBoxes.setTextBoxes(savedCoords.customTextBoxes || []);
-            
+
             return true;
         }
 
@@ -82,10 +92,22 @@ export class CoordinateManager {
         return false;
     }
 
-    saveCurrentCoordinates() {
+    saveCurrentCoordinates(currentGroups = null) {
         const mapId = this.roomSelector.getCurrentMapIdentifier();
         const uiState = this.panelManager.getUIState();
-        
+
+        // Re-key index-based edits by each group's stable anchor room id so
+        // they survive group reordering, mapdb updates, and solver changes.
+        const anchorByIndex = new Map((currentGroups ?? []).map(g => [g.index, g.anchorId]));
+        const toAnchor = (indexEntries) => {
+            const out = [];
+            for (const [index, value] of indexEntries) {
+                const anchorId = anchorByIndex.get(index);
+                if (anchorId !== undefined) out.push([anchorId, value]);
+            }
+            return out;
+        };
+
         const coordData = {
             mapId: mapId,
             version: this.mapdbVersion,
@@ -93,12 +115,16 @@ export class CoordinateManager {
             groupPixelModes: Array.from(uiState.groupData.pixelModes.entries()),
             groupNames: Array.from(uiState.groupData.names.entries()),
             groupLabelOffsets: Array.from(uiState.groupData.labelOffsets.entries()),
+            anchorOffsets: toAnchor(uiState.groupData.offsets.entries()),
+            anchorPixelModes: toAnchor(uiState.groupData.pixelModes.entries()),
+            anchorNames: toAnchor(uiState.groupData.names.entries()),
+            anchorLabelOffsets: toAnchor(uiState.groupData.labelOffsets.entries()),
             crossGroupConnections: uiState.crossConnections,
             customLabels: uiState.customLabels,
             customTextBoxes: uiState.customTextBoxes,
             created: new Date().toISOString()
         };
-        
+
         this.coordinateStorage.saveCoordinates(mapId, this.mapdbVersion, coordData);
         console.log('Saved coordinates for', mapId);
     }

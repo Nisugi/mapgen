@@ -2,7 +2,8 @@
 export class CoordinateStorage {
     constructor() {
         this.storageKey = 'elanthia_map_coordinates';
-        this.maxStorageAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+        // Human curation is expensive - keep it for a year
+        this.maxStorageAge = 365 * 24 * 60 * 60 * 1000;
     }
 
     saveCoordinates(mapId, version, coordData) {
@@ -29,24 +30,35 @@ export class CoordinateStorage {
             const entry = storage[mapId];
             
             if (!entry) return null;
-            
-            // Check if version matches and entry is not too old
+
             const age = Date.now() - entry.savedAt;
-            if (entry.version === version && age < this.maxStorageAge) {
-                const data = entry.data;
-                
-                // Ensure backward compatibility - add pixelModes if missing
-                if (data && !data.groupPixelModes) {
-                    data.groupPixelModes = [];
-                }
-                
+            if (age >= this.maxStorageAge) {
+                delete storage[mapId];
+                localStorage.setItem(this.storageKey, JSON.stringify(storage));
+                return null;
+            }
+
+            const data = entry.data;
+            // Ensure backward compatibility - add pixelModes if missing
+            if (data && !data.groupPixelModes) {
+                data.groupPixelModes = [];
+            }
+
+            if (entry.version === version) {
                 return data;
             }
-            
-            // Remove outdated entry
-            delete storage[mapId];
-            localStorage.setItem(this.storageKey, JSON.stringify(storage));
-            return null;
+
+            // mapdb version changed: index-keyed edits are meaningless (group
+            // order reshuffles) but anchor-keyed edits still apply - keep them.
+            console.warn(`Saved coordinates for ${mapId} are from a different mapdb version; applying anchor-keyed edits only`);
+            return {
+                ...data,
+                groupOffsets: [],
+                groupPixelModes: [],
+                groupNames: [],
+                groupLabelOffsets: [],
+                versionMismatch: true
+            };
             
         } catch (error) {
             console.warn('Failed to load coordinates from localStorage:', error);

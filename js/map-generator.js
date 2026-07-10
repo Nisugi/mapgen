@@ -69,6 +69,13 @@ export class MapGenerator {
         const positionResult = this.roomPositioner.calculateRoomPositionsWithGroups(rooms, roomLookup);
         const groups = positionResult.groups;
 
+        // Stable identity for human edits: group.index is discovery order and
+        // reshuffles on any mapdb/solver change; the lowest room id survives.
+        for (const group of groups) {
+            group.anchorId = Math.min(...group.rooms.map(r => r.id));
+        }
+        this.applyAnchorKeyedEdits(groups);
+
         // Step 2.5: Split interiors (shops, lockers, wagons) from the outdoor
         // map. They render on a separate interiors sheet; the outdoor room
         // that hosts the doorway gets a door marker.
@@ -106,7 +113,7 @@ export class MapGenerator {
         }
 
         // Step 4: Apply group offsets and render the outdoor map
-        const groupPixelModes = config.groupPixelModes || new Map();
+        const groupPixelModes = this.config.groupPixelModes || new Map();
         const finalPositions = this.groupManager.applyGroupOffsets(outdoorGroups, this.config, groupPixelModes);
         const outdoorRooms = outdoorGroups.flatMap(g => g.rooms);
         const outdoorConfig = entranceRoomIds ? { ...this.config, entranceRoomIds } : this.config;
@@ -128,6 +135,37 @@ export class MapGenerator {
         }
 
         return { svg, interiorSvg, groups };
+    }
+
+    // Merge anchor-keyed saved edits (durable) into the index-keyed maps the
+    // rest of the pipeline consumes. Live index-keyed UI values win so
+    // in-session edits are never overridden.
+    applyAnchorKeyedEdits(groups) {
+        const anchorData = this.config.anchorEdits;
+        if (!anchorData) return;
+
+        const indexByAnchor = new Map(groups.map(g => [g.anchorId, g.index]));
+        const merge = (indexMap, anchorEntries) => {
+            const target = indexMap instanceof Map ? indexMap : new Map(indexMap ?? []);
+            for (const [anchorId, value] of anchorEntries ?? []) {
+                const index = indexByAnchor.get(anchorId);
+                if (index !== undefined && !target.has(index)) {
+                    target.set(index, value);
+                }
+            }
+            return target;
+        };
+
+        this.config.groupOffsets = merge(this.config.groupOffsets, anchorData.offsets);
+        this.config.groupPixelModes = merge(this.config.groupPixelModes, anchorData.pixelModes);
+        this.config.groupLabelOffsets = merge(this.config.groupLabelOffsets, anchorData.labelOffsets);
+
+        const names = new Map(anchorData.names ?? []);
+        for (const group of groups) {
+            if (!group.name && names.has(group.anchorId)) {
+                group.name = names.get(group.anchorId);
+            }
+        }
     }
 
     // Delegate methods to sub-modules for compatibility
