@@ -119,6 +119,25 @@ export class MapGenerator {
         const outdoorConfig = entranceRoomIds ? { ...this.config, entranceRoomIds } : this.config;
         const svg = this.svgRenderer.createSVG(outdoorRooms, finalPositions, roomLookup, outdoorGroups, outdoorConfig);
 
+        // Pixel-space bounding boxes of each outdoor group, for the
+        // interactive preview's drag handles
+        const container = this.svgRenderer.lastContainer;
+        const roomSize = this.config.roomSize || 15;
+        const handles = [];
+        for (const group of outdoorGroups) {
+            if (!group.bounds) continue;
+            handles.push({
+                index: group.index,
+                anchorId: group.anchorId,
+                name: group.name ?? null,
+                rooms: group.rooms.length,
+                x: (group.bounds.minX + container.offsetX) * container.edgeLength - roomSize - 4,
+                y: (group.bounds.minY + container.offsetY) * container.edgeLength - roomSize - 4,
+                w: (group.bounds.maxX - group.bounds.minX) * container.edgeLength + roomSize * 2 + 8,
+                h: (group.bounds.maxY - group.bounds.minY) * container.edgeLength + roomSize * 2 + 8
+            });
+        }
+
         // Step 5: Render the interiors sheet
         let interiorSvg = null;
         if (interiorGroups.length > 0) {
@@ -134,7 +153,7 @@ export class MapGenerator {
             interiorSvg = this.svgRenderer.createSVG(interiorRooms, interiorPositions, roomLookup, interiorGroups, interiorConfig);
         }
 
-        return { svg, interiorSvg, groups };
+        return { svg, interiorSvg, groups, handles, edgeLength: container.edgeLength };
     }
 
     // Merge anchor-keyed saved edits (durable) into the index-keyed maps the

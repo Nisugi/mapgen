@@ -19,6 +19,33 @@ export class MapGenerationCoordinator {
         // Listen for generation events
         eventBus.on(EVENTS.MAP_GENERATE, this.generateMap.bind(this));
         eventBus.on(EVENTS.MAP_PREVIEW, this.previewMap.bind(this));
+
+        // Drag-to-reposition messages from the interactive preview window
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (!data || data.type !== 'mapgen-group-drag') return;
+            if (!this.previewManager.ownsWindow(event.source)) return;
+            this.applyGroupDrag(data);
+        });
+    }
+
+    applyGroupDrag({ groupIndex, dxCells, dyCells }) {
+        const panel = this.panelManager.panels.groupPositioning;
+        const index = parseInt(groupIndex);
+        if (Number.isNaN(index)) return;
+
+        // Panel offsets are cells, or raw pixels when the group is in pixel mode
+        const pixelMode = panel.groupPixelMode.get(index) || false;
+        const scale = pixelMode ? (this.config.edgeLength || 60) : 1;
+        const current = panel.groupOffsets.get(index) || { x: 0, y: 0 };
+        panel.groupOffsets.set(index, {
+            x: (current.x || 0) + dxCells * scale,
+            y: (current.y || 0) + dyCells * scale
+        });
+        panel.update();
+
+        StatusManager.update(`Moved group ${index + 1} by (${dxCells}, ${dyCells}) cells`);
+        this.previewMap();
     }
 
     setMapGenerator(generator) {
@@ -119,11 +146,13 @@ export class MapGenerationCoordinator {
                 isPreview: true
             });
             
-            // Show preview in a new window (interiors sheet below the map)
-            const previewContent = result.interiorSvg
-                ? `${svg}<h3 style="font-family:Arial">Interiors</h3>${result.interiorSvg}`
-                : svg;
-            this.previewManager.showPreview(previewContent);
+            // Show interactive preview (drag groups to reposition them)
+            this.previewManager.showInteractivePreview({
+                svg,
+                interiorSvg: result.interiorSvg ?? null,
+                handles: result.handles ?? [],
+                edgeLength: result.edgeLength ?? (this.config.edgeLength || 60)
+            });
             
             StatusManager.update(`Preview generated for ${rooms.length} rooms in ${this.currentGroups.length} groups.`);
             

@@ -29,6 +29,7 @@ export class SVGRenderer {
         // Get SVG container info
         const container = this.baseRenderer.createSVGContainer(rooms, positions, config);
         const { width, height, offsetX, offsetY } = container;
+        this.lastContainer = container;
         
         // Start SVG
         let svg = container.svgStart;
