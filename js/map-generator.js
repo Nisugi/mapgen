@@ -2,6 +2,7 @@
 import { RoomPositioner } from './generation/room-positioner.js';
 import { SVGRenderer } from './generation/svg-renderer.js';
 import { ConnectionAnalyzer } from './generation/connection-analyzer.js';
+import { ClusterPacker } from './generation/cluster-packer.js';
 import { GroupManager } from './generation/group-manager.js';
 
 export class MapGenerator {
@@ -41,6 +42,7 @@ export class MapGenerator {
         // Initialize sub-modules
         this.connectionAnalyzer = new ConnectionAnalyzer();
         this.roomPositioner = new RoomPositioner(this.connectionAnalyzer);
+        this.clusterPacker = new ClusterPacker(this.connectionAnalyzer);
         this.groupManager = new GroupManager();
         this.svgRenderer = new SVGRenderer();
         this.svgRenderer.setConnectionAnalyzer(this.connectionAnalyzer);
@@ -65,7 +67,14 @@ export class MapGenerator {
         const positionResult = this.roomPositioner.calculateRoomPositionsWithGroups(rooms, roomLookup);
         const positions = positionResult.positions;
         const groups = positionResult.groups;
-        
+
+        // Step 2.5: Pack groups relative to each other (image anchors,
+        // connector adjacency, uid tiebreaks). Sets group.baseOffset, which
+        // GroupManager respects instead of its left-to-right strip.
+        if (this.config.packClusters !== false) {
+            this.clusterPacker.packGroups(groups, roomLookup);
+        }
+
         // Step 3: Apply group offsets
         const groupPixelModes = config.groupPixelModes || new Map();
         const finalPositions = this.groupManager.applyGroupOffsets(groups, this.config, groupPixelModes);

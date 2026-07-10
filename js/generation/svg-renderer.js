@@ -45,7 +45,12 @@ export class SVGRenderer {
         if (config.showConnections) {
             svg += this.connectionRenderer.renderRegularConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         }
-        
+
+        // Draw dashed connector edges (no derivable direction)
+        if (config.showConnections && config.showConnectorEdges !== false) {
+            svg += this.connectionRenderer.renderConnectorConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
+        }
+
         // Draw cross-group connection LINES ONLY (no terminals)
         if (config.showConnections) {
             svg += this.connectionRenderer.renderCrossGroupConnectionLines(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);

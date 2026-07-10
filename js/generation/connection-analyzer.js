@@ -7,9 +7,28 @@ export class ConnectionAnalyzer {
             'northeast', 'northwest', 'southeast', 'southwest',
             'up', 'down'
         ]);
+
+        // Longest names first so "northeast" wins over "north" when scanning text
+        this.directionsByLength = [
+            'northeast', 'northwest', 'southeast', 'southwest',
+            'north', 'south', 'east', 'west', 'down', 'up'
+        ];
+        // \b boundaries so "go upper hallway" no longer parses as "up"
+        this.directionPatterns = this.directionsByLength.map(direction => ({
+            direction,
+            pattern: new RegExp(`\\b${direction}\\b`)
+        }));
+
+        this.oppositeDirections = {
+            north: 'south', south: 'north',
+            east: 'west', west: 'east',
+            northeast: 'southwest', southwest: 'northeast',
+            northwest: 'southeast', southeast: 'northwest',
+            up: 'down', down: 'up'
+        };
     }
 
-    getDirectionForConnection(room, targetId) {
+    getDirectionForConnection(room, targetId, roomLookup = null) {
         // First check dirto for overrides (also check "dir" for legacy compatibility)
         if (room.dirto && room.dirto[targetId]) {
             const dirtoDirection = room.dirto[targetId].toLowerCase().trim();
@@ -20,12 +39,12 @@ export class ConnectionAnalyzer {
             if (dirtoDirection !== 'none' && dirtoDirection !== 'skip' && this.cardinalDirections.has(dirtoDirection)) {
                 return dirtoDirection;
             }
-        } 
+        }
 
         // Then check wayto for cardinal directions or simple commands
         if (room.wayto && room.wayto[targetId]) {
             const waytoCommand = room.wayto[targetId].toLowerCase().trim();
-            
+
             // Skip stringprocs (commands starting with ;e) unless there's a dirto
             if (waytoCommand.startsWith(';e')) {
                 // Only use stringprocs if there's a corresponding dirto
@@ -37,21 +56,59 @@ export class ConnectionAnalyzer {
                 }
                 return null; // Ignore stringprocs without dirto
             }
-            
+
             // Check if it's a direct cardinal direction
             if (this.cardinalDirections.has(waytoCommand)) {
                 return waytoCommand;
             }
-            
-            // Check if it contains a cardinal direction (like "go north")
-            for (const direction of this.cardinalDirections) {
-                if (waytoCommand.includes(direction)) {
+
+            // Check if it contains a cardinal direction (like "go north gate")
+            for (const { direction, pattern } of this.directionPatterns) {
+                if (pattern.test(waytoCommand)) {
                     return direction;
                 }
             }
         }
-        
+
+        // Fall back to the reverse edge: if the target room comes back to us via a
+        // bare cardinal (e.g. forward "go door", back "south"), the door goes north.
+        if (roomLookup) {
+            const inferred = this.inferDirectionFromReverse(room, targetId, roomLookup);
+            if (inferred) {
+                return inferred;
+            }
+        }
+
         // No direction found
+        return null;
+    }
+
+    inferDirectionFromReverse(room, targetId, roomLookup) {
+        const targetRoom = roomLookup.get(parseInt(targetId));
+        if (!targetRoom) {
+            return null;
+        }
+        const backKey = String(room.id);
+
+        // A curated dirto on the reverse edge is authoritative either way:
+        // reverse it if cardinal, and never guess past a none/skip/cross-group.
+        if (targetRoom.dirto && targetRoom.dirto[backKey]) {
+            const backDirto = targetRoom.dirto[backKey].toLowerCase().trim();
+            if (this.cardinalDirections.has(backDirto)) {
+                return this.oppositeDirections[backDirto];
+            }
+            return null;
+        }
+
+        // Only trust exact cardinals on the reverse wayto — directions extracted
+        // from "go X" text are too weak to reverse.
+        const backWayto = targetRoom.wayto ? targetRoom.wayto[backKey] : null;
+        if (typeof backWayto === 'string') {
+            const back = backWayto.toLowerCase().trim();
+            if (this.cardinalDirections.has(back)) {
+                return this.oppositeDirections[back];
+            }
+        }
         return null;
     }
 

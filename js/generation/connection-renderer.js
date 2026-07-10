@@ -34,7 +34,7 @@ export class ConnectionRenderer {
                 if (drawnConnections.has(connectionKey)) continue;
                 drawnConnections.add(connectionKey);
                 
-                const direction = this.connectionAnalyzer ? this.connectionAnalyzer.getDirectionForConnection(room, targetId) : null;
+                const direction = this.connectionAnalyzer ? this.connectionAnalyzer.getDirectionForConnection(room, targetId, roomLookup) : null;
                 if (!direction) continue;
                 
                 const x1 = (pos.x + offsetX) * edgeLength;
@@ -60,6 +60,62 @@ export class ConnectionRenderer {
             }
         });
         
+        svg += '</g>';
+        return svg;
+    }
+
+    // Dashed connectors for edges with no derivable direction ("go door",
+    // "climb ladder", scripts). These prove adjacency but not geometry, so
+    // they render as dashed labeled lines - within or across groups.
+    renderConnectorConnections(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config) {
+        let svg = '<g id="connector-connections">';
+
+        const maxCells = config.connectorMaxCells ?? 30; // skip portal-length spaghetti
+        const drawnConnections = new Set();
+
+        rooms.forEach(room => {
+            const pos = positions.get(room.id);
+            if (!pos || !room.wayto) return;
+
+            for (const targetId of Object.keys(room.wayto)) {
+                const targetIdNum = parseInt(targetId);
+                const targetRoom = roomLookup.get(targetIdNum);
+                const targetPos = positions.get(targetIdNum);
+                if (!targetPos || !targetRoom) continue;
+
+                // Cross-group dirto edges are drawn by the cross-group pass
+                if (this.connectionAnalyzer && this.connectionAnalyzer.isCrossGroupConnection(room, targetId)) continue;
+
+                const connectionKey = [room.id, targetIdNum].sort().join('-');
+                if (drawnConnections.has(connectionKey)) continue;
+
+                // Directional edges are drawn by renderRegularConnections
+                const direction = this.connectionAnalyzer ? this.connectionAnalyzer.getDirectionForConnection(room, targetId, roomLookup) : null;
+                if (direction) continue;
+                drawnConnections.add(connectionKey);
+
+                const cellDist = Math.max(Math.abs(pos.x - targetPos.x), Math.abs(pos.y - targetPos.y));
+                if (cellDist > maxCells) continue;
+
+                const x1 = (pos.x + offsetX) * edgeLength;
+                const y1 = (pos.y + offsetY) * edgeLength;
+                const x2 = (targetPos.x + offsetX) * edgeLength;
+                const y2 = (targetPos.y + offsetY) * edgeLength;
+
+                const roomSize = config.roomSize || 15;
+                const roomShape = config.roomShape || 'square';
+                const edgePoints = this.calculateEdgeIntersections(x1, y1, x2, y2, roomSize, roomShape);
+
+                svg += `<line x1="${edgePoints.x1}" y1="${edgePoints.y1}" x2="${edgePoints.x2}" y2="${edgePoints.y2}" ` +
+                    `stroke="${config.colors.connections || '#666'}" stroke-width="${connectionWidth}" ` +
+                    `stroke-dasharray="4,3" opacity="0.7"/>`;
+
+                if (config.showLabels && this.connectionAnalyzer) {
+                    svg += this.renderConnectionLabel(room, targetId, targetRoom, x1, y1, x2, y2, config);
+                }
+            }
+        });
+
         svg += '</g>';
         return svg;
     }
