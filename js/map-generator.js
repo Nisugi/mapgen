@@ -70,9 +70,14 @@ export class MapGenerator {
         const groups = positionResult.groups;
 
         // Stable identity for human edits: group.index is discovery order and
-        // reshuffles on any mapdb/solver change; the lowest room id survives.
+        // reshuffles on any mapdb/solver change. Prefer the lowest game uid
+        // (survives even Lich room-id renumbering); fall back to lowest room
+        // id. Uids are 7+ digits and room ids are not, so keys never collide.
         for (const group of groups) {
-            group.anchorId = Math.min(...group.rooms.map(r => r.id));
+            const uids = group.rooms.flatMap(r => Array.isArray(r.uid) ? r.uid : []);
+            group.anchorId = uids.length > 0
+                ? Math.min(...uids)
+                : Math.min(...group.rooms.map(r => r.id));
         }
         this.applyAnchorKeyedEdits(groups);
 
