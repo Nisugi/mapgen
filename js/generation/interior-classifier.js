@@ -13,7 +13,7 @@ export class InteriorClassifier {
 
         const interiorGroups = new Set();
         for (const group of groups) {
-            if (this.isInteriorComponent(group)) {
+            if (this.isInteriorComponent(group, componentOf)) {
                 interiorGroups.add(group.index);
             }
         }
@@ -38,11 +38,15 @@ export class InteriorClassifier {
         return { interiorGroups, entrances, entranceRoomIds };
     }
 
-    isInteriorComponent(group) {
+    isInteriorComponent(group, componentOf) {
         let weatherless = 0;
         for (const room of group.rooms) {
-            for (const way of Object.values(room.wayto ?? {})) {
-                if (typeof way === 'string' && way.toLowerCase().trim() === 'out') {
+            for (const [targetId, way] of Object.entries(room.wayto ?? {})) {
+                if (typeof way !== 'string' || way.toLowerCase().trim() !== 'out') continue;
+                // `out` is only a doorway when it LEAVES this component. An
+                // `out` that stays inside means the component contains its
+                // own outdoors (e.g. grottos off a beach) - not a building.
+                if (componentOf.get(parseInt(targetId)) !== group.index) {
                     return true;
                 }
             }
