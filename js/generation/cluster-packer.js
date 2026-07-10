@@ -298,11 +298,13 @@ export class ClusterPacker {
         if (!groups || groups.length === 0) return;
         const sorted = [...groups].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
+        // padded area, so the sheet comes out roughly square even when the
+        // padding dwarfs the mostly tiny groups
         const totalArea = sorted.reduce((sum, g) => {
             const b = this.groupBounds(g);
-            return sum + b.width * b.height;
+            return sum + (b.width + this.groupPadding) * (b.height + this.groupPadding);
         }, 0);
-        const rowWidth = Math.max(20, Math.ceil(Math.sqrt(totalArea) * 1.5));
+        const rowWidth = Math.max(20, Math.ceil(Math.sqrt(totalArea)));
 
         let cursorX = 0, cursorY = 0, rowHeight = 0;
         for (const group of sorted) {

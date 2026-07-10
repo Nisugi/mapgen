@@ -116,6 +116,8 @@ export class RoomPositioner {
                 }
             }
 
+            this.optimizeComponent(componentRooms, componentPositions, roomLookup);
+
             const violations = this.validateComponent(componentRooms, componentPositions, roomLookup);
             if (violations.length > 0) {
                 console.warn(`Component ${groups.length}: ${violations.length} direction violation(s)`, violations);
@@ -159,6 +161,124 @@ export class RoomPositioner {
             for (const pos of componentPositions.values()) {
                 if (pos.y <= targetY) pos.y -= 1;
             }
+        }
+    }
+
+    // Local search: BFS placement order leaves long stretched edges when a
+    // room is reached first via a roundabout path. Each room tries cells
+    // adjacent to its directional neighbors; a move is accepted only when
+    // ALL its compass edges stay sign-correct and its total edge length
+    // drops, so quality strictly improves and the loop terminates.
+    optimizeComponent(componentRooms, componentPositions, roomLookup) {
+        if (componentRooms.length < 3) {
+            this.compactComponent(componentPositions);
+            return;
+        }
+
+        // roomId -> [{otherId, sx, sy}] expected sign of (other - this)
+        const adjacency = new Map();
+        const addEdge = (id, entry) => {
+            if (!adjacency.has(id)) adjacency.set(id, []);
+            adjacency.get(id).push(entry);
+        };
+        for (const room of componentRooms) {
+            if (!room.wayto) continue;
+            for (const targetId of Object.keys(room.wayto)) {
+                const targetIdNum = parseInt(targetId);
+                if (!componentPositions.has(targetIdNum)) continue;
+                const direction = this.connectionAnalyzer.getDirectionForConnection(room, targetId, roomLookup);
+                if (!direction || !this.compassDirections.has(direction)) continue;
+                const offset = this.directionOffsets[direction];
+                addEdge(room.id, { otherId: targetIdNum, sx: Math.sign(offset.x), sy: Math.sign(offset.y) });
+                addEdge(targetIdNum, { otherId: room.id, sx: -Math.sign(offset.x), sy: -Math.sign(offset.y) });
+            }
+        }
+
+        const occupied = new Map();
+        for (const [id, pos] of componentPositions) occupied.set(`${pos.x},${pos.y}`, id);
+
+        let improved = true;
+        let passes = 0;
+        while (improved && passes < 12) {
+            improved = false;
+            passes++;
+
+            for (const room of componentRooms) {
+                const roomEdges = adjacency.get(room.id);
+                if (!roomEdges || roomEdges.length === 0) continue;
+                const current = componentPositions.get(room.id);
+
+                let currentCost = 0;
+                for (const e of roomEdges) {
+                    const other = componentPositions.get(e.otherId);
+                    currentCost += Math.max(Math.abs(other.x - current.x), Math.abs(other.y - current.y));
+                }
+
+                // candidates: the ideal cell beside each neighbor plus ring 1,
+                // and ring 1 around the current spot so rooms can drift
+                // stepwise toward distant neighbors across passes
+                const candidates = new Set();
+                for (const e of roomEdges) {
+                    const other = componentPositions.get(e.otherId);
+                    const ix = other.x - e.sx, iy = other.y - e.sy;
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            candidates.add(`${ix + dx},${iy + dy}`);
+                        }
+                    }
+                }
+                for (let dx = -1; dx <= 1; dx++) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                        candidates.add(`${current.x + dx},${current.y + dy}`);
+                    }
+                }
+
+                let best = null;
+                let bestCost = currentCost;
+                for (const key of candidates) {
+                    if (occupied.has(key)) continue;
+                    const comma = key.indexOf(',');
+                    const cx = Number(key.slice(0, comma));
+                    const cy = Number(key.slice(comma + 1));
+                    let cost = 0;
+                    let valid = true;
+                    for (const e of roomEdges) {
+                        const other = componentPositions.get(e.otherId);
+                        const dx = other.x - cx, dy = other.y - cy;
+                        if (Math.sign(dx) !== e.sx || Math.sign(dy) !== e.sy) { valid = false; break; }
+                        cost += Math.max(Math.abs(dx), Math.abs(dy));
+                    }
+                    if (valid && cost < bestCost) {
+                        bestCost = cost;
+                        best = { x: cx, y: cy };
+                    }
+                }
+
+                if (best) {
+                    occupied.delete(`${current.x},${current.y}`);
+                    occupied.set(`${best.x},${best.y}`, room.id);
+                    current.x = best.x;
+                    current.y = best.y;
+                    improved = true;
+                }
+            }
+        }
+
+        this.compactComponent(componentPositions);
+    }
+
+    // Collapse fully-empty rows and columns. Relative order of all rooms is
+    // preserved, so every edge keeps its direction signs.
+    compactComponent(componentPositions) {
+        const positions = [...componentPositions.values()];
+        if (positions.length === 0) return;
+        const xs = [...new Set(positions.map(p => p.x))].sort((a, b) => a - b);
+        const ys = [...new Set(positions.map(p => p.y))].sort((a, b) => a - b);
+        const xMap = new Map(xs.map((x, i) => [x, i]));
+        const yMap = new Map(ys.map((y, i) => [y, i]));
+        for (const pos of positions) {
+            pos.x = xMap.get(pos.x);
+            pos.y = yMap.get(pos.y);
         }
     }
 

@@ -36,24 +36,35 @@ export class ConnectionRenderer {
                 
                 const direction = this.connectionAnalyzer ? this.connectionAnalyzer.getDirectionForConnection(room, targetId, roomLookup) : null;
                 if (!direction) continue;
-                
+
                 const x1 = (pos.x + offsetX) * edgeLength;
                 const y1 = (pos.y + offsetY) * edgeLength;
                 const x2 = (targetPos.x + offsetX) * edgeLength;
                 const y2 = (targetPos.y + offsetY) * edgeLength;
-                
+
                 // Determine connection color
                 let isVertical = false;
                 if (this.connectionAnalyzer) {
-                    isVertical = this.connectionAnalyzer.isVerticalConnection(room, targetId) || 
+                    isVertical = this.connectionAnalyzer.isVerticalConnection(room, targetId) ||
                                  this.connectionAnalyzer.isVerticalConnection(targetRoom, room.id.toString());
                 }
-                const connectionColor = isVertical ? 
-                    (config.colors.verticalConnections || '#999') : 
+                const connectionColor = isVertical ?
+                    (config.colors.verticalConnections || '#999') :
                     (config.colors.connections || '#666');
-                
+
+                // Non-Euclidean stretch: an edge this long slices across the
+                // map and helps nobody. Draw a labeled stub at each end
+                // pointing toward the partner room instead.
+                const cellDist = Math.max(Math.abs(pos.x - targetPos.x), Math.abs(pos.y - targetPos.y));
+                const longEdgeCells = config.longEdgeCells ?? 8;
+                if (cellDist > longEdgeCells) {
+                    svg += this.renderEdgeStub(x1, y1, x2, y2, targetRoom.id, connectionColor, connectionWidth, edgeLength, config);
+                    svg += this.renderEdgeStub(x2, y2, x1, y1, room.id, connectionColor, connectionWidth, edgeLength, config);
+                    continue;
+                }
+
                 svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${connectionColor}" stroke-width="${connectionWidth}"/>`;
-                
+
                 if (config.showLabels && this.connectionAnalyzer) {
                     svg += this.renderConnectionLabel(room, targetId, targetRoom, x1, y1, x2, y2, config);
                 }
@@ -61,6 +72,26 @@ export class ConnectionRenderer {
         });
         
         svg += '</g>';
+        return svg;
+    }
+
+    // Short arrowed stub from (x1,y1) toward (x2,y2) labeled with the far
+    // room's id - stands in for edges too stretched to draw as lines.
+    renderEdgeStub(x1, y1, x2, y2, farRoomId, color, connectionWidth, edgeLength, config) {
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const stubLen = edgeLength * 0.45;
+        const sx = x1 + Math.cos(angle) * stubLen;
+        const sy = y1 + Math.sin(angle) * stubLen;
+
+        let svg = `<line x1="${x1}" y1="${y1}" x2="${sx}" y2="${sy}" stroke="${color}" ` +
+            `stroke-width="${connectionWidth}" stroke-dasharray="2,2" opacity="0.8"/>`;
+        svg += this.renderConnectionTerminal(sx, sy, 'arrow', color, connectionWidth, angle);
+
+        const fontSize = (config.fonts?.labels?.size || 8) - 1;
+        const lx = x1 + Math.cos(angle) * (stubLen + 8);
+        const ly = y1 + Math.sin(angle) * (stubLen + 8);
+        svg += `<text x="${lx}" y="${ly + 2}" text-anchor="middle" font-size="${fontSize}" ` +
+            `fill="${color}" font-family="Arial" opacity="0.9">${farRoomId}</text>`;
         return svg;
     }
 
