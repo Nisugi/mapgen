@@ -36,6 +36,18 @@ export class ClusterPacker {
 
         const occupied = new Set();
         const placed = new Set();
+        // Connector lines already committed to the layout, so later
+        // placements can avoid crossing them.
+        const placedSegments = [];
+        const commitSegments = (group) => {
+            for (const e of (edges.get(group.index) ?? [])) {
+                if (!placed.has(e.otherGroup)) continue;
+                const a = this.finalCell(group, e.roomId);
+                const b = this.finalCell(groupByIndex.get(e.otherGroup), e.otherRoomId);
+                if (Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) > 30) continue;
+                placedSegments.push({ a, b, ra: e.roomId, rb: e.otherRoomId });
+            }
+        };
 
         // --- Pass 1: image-anchored groups ---
         if (primaryImage) {
@@ -62,6 +74,7 @@ export class ClusterPacker {
                 const offset = this.findFreeOffset(group, proposed, occupied);
                 if (offset) {
                     this.placeGroup(group, offset, occupied, placed, { method: 'image', image: primaryImage });
+                    commitSegments(group);
                 }
             }
         }
@@ -105,6 +118,7 @@ export class ClusterPacker {
                 };
                 const offset = this.findFreeOffset(seedGroup, proposed, occupied) ?? proposed;
                 this.placeGroup(seedGroup, offset, occupied, placed, { method: 'seed' });
+                commitSegments(seedGroup);
                 continue;
             }
 
@@ -114,14 +128,23 @@ export class ClusterPacker {
             const neighborCell = this.finalCell(neighborGroup, edge.otherRoomId);
             const internal = best.group.positions.get(edge.roomId);
 
-            // Try to land our connector room right beside the neighbor's room
+            // All connector lines this placement will create - the candidate
+            // spot must keep them short and avoid crossing existing ones
+            const anchors = best.placedEdges.map(e => ({
+                internal: best.group.positions.get(e.roomId),
+                target: this.finalCell(groupByIndex.get(e.otherGroup), e.otherRoomId),
+                roomId: e.roomId,
+                otherRoomId: e.otherRoomId
+            }));
+
             const proposed = { x: neighborCell.x - internal.x, y: neighborCell.y - internal.y };
-            const offset = this.findFreeOffset(best.group, proposed, occupied);
+            const offset = this.findBestConnectorOffset(best.group, proposed, occupied, anchors, placedSegments);
             if (offset) {
                 this.placeGroup(best.group, offset, occupied, placed, {
                     method: 'connector',
                     via: { from: edge.roomId, to: edge.otherRoomId }
                 });
+                commitSegments(best.group);
             } else {
                 // No room nearby; leave it for the strip pass and keep going
                 deferred.add(best.group.index);
@@ -315,6 +338,58 @@ export class ClusterPacker {
             if (occupied.has(`${pos.x + offset.x},${pos.y + offset.y}`)) return false;
         }
         return true;
+    }
+
+    // Connector-aware placement: among collision-free offsets near the
+    // proposed one, prefer short connector lines that cross as few existing
+    // connector lines as possible. Explores two rings past the nearest fit
+    // so a clean spot can beat a marginally closer tangled one.
+    findBestConnectorOffset(group, proposed, occupied, anchors, placedSegments) {
+        let best = null;
+        let bestScore = Infinity;
+        let firstFitRadius = null;
+
+        const consider = (candidate) => {
+            if (!this.fits(group, candidate, occupied)) return;
+            let score = 0;
+            for (const anchor of anchors) {
+                const x = anchor.internal.x + candidate.x;
+                const y = anchor.internal.y + candidate.y;
+                score += Math.max(Math.abs(x - anchor.target.x), Math.abs(y - anchor.target.y));
+                for (const seg of placedSegments) {
+                    if (seg.ra === anchor.roomId || seg.rb === anchor.roomId ||
+                        seg.ra === anchor.otherRoomId || seg.rb === anchor.otherRoomId) continue;
+                    if (this.segmentsCross({ x, y }, anchor.target, seg.a, seg.b)) {
+                        score += 1000;
+                    }
+                }
+            }
+            if (score < bestScore) {
+                bestScore = score;
+                best = candidate;
+            }
+        };
+
+        consider(proposed);
+        for (let r = 1; r <= this.searchRadius; r++) {
+            if (best && firstFitRadius === null) firstFitRadius = r - 1;
+            if (firstFitRadius !== null && r > firstFitRadius + 2) break;
+            for (let dx = -r; dx <= r; dx++) {
+                for (const dy of (Math.abs(dx) === r ? this.range(-r, r) : [-r, r])) {
+                    consider({ x: proposed.x + dx, y: proposed.y + dy });
+                }
+            }
+        }
+        return best;
+    }
+
+    segmentsCross(a1, b1, a2, b2) {
+        const orient = (ax, ay, bx, by, cx, cy) => Math.sign((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
+        const o1 = orient(a1.x, a1.y, b1.x, b1.y, a2.x, a2.y);
+        const o2 = orient(a1.x, a1.y, b1.x, b1.y, b2.x, b2.y);
+        const o3 = orient(a2.x, a2.y, b2.x, b2.y, a1.x, a1.y);
+        const o4 = orient(a2.x, a2.y, b2.x, b2.y, b1.x, b1.y);
+        return o1 !== o2 && o3 !== o4 && o1 !== 0 && o2 !== 0 && o3 !== 0 && o4 !== 0;
     }
 
     // Nearest collision-free offset to the proposed one, spiraling outward.
