@@ -68,13 +68,36 @@ export class SVGRenderer {
         
         // Draw rooms
         svg += this.roomRenderer.renderRooms(rooms, positions, offsetX, offsetY, edgeLength, roomSize, roomShape, strokeWidth, config);
-        
+
+        // Mark rooms that host a doorway into an interior (separate sheet)
+        if (config.entranceRoomIds && config.entranceRoomIds.size > 0) {
+            svg += this.renderDoorMarkers(positions, offsetX, offsetY, edgeLength, roomSize, config);
+        }
+
         // Draw cross-group connection TERMINALS ONLY (on top of rooms)
         if (config.showConnections) {
             svg += this.connectionRenderer.renderCrossGroupConnectionTerminals(rooms, positions, roomLookup, offsetX, offsetY, edgeLength, connectionWidth, config);
         }
         
         svg += container.svgEnd;
+        return svg;
+    }
+
+    // Small door glyph on the top-right corner of entrance rooms
+    renderDoorMarkers(positions, offsetX, offsetY, edgeLength, roomSize, config) {
+        let svg = '<g id="door-markers">';
+        const size = Math.max(4, roomSize / 2.5);
+
+        for (const roomId of config.entranceRoomIds) {
+            const pos = positions.get(roomId);
+            if (!pos) continue;
+            const x = (pos.x + offsetX) * edgeLength + roomSize;
+            const y = (pos.y + offsetY) * edgeLength - roomSize;
+            svg += `<rect x="${x - size / 2}" y="${y - size / 2}" width="${size}" height="${size}" ` +
+                `fill="#8b5a2b" stroke="#333" stroke-width="0.5" rx="1"><title>doorway to interior</title></rect>`;
+        }
+
+        svg += '</g>';
         return svg;
     }
 

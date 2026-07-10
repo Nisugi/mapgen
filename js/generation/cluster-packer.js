@@ -26,6 +26,8 @@ export class ClusterPacker {
 
         const componentOf = new Map();
         groups.forEach(g => g.rooms.forEach(r => componentOf.set(r.id, g.index)));
+        // group.index is global; when packing a subset it is not an array position
+        const groupByIndex = new Map(groups.map(g => [g.index, g]));
 
         const edges = this.collectConnectorEdges(groups, roomLookup, componentOf);
         const anchors = this.collectAnchors(groups);
@@ -108,7 +110,7 @@ export class ClusterPacker {
 
             // Pack next to the neighbor most likely to be physically adjacent
             const edge = best.placedEdges.sort((a, b) => a.uidDelta - b.uidDelta)[0];
-            const neighborGroup = groups[edge.otherGroup];
+            const neighborGroup = groupByIndex.get(edge.otherGroup);
             const neighborCell = this.finalCell(neighborGroup, edge.otherRoomId);
             const internal = best.group.positions.get(edge.roomId);
 
@@ -265,6 +267,33 @@ export class ClusterPacker {
         ratios.sort((a, b) => a - b);
         const median = ratios[Math.floor(ratios.length / 2)];
         return Math.min(300, Math.max(5, median));
+    }
+
+    // Interiors sheet: wrapped shelf rows in an independent coordinate space,
+    // sorted by name so related buildings sit together.
+    packInteriorShelf(groups) {
+        if (!groups || groups.length === 0) return;
+        const sorted = [...groups].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+
+        const totalArea = sorted.reduce((sum, g) => {
+            const b = this.groupBounds(g);
+            return sum + b.width * b.height;
+        }, 0);
+        const rowWidth = Math.max(20, Math.ceil(Math.sqrt(totalArea) * 1.5));
+
+        let cursorX = 0, cursorY = 0, rowHeight = 0;
+        for (const group of sorted) {
+            const bounds = this.groupBounds(group);
+            if (cursorX > 0 && cursorX + bounds.width > rowWidth) {
+                cursorY += rowHeight + this.groupPadding;
+                cursorX = 0;
+                rowHeight = 0;
+            }
+            group.baseOffset = { x: cursorX - bounds.minX, y: cursorY - bounds.minY };
+            group.packing = { method: 'interior-shelf' };
+            cursorX += bounds.width + this.groupPadding;
+            rowHeight = Math.max(rowHeight, bounds.height);
+        }
     }
 
     groupBounds(group) {

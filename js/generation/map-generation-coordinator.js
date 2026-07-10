@@ -65,10 +65,13 @@ export class MapGenerationCoordinator {
                 roomCount: rooms.length
             });
             
-            // Download the SVG file
+            // Download the SVG file(s)
             const outputName = document.getElementById('output-name').value;
             this.previewManager.downloadSVG(svg, outputName);
-            
+            if (result.interiorSvg) {
+                this.previewManager.downloadSVG(result.interiorSvg, `${outputName}-interiors`);
+            }
+
             StatusManager.update(`Map generated! ${rooms.length} rooms in ${this.currentGroups.length} groups.`);
             
         } catch (error) {
@@ -114,8 +117,11 @@ export class MapGenerationCoordinator {
                 isPreview: true
             });
             
-            // Show preview in a new window
-            this.previewManager.showPreview(svg);
+            // Show preview in a new window (interiors sheet below the map)
+            const previewContent = result.interiorSvg
+                ? `${svg}<h3 style="font-family:Arial">Interiors</h3>${result.interiorSvg}`
+                : svg;
+            this.previewManager.showPreview(previewContent);
             
             StatusManager.update(`Preview generated for ${rooms.length} rooms in ${this.currentGroups.length} groups.`);
             

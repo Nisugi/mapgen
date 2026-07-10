@@ -19,6 +19,7 @@ globalThis.window = globalThis.window ?? {};
 const { ConnectionAnalyzer } = await import('../js/generation/connection-analyzer.js');
 const { RoomPositioner } = await import('../js/generation/room-positioner.js');
 const { ClusterPacker } = await import('../js/generation/cluster-packer.js');
+const { InteriorClassifier } = await import('../js/generation/interior-classifier.js');
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 
@@ -153,8 +154,19 @@ console.log = () => {};
 const current = positioner.calculateRoomPositionsWithGroups(rooms, roomLookup);
 console.log = realLog;
 
+// split interiors from the outdoor map, then pack each set
+const classifier = new InteriorClassifier();
+const classification = classifier.classify(current.groups, roomLookup);
+let outdoorGroups = current.groups.filter(g => !classification.interiorGroups.has(g.index));
+let interiorGroups = current.groups.filter(g => classification.interiorGroups.has(g.index));
+if (outdoorGroups.length === 0) { outdoorGroups = current.groups; interiorGroups = []; }
+for (const g of interiorGroups) {
+    if (!g.name) g.name = classifier.buildingName(g) ?? `Interior ${g.index + 1}`;
+}
+
 const packer = new ClusterPacker(analyzer);
-packer.packGroups(current.groups, roomLookup);
+packer.packGroups(outdoorGroups, roomLookup);
+packer.packInteriorShelf(interiorGroups);
 
 const legacyGroups = legacyPositions(rooms, roomLookup);
 // validate legacy layout with the same validator (using legacy directions)
@@ -185,6 +197,8 @@ console.log('\n--- cluster packing ---');
 console.log(`primary image: ${packer.lastPackInfo.primaryImage ?? '(none)'}`);
 console.log(`scale: ${packer.lastPackInfo.scale.toFixed(1)} px/cell`);
 console.log(`placement methods:`, packer.lastPackInfo.methods);
+console.log(`interior components: ${interiorGroups.length} (${interiorGroups.reduce((n, g) => n + g.rooms.length, 0)} rooms), outdoor: ${outdoorGroups.length} (${outdoorGroups.reduce((n, g) => n + g.rooms.length, 0)} rooms)`);
+console.log(`outdoor entrance rooms: ${classification.entranceRoomIds.size}`);
 
 // --- SVG output ---
 const CELL = 60;
@@ -195,7 +209,8 @@ function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function renderSVG(groups, roomLookup, directionFn) {
+function renderSVG(groups, roomLookup, directionFn, entranceRoomIds = null) {
+    const mapRooms = groups.flatMap(g => g.rooms);
     // packed groups carry baseOffset; otherwise lay out left-to-right, largest first
     const finalPositions = new Map();
     if (groups.every(g => g.baseOffset)) {
@@ -239,7 +254,7 @@ function renderSVG(groups, roomLookup, directionFn) {
     }
 
     // edges: directional solid (violations red), connectors dashed — including inter-group
-    for (const room of rooms) {
+    for (const room of mapRooms) {
         const pos = finalPositions.get(room.id);
         if (!pos || !room.wayto) continue;
         const { x, y } = px(pos);
@@ -263,25 +278,46 @@ function renderSVG(groups, roomLookup, directionFn) {
         }
     }
 
-    for (const room of rooms) {
+    for (const room of mapRooms) {
         const pos = finalPositions.get(room.id);
         if (!pos) continue;
         const { x, y } = px(pos);
         const title = room.title?.[0] ?? '';
         nodes += `<rect x="${x - ROOM / 2}" y="${y - ROOM / 2}" width="${ROOM}" height="${ROOM}" fill="#fff" stroke="#333" stroke-width="1"><title>${esc(title)}</title></rect>`;
         nodes += `<text x="${x}" y="${y + 3}" font-size="8" font-family="Arial" text-anchor="middle">${room.id}</text>`;
+        if (entranceRoomIds && entranceRoomIds.has(room.id)) {
+            nodes += `<rect x="${x + ROOM / 2 - 4}" y="${y - ROOM / 2 - 4}" width="8" height="8" fill="#8b5a2b" stroke="#333" stroke-width="0.5" rx="1"><title>doorway to interior</title></rect>`;
+        }
+    }
+
+    // labels for named groups (interiors sheet)
+    let labels = '';
+    for (const g of groups) {
+        if (!g.name) continue;
+        const cells = [...g.positions.values()].map(p => ({ x: p.x + (g.baseOffset?.x ?? 0) + shiftX, y: p.y + (g.baseOffset?.y ?? 0) + shiftY }));
+        const minX = Math.min(...cells.map(p => p.x)), minY = Math.min(...cells.map(p => p.y));
+        const maxX = Math.max(...cells.map(p => p.x));
+        const cx = ((minX + maxX) / 2 + 1) * CELL;
+        const cy = (minY + 1) * CELL - ROOM;
+        labels += `<text x="${cx}" y="${cy}" font-size="10" font-family="Arial" text-anchor="middle" fill="#555">${esc(g.name)}</text>`;
     }
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
-        `<rect width="${width}" height="${height}" fill="#f8f9fa"/>${edges}${nodes}</svg>`;
+        `<rect width="${width}" height="${height}" fill="#f8f9fa"/>${edges}${nodes}${labels}</svg>`;
 }
 
 mkdirSync(outDir, { recursive: true });
 const slug = location.toLowerCase().replace(/[^a-z0-9]+/g, '_');
 
-const newSVG = renderSVG(current.groups, roomLookup, (r, t) => analyzer.getDirectionForConnection(r, t, roomLookup));
+const currentDir = (r, t) => analyzer.getDirectionForConnection(r, t, roomLookup);
+const newSVG = renderSVG(outdoorGroups, roomLookup, currentDir, classification.entranceRoomIds);
 const oldSVG = renderSVG(legacyGroups, roomLookup, legacyDirection);
 
 writeFileSync(join(outDir, `${slug}-current.svg`), newSVG);
 writeFileSync(join(outDir, `${slug}-legacy.svg`), oldSVG);
-console.log(`\nSVGs written to ${resolve(outDir)}\\${slug}-current.svg and ${slug}-legacy.svg`);
+const written = [`${slug}-current.svg`, `${slug}-legacy.svg`];
+if (interiorGroups.length > 0) {
+    writeFileSync(join(outDir, `${slug}-interiors.svg`), renderSVG(interiorGroups, roomLookup, currentDir));
+    written.push(`${slug}-interiors.svg`);
+}
+console.log(`\nSVGs written to ${resolve(outDir)}: ${written.join(', ')}`);

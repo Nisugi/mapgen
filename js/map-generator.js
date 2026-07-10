@@ -3,6 +3,7 @@ import { RoomPositioner } from './generation/room-positioner.js';
 import { SVGRenderer } from './generation/svg-renderer.js';
 import { ConnectionAnalyzer } from './generation/connection-analyzer.js';
 import { ClusterPacker } from './generation/cluster-packer.js';
+import { InteriorClassifier } from './generation/interior-classifier.js';
 import { GroupManager } from './generation/group-manager.js';
 
 export class MapGenerator {
@@ -43,6 +44,7 @@ export class MapGenerator {
         this.connectionAnalyzer = new ConnectionAnalyzer();
         this.roomPositioner = new RoomPositioner(this.connectionAnalyzer);
         this.clusterPacker = new ClusterPacker(this.connectionAnalyzer);
+        this.interiorClassifier = new InteriorClassifier();
         this.groupManager = new GroupManager();
         this.svgRenderer = new SVGRenderer();
         this.svgRenderer.setConnectionAnalyzer(this.connectionAnalyzer);
@@ -65,24 +67,67 @@ export class MapGenerator {
         
         // Step 2: Position rooms based on connections and get group info
         const positionResult = this.roomPositioner.calculateRoomPositionsWithGroups(rooms, roomLookup);
-        const positions = positionResult.positions;
         const groups = positionResult.groups;
 
-        // Step 2.5: Pack groups relative to each other (image anchors,
+        // Step 2.5: Split interiors (shops, lockers, wagons) from the outdoor
+        // map. They render on a separate interiors sheet; the outdoor room
+        // that hosts the doorway gets a door marker.
+        let outdoorGroups = groups;
+        let interiorGroups = [];
+        let entranceRoomIds = null;
+
+        if (this.config.separateInteriors !== false) {
+            const classification = this.interiorClassifier.classify(groups, roomLookup);
+            const candidates = groups.filter(g => classification.interiorGroups.has(g.index));
+            const remaining = groups.filter(g => !classification.interiorGroups.has(g.index));
+
+            // A selection that is entirely interiors (mapping a single
+            // building) should render as a normal map.
+            if (candidates.length > 0 && remaining.length > 0) {
+                interiorGroups = candidates;
+                outdoorGroups = remaining;
+                entranceRoomIds = classification.entranceRoomIds;
+
+                for (const group of interiorGroups) {
+                    if (!group.name) {
+                        const building = this.interiorClassifier.buildingName(group) || `Interior ${group.index + 1}`;
+                        const via = classification.entrances.get(group.index)?.[0];
+                        group.name = via ? `${building} (via ${via.outdoorRoomId})` : building;
+                    }
+                }
+            }
+        }
+
+        // Step 3: Pack groups relative to each other (image anchors,
         // connector adjacency, uid tiebreaks). Sets group.baseOffset, which
         // GroupManager respects instead of its left-to-right strip.
         if (this.config.packClusters !== false) {
-            this.clusterPacker.packGroups(groups, roomLookup);
+            this.clusterPacker.packGroups(outdoorGroups, roomLookup);
         }
 
-        // Step 3: Apply group offsets
+        // Step 4: Apply group offsets and render the outdoor map
         const groupPixelModes = config.groupPixelModes || new Map();
-        const finalPositions = this.groupManager.applyGroupOffsets(groups, this.config, groupPixelModes);
-        
-        // Step 4: Generate SVG
-        const svg = this.svgRenderer.createSVG(rooms, finalPositions, roomLookup, groups, this.config);
-        
-        return { svg, groups };
+        const finalPositions = this.groupManager.applyGroupOffsets(outdoorGroups, this.config, groupPixelModes);
+        const outdoorRooms = outdoorGroups.flatMap(g => g.rooms);
+        const outdoorConfig = entranceRoomIds ? { ...this.config, entranceRoomIds } : this.config;
+        const svg = this.svgRenderer.createSVG(outdoorRooms, finalPositions, roomLookup, outdoorGroups, outdoorConfig);
+
+        // Step 5: Render the interiors sheet
+        let interiorSvg = null;
+        if (interiorGroups.length > 0) {
+            this.clusterPacker.packInteriorShelf(interiorGroups);
+            const interiorPositions = this.groupManager.applyGroupOffsets(interiorGroups, this.config, groupPixelModes);
+            const interiorRooms = interiorGroups.flatMap(g => g.rooms);
+            const interiorConfig = {
+                ...this.config,
+                showGroupLabels: true,
+                groups: interiorGroups,
+                backgroundImage: null
+            };
+            interiorSvg = this.svgRenderer.createSVG(interiorRooms, interiorPositions, roomLookup, interiorGroups, interiorConfig);
+        }
+
+        return { svg, interiorSvg, groups };
     }
 
     // Delegate methods to sub-modules for compatibility
